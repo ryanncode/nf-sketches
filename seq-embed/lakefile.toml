@@ -1,0 +1,14 @@
+name = "seq-embed"
+version = "0.1.0"
+defaultTargets = ["seq-embed"]
+
+[[require]]
+name = "nf-validate"
+path = "../nf-validate"
+
+[[lean_lib]]
+name = "SeqEmbed"
+
+[[lean_exe]]
+name = "seq-embed"
+root = "Main"

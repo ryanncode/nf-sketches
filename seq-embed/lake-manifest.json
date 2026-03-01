@@ -1,0 +1,12 @@
+{"version": "1.1.0",
+ "packagesDir": ".lake/packages",
+ "packages":
+ [{"type": "path",
+   "scope": "",
+   "name": "«nf-validate»",
+   "manifestFile": "lake-manifest.json",
+   "inherited": false,
+   "dir": "../nf-validate",
+   "configFile": "lakefile.toml"}],
+ "name": "«seq-embed»",
+ "lakeDir": ".lake"}
