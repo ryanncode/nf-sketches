@@ -1,0 +1,30 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["8b63235bc59c800a.olean"],
+  "i": "38449b9fc8615453.ilean",
+  "c": "4c52b9aeb5dc817b.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=/home/gemini/Data/Code/nf-sketches/nf-validate/.lake/build/lib/lean /home/gemini/.elan/toolchains/leanprover--lean4---v4.28.0/bin/lean /home/gemini/Data/Code/nf-sketches/nf-validate/Main.lean -o /home/gemini/Data/Code/nf-sketches/nf-validate/.lake/build/lib/lean/Main.olean -i /home/gemini/Data/Code/nf-sketches/nf-validate/.lake/build/lib/lean/Main.ilean -c /home/gemini/Data/Code/nf-sketches/nf-validate/.lake/build/ir/Main.c --setup /home/gemini/Data/Code/nf-sketches/nf-validate/.lake/build/ir/Main.setup.json --json",
+   "level": "trace"}],
+ "inputs":
+ [["Main:deps",
+   [["deps",
+     [["«nf-validate»/«nf-validate»:extraDep",
+       [["@«nf-validate»:extraDep", "00000000000006bb"]]],
+      ["imports",
+       [["NfValidate transitive imports (legacy)", "7b9fd834cffb78ba"],
+        ["NfValidate:importAllArts", "0da8dd067c25e335"]]]]],
+    ["libs",
+     [["import dynlibs", "00000000000006bb"],
+      ["package external libraries", "00000000000006bb"],
+      ["module dynlibs", "00000000000006bb"],
+      ["module plugins", "00000000000006bb"]]]]],
+  ["Lean 4.28.0, commit 7e01a1bf5c70fc6167d49c345d3bf80596e9a79b",
+   "a96bc04a2e5e9630"],
+  ["/home/gemini/Data/Code/nf-sketches/nf-validate/Main.lean",
+   "44d836a0a8b6073b"],
+  ["options", "00000000000006bb"],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "c715871d27c9a9ed"}

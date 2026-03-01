@@ -1,0 +1,21 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs": "b3dc7ab528d1ec76",
+ "log":
+ [{"message":
+   ".> /home/gemini/.elan/toolchains/leanprover--lean4---v4.28.0/bin/clang -o /home/gemini/Data/Code/nf-sketches/nf-validate/.lake/build/bin/nf-validate /home/gemini/Data/Code/nf-sketches/nf-validate/.lake/build/ir/Main.c.o.export /home/gemini/Data/Code/nf-sketches/nf-validate/.lake/build/ir/NfValidate/Basic.c.o.export /home/gemini/Data/Code/nf-sketches/nf-validate/.lake/build/ir/NfValidate.c.o.export -L /home/gemini/.elan/toolchains/leanprover--lean4---v4.28.0/lib/lean --sysroot /home/gemini/.elan/toolchains/leanprover--lean4---v4.28.0 -L /home/gemini/.elan/toolchains/leanprover--lean4---v4.28.0/lib -L /home/gemini/.elan/toolchains/leanprover--lean4---v4.28.0/lib/glibc -lc -lc_nonshared -Wl,--as-needed -l:ld.so -Wl,--no-as-needed -lpthread_nonshared -Wl,--as-needed -Wl,-Bstatic -lgmp -lunwind -luv -Wl,-Bdynamic -Wl,--no-as-needed -fuse-ld=lld -Wl,--start-group -lleancpp -lLean -Wl,--end-group -lStd -Wl,--start-group -lInit -lleanrt -Wl,--end-group -Wl,-Bstatic -lc++ -lc++abi -Wl,-Bdynamic -lLake -Wl,--as-needed -lgmp -luv -lpthread -ldl -lrt -Wl,--no-as-needed -Wl,--gc-sections -lm -ldl -pthread",
+   "level": "trace"}],
+ "inputs":
+ [["linkObjs",
+   [["/home/gemini/Data/Code/nf-sketches/nf-validate/.lake/build/ir/Main.c.o.export",
+     "c91283ce63c5b88e"],
+    ["/home/gemini/Data/Code/nf-sketches/nf-validate/.lake/build/ir/NfValidate/Basic.c.o.export",
+     "f041244e077cfeba"],
+    ["/home/gemini/Data/Code/nf-sketches/nf-validate/.lake/build/ir/NfValidate.c.o.export",
+     "ca0e7b73ff256c87"]]],
+  ["linkLibs", "00000000000006bb"],
+  ["Lean 4.28.0, commit 7e01a1bf5c70fc6167d49c345d3bf80596e9a79b",
+   "a96bc04a2e5e9630"],
+  ["traceArgs: #[]", "00000000000006bb"],
+  ["x86_64-unknown-linux-gnu", "53a0e8937c307c28"]],
+ "depHash": "16dfafe29a596039"}
