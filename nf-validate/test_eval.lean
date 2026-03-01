@@ -1,24 +1,32 @@
-import NfValidate.GraphSemantics
+import NfValidate
 import NfValidate.BellmanFordInvariants
+import NfValidate.StratificationSoundness
 
-def v1 : Var := "v1"
-def v2 : Var := "v2"
-def v3 : Var := "v3"
-
-def edges : List Edge := [
-  { src := v1, dst := v2, weight := 5 },
-  { src := v2, dst := v3, weight := -2 }
-]
-
-def initial_dist : List (Var × Int) := [(v1, 0), (v2, 100), (v3, 100)]
-def initial_pred : List (Var × Var) := []
-
-def step1 := relaxEdges edges initial_dist initial_pred
-def step2 := relaxEdges edges step1.1 step1.2.1
-
-#eval step1.1
-#eval step1.2.2
-
-#eval step2.1
-#eval step2.2
-
+theorem evaluateClause_sound (vars : List Var) (constraints : List Constraint) (M : List (Var × Int))
+  (h_eval : evaluateClause vars constraints = StratificationResult.success M) :
+  SatisfiesGraph (lookup M) (buildEdges constraints) := by
+  unfold evaluateClause at h_eval
+  revert h_eval
+  let edges := buildEdges constraints
+  let n := vars.length
+  let initialDist := vars.map (fun v => (v, (0 : Int)))
+  let initialPred : List (Var × Var) := []
+  let (finalDist, finalPred) := evaluateClause.loop edges (n - 1) initialDist initialPred
+  intro h_eval
+  have h_not_cycle : (relaxEdges edges finalDist finalPred).2.2 = false := by
+    cases h : (relaxEdges edges finalDist finalPred).2.2
+    · rfl
+    · rw [h] at h_eval
+      dsimp at h_eval
+      contradiction
+  have h_eq : M = finalDist := by
+    cases h : (relaxEdges edges finalDist finalPred).2.2
+    · rw [h] at h_eval
+      dsimp at h_eval
+      injection h_eval with h_eq
+      exact h_eq.symm
+    · rw [h] at h_eval
+      dsimp at h_eval
+      contradiction
+  subst h_eq
+  exact relaxEdges_converged edges finalDist finalPred h_not_cycle
