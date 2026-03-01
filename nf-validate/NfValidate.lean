@@ -60,9 +60,16 @@ def getVarsAux : List Constraint → List Var
   | [] => []
   | c :: cs => c.v1 :: c.v2 :: getVarsAux cs
 
-partial def nub : List Var → List Var
+def nub (l : List Var) : List Var :=
+  match l with
   | [] => []
-  | x :: xs => x :: nub (xs.filter (fun y => y != x))
+  | x :: xs =>
+    have : (xs.filter (fun y => y != x)).length < (x :: xs).length := by
+      calc (xs.filter (fun y => y != x)).length
+        _ ≤ xs.length := List.length_filter_le ..
+        _ < (x :: xs).length := Nat.lt_succ_self ..
+    x :: nub (xs.filter (fun y => y != x))
+termination_by l.length
 
 def getVars (cs : List Constraint) : List Var :=
   nub (getVarsAux cs)
@@ -106,23 +113,27 @@ def relaxEdges (edges : List Edge) (dist : List (Var × Int)) (pred : List (Var 
       (accD, accP, changed)
   ) (dist, pred, false)
 
-partial def getCycleForward (pred : List (Var × Var)) (start : Var) (n : Nat) : List Var :=
+def getCycleForward (pred : List (Var × Var)) (start : Var) (n : Nat) : List Var :=
   -- Trace backwards through the predecessor map `n` times to guarantee we land inside the cycle
   let rec goUp (curr : Var) (steps : Nat) : Var :=
-    if steps == 0 then curr
-    else match lookupPred pred curr with
-         | some p => goUp p (steps - 1)
-         | none => curr
+    match steps with
+    | 0 => curr
+    | s + 1 => match lookupPred pred curr with
+               | some p => goUp p s
+               | none => curr
   let cycleStart := goUp start n
 
   -- From the guaranteed cycle node, trace backwards again until we hit a node we've already seen
-  let rec collect (curr : Var) (acc : List Var) : List Var :=
-    if acc.contains curr then curr :: acc -- We've completed the loop
-    else match lookupPred pred curr with
-         | some p => collect p (curr :: acc)
-         | none => curr :: acc
+  let rec collect (curr : Var) (acc : List Var) (fuel : Nat) : List Var :=
+    match fuel with
+    | 0 => curr :: acc
+    | f + 1 =>
+      if acc.contains curr then curr :: acc -- We've completed the loop
+      else match lookupPred pred curr with
+           | some p => collect p (curr :: acc) f
+           | none => curr :: acc
 
-  collect cycleStart []
+  collect cycleStart [] n
 
 --------------------------------------------------------------------------------
 -- 5. EVALUATION PIPELINE & DNF CONVERSION
@@ -134,7 +145,7 @@ inductive StratificationResult where
   | success (witness : List (Var × Int))
   | failure (cycle : List Var) (edges : List Edge)
 
-partial def getFormulaVarsAux : Formula → List Var
+def getFormulaVarsAux : Formula → List Var
   | Formula.eq x y => [x, y]
   | Formula.mem x y => [x, y]
   | Formula.neg p => getFormulaVarsAux p
@@ -146,7 +157,7 @@ partial def getFormulaVarsAux : Formula → List Var
 def getFormulaVars (f : Formula) : List Var :=
   nub (getFormulaVarsAux f)
 
-partial def evaluateClause (vars : List Var) (constraints : List Constraint) : StratificationResult :=
+def evaluateClause (vars : List Var) (constraints : List Constraint) : StratificationResult :=
   let edges := buildEdges constraints
   let n := vars.length
 
@@ -154,10 +165,11 @@ partial def evaluateClause (vars : List Var) (constraints : List Constraint) : S
   let initialPred : List (Var × Var) := []
 
   let rec loop (i : Nat) (d : List (Var × Int)) (p : List (Var × Var)) :=
-    if i == 0 then (d, p)
-    else
+    match i with
+    | 0 => (d, p)
+    | j + 1 =>
       let (d', p', changed) := relaxEdges edges d p
-      if not changed then (d', p') else loop (i - 1) d' p'
+      if not changed then (d', p') else loop j d' p'
 
   let (finalDist, finalPred) := loop (n - 1) initialDist initialPred
 
@@ -174,7 +186,7 @@ partial def evaluateClause (vars : List Var) (constraints : List Constraint) : S
     | some node => StratificationResult.failure (getCycleForward finalPred node n) edges
     | none => StratificationResult.failure [] edges
 
-partial def evaluateStratification (f : Formula) : StratificationResult :=
+def evaluateStratification (f : Formula) : StratificationResult :=
   let constraints := extractConstraints f
   evaluateClause (getFormulaVars f) constraints
 
@@ -184,27 +196,79 @@ partial def evaluateStratification (f : Formula) : StratificationResult :=
 -- Flattens complex logic into an OR-of-ANDs structure. This allows the Bellman-Ford
 -- engine to test multiple possible mathematical realities independently.
 
-partial def pushNeg : Formula → Formula
-  | Formula.neg (Formula.neg p) => pushNeg p -- Double negation elimination
+def formulaSize : Formula → Nat
+  | Formula.eq _ _ => 1
+  | Formula.mem _ _ => 1
+  | Formula.neg p => 1 + formulaSize p
+  | Formula.conj p q => 1 + formulaSize p + formulaSize q
+  | Formula.disj p q => 1 + formulaSize p + formulaSize q
+  | Formula.impl p q => 1 + formulaSize p + formulaSize q
+  | Formula.univ _ p => 1 + formulaSize p
+
+@[simp] theorem size_eq (x y) : formulaSize (Formula.eq x y) = 1 := rfl
+@[simp] theorem size_mem (x y) : formulaSize (Formula.mem x y) = 1 := rfl
+@[simp] theorem size_neg (p) : formulaSize (Formula.neg p) = 1 + formulaSize p := rfl
+@[simp] theorem size_conj (p q) : formulaSize (Formula.conj p q) = 1 + formulaSize p + formulaSize q := rfl
+@[simp] theorem size_disj (p q) : formulaSize (Formula.disj p q) = 1 + formulaSize p + formulaSize q := rfl
+@[simp] theorem size_impl (p q) : formulaSize (Formula.impl p q) = 1 + formulaSize p + formulaSize q := rfl
+@[simp] theorem size_univ (x p) : formulaSize (Formula.univ x p) = 1 + formulaSize p := rfl
+
+@[simp] theorem size_pos (f : Formula) : 0 < formulaSize f := by
+  cases f <;> simp <;> omega
+
+def pushNeg : Formula → Formula
+  | Formula.neg (Formula.neg p) =>
+      have : formulaSize p < formulaSize (Formula.neg (Formula.neg p)) := by simp; omega
+      pushNeg p -- Double negation elimination
   -- De Morgan's laws: push negation through conjunction/disjunction and flip the operator
-  | Formula.neg (Formula.conj p q) => Formula.disj (pushNeg (Formula.neg p)) (pushNeg (Formula.neg q))
-  | Formula.neg (Formula.disj p q) => Formula.conj (pushNeg (Formula.neg p)) (pushNeg (Formula.neg q))
+  | Formula.neg (Formula.conj p q) =>
+      have : formulaSize (Formula.neg p) < formulaSize (Formula.neg (Formula.conj p q)) := by simp <;> try omega
+      have : formulaSize (Formula.neg q) < formulaSize (Formula.neg (Formula.conj p q)) := by simp <;> try omega
+      Formula.disj (pushNeg (Formula.neg p)) (pushNeg (Formula.neg q))
+  | Formula.neg (Formula.disj p q) =>
+      have : formulaSize (Formula.neg p) < formulaSize (Formula.neg (Formula.disj p q)) := by simp <;> try omega
+      have : formulaSize (Formula.neg q) < formulaSize (Formula.neg (Formula.disj p q)) := by simp <;> try omega
+      Formula.conj (pushNeg (Formula.neg p)) (pushNeg (Formula.neg q))
   -- Implication equivalence: ~(p -> q) == p & ~q
-  | Formula.neg (Formula.impl p q) => Formula.conj (pushNeg p) (pushNeg (Formula.neg q))
+  | Formula.neg (Formula.impl p q) =>
+      have : formulaSize p < formulaSize (Formula.neg (Formula.impl p q)) := by simp <;> try omega
+      have : formulaSize (Formula.neg q) < formulaSize (Formula.neg (Formula.impl p q)) := by simp <;> try omega
+      Formula.conj (pushNeg p) (pushNeg (Formula.neg q))
   -- Implication equivalence: p -> q == ~p v q
-  | Formula.impl p q => Formula.disj (pushNeg (Formula.neg p)) (pushNeg q)
-  | Formula.conj p q => Formula.conj (pushNeg p) (pushNeg q)
-  | Formula.disj p q => Formula.disj (pushNeg p) (pushNeg q)
+  | Formula.impl p q =>
+      have : formulaSize (Formula.neg p) < formulaSize (Formula.impl p q) := by simp <;> try omega
+      have : formulaSize q < formulaSize (Formula.impl p q) := by simp <;> try omega
+      Formula.disj (pushNeg (Formula.neg p)) (pushNeg q)
+  | Formula.conj p q =>
+      have : formulaSize p < formulaSize (Formula.conj p q) := by simp <;> try omega
+      have : formulaSize q < formulaSize (Formula.conj p q) := by simp <;> try omega
+      Formula.conj (pushNeg p) (pushNeg q)
+  | Formula.disj p q =>
+      have : formulaSize p < formulaSize (Formula.disj p q) := by simp <;> try omega
+      have : formulaSize q < formulaSize (Formula.disj p q) := by simp <;> try omega
+      Formula.disj (pushNeg p) (pushNeg q)
   | Formula.neg p => Formula.neg p -- Negation has reached the atomic level
   | p => p
+termination_by f => formulaSize f
+decreasing_by
+  all_goals assumption
 
-partial def distributeAnd : Formula → Formula → Formula
+def distributeAnd : Formula → Formula → Formula
   -- Distributive property: (p1 v p2) & q == (p1 & q) v (p2 & q)
-  | Formula.disj p1 p2, q => Formula.disj (distributeAnd p1 q) (distributeAnd p2 q)
-  | p, Formula.disj q1 q2 => Formula.disj (distributeAnd p q1) (distributeAnd p q2)
+  | Formula.disj p1 p2, q =>
+      have : formulaSize p1 + formulaSize q < formulaSize (Formula.disj p1 p2) + formulaSize q := by rw [size_disj]; omega
+      have : formulaSize p2 + formulaSize q < formulaSize (Formula.disj p1 p2) + formulaSize q := by rw [size_disj]; omega
+      Formula.disj (distributeAnd p1 q) (distributeAnd p2 q)
+  | p, Formula.disj q1 q2 =>
+      have : formulaSize p + formulaSize q1 < formulaSize p + formulaSize (Formula.disj q1 q2) := by rw [size_disj]; omega
+      have : formulaSize p + formulaSize q2 < formulaSize p + formulaSize (Formula.disj q1 q2) := by rw [size_disj]; omega
+      Formula.disj (distributeAnd p q1) (distributeAnd p q2)
   | p, q => Formula.conj p q
+termination_by p q => formulaSize p + formulaSize q
+decreasing_by
+  all_goals assumption
 
-partial def toDNFForm : Formula → Formula
+def toDNFForm : Formula → Formula
   | Formula.conj p q => distributeAnd (toDNFForm p) (toDNFForm q)
   | Formula.disj p q => Formula.disj (toDNFForm p) (toDNFForm q)
   | p => p
@@ -219,11 +283,11 @@ def extractLiterals : Formula → List Constraint
   | Formula.conj p q => extractLiterals p ++ extractLiterals q
   | _ => []
 
-partial def getDNFClauses : Formula → List (List Constraint)
+def getDNFClauses : Formula → List (List Constraint)
   | Formula.disj p q => getDNFClauses p ++ getDNFClauses q
   | p => [extractLiterals p]
 
-partial def toDNF (f : Formula) : List (List Constraint) :=
+def toDNF (f : Formula) : List (List Constraint) :=
   getDNFClauses (toDNFForm (pushNeg f))
 
 def evaluateFullFormula (f : Formula) : StratificationResult :=
