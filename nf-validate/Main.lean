@@ -10,6 +10,8 @@ inductive Formula where
   | mem : Var → Var → Formula
   | neg : Formula → Formula
   | conj : Formula → Formula → Formula
+  | disj : Formula → Formula → Formula
+  | impl : Formula → Formula → Formula
   | univ : Var → Formula → Formula
   deriving Repr, BEq
 
@@ -24,6 +26,8 @@ def extractConstraints : Formula → List Constraint
   | Formula.mem x y => [{ v1 := x, v2 := y, diff := 1 }]
   | Formula.neg p => extractConstraints p
   | Formula.conj p q => extractConstraints p ++ extractConstraints q
+  | Formula.disj p q => extractConstraints p ++ extractConstraints q
+  | Formula.impl p q => extractConstraints p ++ extractConstraints q
   | Formula.univ _ p => extractConstraints p
 
 structure Edge where
@@ -101,8 +105,7 @@ inductive StratificationResult where
   | success (witness : List (Var × Int))
   | failure (cycle : List Var) (edges : List Edge)
 
-partial def evaluateStratification (f : Formula) : StratificationResult :=
-  let constraints := extractConstraints f
+partial def evaluateClause (constraints : List Constraint) : StratificationResult :=
   let vars := getVars constraints
   let edges := buildEdges constraints
   let n := vars.length
@@ -131,6 +134,54 @@ partial def evaluateStratification (f : Formula) : StratificationResult :=
     | some node => StratificationResult.failure (getCycleForward finalPred node n) edges
     | none => StratificationResult.failure [] edges
 
+partial def evaluateStratification (f : Formula) : StratificationResult :=
+  let constraints := extractConstraints f
+  evaluateClause constraints
+
+partial def pushNeg : Formula → Formula
+  | Formula.neg (Formula.neg p) => pushNeg p
+  | Formula.neg (Formula.conj p q) => Formula.disj (pushNeg (Formula.neg p)) (pushNeg (Formula.neg q))
+  | Formula.neg (Formula.disj p q) => Formula.conj (pushNeg (Formula.neg p)) (pushNeg (Formula.neg q))
+  | Formula.neg (Formula.impl p q) => Formula.conj (pushNeg p) (pushNeg (Formula.neg q))
+  | Formula.impl p q => Formula.disj (pushNeg (Formula.neg p)) (pushNeg q)
+  | Formula.conj p q => Formula.conj (pushNeg p) (pushNeg q)
+  | Formula.disj p q => Formula.disj (pushNeg p) (pushNeg q)
+  | Formula.neg p => Formula.neg p
+  | p => p
+
+partial def distributeAnd : Formula → Formula → Formula
+  | Formula.disj p1 p2, q => Formula.disj (distributeAnd p1 q) (distributeAnd p2 q)
+  | p, Formula.disj q1 q2 => Formula.disj (distributeAnd p q1) (distributeAnd p q2)
+  | p, q => Formula.conj p q
+
+partial def toDNFForm : Formula → Formula
+  | Formula.conj p q => distributeAnd (toDNFForm p) (toDNFForm q)
+  | Formula.disj p q => Formula.disj (toDNFForm p) (toDNFForm q)
+  | p => p
+
+def extractLiterals : Formula → List Constraint
+  | Formula.eq x y => [{ v1 := x, v2 := y, diff := 0 }]
+  | Formula.mem x y => [{ v1 := x, v2 := y, diff := 1 }]
+  | Formula.neg (Formula.eq x y) => []
+  | Formula.neg (Formula.mem x y) => []
+  | Formula.conj p q => extractLiterals p ++ extractLiterals q
+  | _ => []
+
+partial def getDNFClauses : Formula → List (List Constraint)
+  | Formula.disj p q => getDNFClauses p ++ getDNFClauses q
+  | p => [extractLiterals p]
+
+partial def toDNF (f : Formula) : List (List Constraint) :=
+  getDNFClauses (toDNFForm (pushNeg f))
+
+def evaluateFullFormula (f : Formula) : Bool :=
+  let clauses := toDNF f
+  clauses.any (fun constraints =>
+    match evaluateClause constraints with
+    | StratificationResult.success _ => true
+    | StratificationResult.failure _ _ => false
+  )
+
 def buildConjunction (atoms : List Formula) : Option Formula :=
   match atoms with
   | [] => none
@@ -140,11 +191,89 @@ def buildConjunction (atoms : List Formula) : Option Formula :=
       | some rest => some (Formula.conj x rest)
       | none => none
 
-def parseAtomic (s : String) : Option Formula :=
-  let parts := s.splitOn " "
-  match parts with
-  | [x, "=", y] => some (Formula.eq x y)
-  | [x, "e", y] => some (Formula.mem x y)
+inductive Token where
+  | var : String → Token
+  | eq : Token
+  | mem : Token
+  | neg : Token
+  | conj : Token
+  | disj : Token
+  | impl : Token
+  | lparen : Token
+  | rparen : Token
+  deriving Repr, BEq
+
+partial def tokenize (s : String) : List Token :=
+  let rec go (cs : List Char) (acc : List Token) :=
+    match cs with
+    | [] => acc.reverse
+    | ' ' :: rest => go rest acc
+    | '(' :: rest => go rest (Token.lparen :: acc)
+    | ')' :: rest => go rest (Token.rparen :: acc)
+    | '~' :: rest => go rest (Token.neg :: acc)
+    | 'v' :: rest => go rest (Token.disj :: acc)
+    | '&' :: rest => go rest (Token.conj :: acc)
+    | '-' :: '>' :: rest => go rest (Token.impl :: acc)
+    | '=' :: rest => go rest (Token.eq :: acc)
+    | 'e' :: rest => go rest (Token.mem :: acc)
+    | c :: rest =>
+        if c.isAlphanum then
+          let (varChars, rest') := cs.span Char.isAlphanum
+          go rest' (Token.var (String.mk varChars) :: acc)
+        else
+          go rest acc
+  go s.toList []
+
+partial def parseAtomic (toks : List Token) : Option (Formula × List Token) :=
+  match toks with
+  | Token.var x :: Token.eq :: Token.var y :: rest => some (Formula.eq x y, rest)
+  | Token.var x :: Token.mem :: Token.var y :: rest => some (Formula.mem x y, rest)
+  | Token.lparen :: rest =>
+      -- forward declaration workaround: call parseImpl
+      none -- replaced below
+  | _ => none
+
+mutual
+partial def parsePrimary (toks : List Token) : Option (Formula × List Token) :=
+  match toks with
+  | Token.neg :: rest =>
+      match parsePrimary rest with
+      | some (f, rest') => some (Formula.neg f, rest')
+      | none => none
+  | Token.lparen :: rest =>
+      match parseImpl rest with
+      | some (f, Token.rparen :: rest') => some (f, rest')
+      | _ => none
+  | _ => parseAtomic toks
+
+partial def parseConj (toks : List Token) : Option (Formula × List Token) :=
+  match parsePrimary toks with
+  | some (f1, Token.conj :: rest) =>
+      match parseConj rest with
+      | some (f2, rest') => some (Formula.conj f1 f2, rest')
+      | none => none
+  | res => res
+
+partial def parseDisj (toks : List Token) : Option (Formula × List Token) :=
+  match parseConj toks with
+  | some (f1, Token.disj :: rest) =>
+      match parseDisj rest with
+      | some (f2, rest') => some (Formula.disj f1 f2, rest')
+      | none => none
+  | res => res
+
+partial def parseImpl (toks : List Token) : Option (Formula × List Token) :=
+  match parseDisj toks with
+  | some (f1, Token.impl :: rest) =>
+      match parseImpl rest with
+      | some (f2, rest') => some (Formula.impl f1 f2, rest')
+      | none => none
+  | res => res
+end
+
+def parseFormula (s : String) : Option Formula :=
+  match parseImpl (tokenize s) with
+  | some (f, []) => some f
   | _ => none
 
 partial def readFormulas (stdin : IO.FS.Stream) (stdout : IO.FS.Stream) (acc : List Formula) : IO (List Formula) := do
@@ -155,10 +284,10 @@ partial def readFormulas (stdin : IO.FS.Stream) (stdout : IO.FS.Stream) (acc : L
   if input == "done" then
     return acc
   else
-    match parseAtomic input with
+    match parseFormula input with
     | some f => readFormulas stdin stdout (acc ++ [f])
     | none =>
-        stdout.putStrLn "Invalid format. Use the exact syntax 'x = y' or 'x e y'."
+        stdout.putStrLn "Invalid format. Use syntax like 'x = y', 'x e y', '~p', 'p & q', 'p v q', 'p -> q'."
         readFormulas stdin stdout acc
 
 def formatWitness (w : List (Var × Int)) : String :=
@@ -218,19 +347,16 @@ def main : IO Unit := do
   let stdout ← IO.getStdout
 
   stdout.putStrLn "=== NF Stratification Validator (Bellman-Ford Edition) ==="
-  stdout.putStrLn "Enter atomic formulas to build a conjunction."
-  stdout.putStrLn "Accepted syntax: 'x = y' for equality, 'x e y' for membership."
+  stdout.putStrLn "Enter formulas to build a conjunction."
+  stdout.putStrLn "Accepted syntax: 'x = y', 'x e y', '~p', 'p & q', 'p v q', 'p -> q'."
   stdout.putStrLn "Type 'done' to evaluate the combined formula."
 
   let atoms ← readFormulas stdin stdout []
   match buildConjunction atoms with
   | none => stdout.putStrLn "Execution terminated. No formulas were entered."
   | some f =>
-      stdout.putStrLn "\nEvaluating constraint graph with cycle detection..."
-      match evaluateStratification f with
-      | StratificationResult.success witness =>
+      stdout.putStrLn "\nEvaluating constraint graph with DNF conversion and cycle detection..."
+      if evaluateFullFormula f then
           stdout.putStrLn "Result: The formula is stratifiable."
-          stdout.putStrLn s!"Witness Context: {formatWitness witness}"
-      | StratificationResult.failure cycle edges =>
-          stdout.putStrLn "Result: Not stratifiable. A type contradiction was detected."
-          stdout.putStrLn (formatDetailedCycle cycle edges)
+      else
+          stdout.putStrLn "Result: Not stratifiable. A type contradiction was detected in all branches."
