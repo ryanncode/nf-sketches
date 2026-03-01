@@ -5,6 +5,11 @@ import Init.System.IO
 
 abbrev Var := String
 
+--------------------------------------------------------------------------------
+-- 1. ABSTRACT SYNTAX TREE (AST)
+--------------------------------------------------------------------------------
+-- Defines the structure of logical formulas in our language.
+
 inductive Formula where
   | eq : Var → Var → Formula
   | mem : Var → Var → Formula
@@ -14,6 +19,11 @@ inductive Formula where
   | impl : Formula → Formula → Formula
   | univ : Var → Formula → Formula
   deriving Repr, BEq
+
+--------------------------------------------------------------------------------
+-- 2. CONSTRAINT GENERATION
+--------------------------------------------------------------------------------
+-- Converts atomic formulas into numerical constraints for the Bellman-Ford graph.
 
 structure Constraint where
   v1 : Var
@@ -29,6 +39,11 @@ def extractConstraints : Formula → List Constraint
   | Formula.disj p q => extractConstraints p ++ extractConstraints q
   | Formula.impl p q => extractConstraints p ++ extractConstraints q
   | Formula.univ _ p => extractConstraints p
+
+--------------------------------------------------------------------------------
+-- 3. GRAPH REPRESENTATION
+--------------------------------------------------------------------------------
+-- Defines the directed edges and weights for the constraint graph.
 
 structure Edge where
   src : Var
@@ -53,6 +68,12 @@ partial def nub : List Var → List Var
 
 def getVars (cs : List Constraint) : List Var :=
   nub (getVarsAux cs)
+
+--------------------------------------------------------------------------------
+-- 4. BELLMAN-FORD ALGORITHM (CYCLE DETECTION)
+--------------------------------------------------------------------------------
+-- The core engine for checking stratifiability. Evaluates sets of constraints
+-- simultaneously by searching for negative weight cycles in a directed graph.
 
 def lookup (l : List (Var × Int)) (k : Var) : Int :=
   match l with
@@ -79,13 +100,16 @@ def relaxEdges (edges : List Edge) (dist : List (Var × Int)) (pred : List (Var 
   edges.foldl (fun (accD, accP, changed) e =>
     let du := lookup accD e.src
     let dv := lookup accD e.dst
+    -- If moving through the edge provides a shorter path (lower type level requirement)
     if du + e.weight < dv then
+      -- Relax the edge, record the new distance, and track the predecessor for cycle reconstruction
       (update accD e.dst (du + e.weight), updatePred accP e.dst e.src, true)
     else
       (accD, accP, changed)
   ) (dist, pred, false)
 
 partial def getCycleForward (pred : List (Var × Var)) (start : Var) (n : Nat) : List Var :=
+  -- Trace backwards through the predecessor map `n` times to guarantee we land inside the cycle
   let rec goUp (curr : Var) (steps : Nat) : Var :=
     if steps == 0 then curr
     else match lookupPred pred curr with
@@ -93,13 +117,20 @@ partial def getCycleForward (pred : List (Var × Var)) (start : Var) (n : Nat) :
          | none => curr
   let cycleStart := goUp start n
 
+  -- From the guaranteed cycle node, trace backwards again until we hit a node we've already seen
   let rec collect (curr : Var) (acc : List Var) : List Var :=
-    if acc.contains curr then curr :: acc
+    if acc.contains curr then curr :: acc -- We've completed the loop
     else match lookupPred pred curr with
          | some p => collect p (curr :: acc)
          | none => curr :: acc
 
   collect cycleStart []
+
+--------------------------------------------------------------------------------
+-- 5. EVALUATION PIPELINE & DNF CONVERSION
+--------------------------------------------------------------------------------
+-- Orchestrates the translation of full syntax trees into parallelizable branches
+-- of simple constraints, evaluating each for stratifiability.
 
 inductive StratificationResult where
   | success (witness : List (Var × Int))
@@ -149,18 +180,28 @@ partial def evaluateStratification (f : Formula) : StratificationResult :=
   let constraints := extractConstraints f
   evaluateClause (getFormulaVars f) constraints
 
+--------------------------------------------------------------------------------
+-- 6. DISJUNCTIVE NORMAL FORM (DNF) REDUCTION
+--------------------------------------------------------------------------------
+-- Flattens complex logic into an OR-of-ANDs structure. This allows the Bellman-Ford
+-- engine to test multiple possible mathematical realities independently.
+
 partial def pushNeg : Formula → Formula
-  | Formula.neg (Formula.neg p) => pushNeg p
+  | Formula.neg (Formula.neg p) => pushNeg p -- Double negation elimination
+  -- De Morgan's laws: push negation through conjunction/disjunction and flip the operator
   | Formula.neg (Formula.conj p q) => Formula.disj (pushNeg (Formula.neg p)) (pushNeg (Formula.neg q))
   | Formula.neg (Formula.disj p q) => Formula.conj (pushNeg (Formula.neg p)) (pushNeg (Formula.neg q))
+  -- Implication equivalence: ~(p -> q) == p & ~q
   | Formula.neg (Formula.impl p q) => Formula.conj (pushNeg p) (pushNeg (Formula.neg q))
+  -- Implication equivalence: p -> q == ~p v q
   | Formula.impl p q => Formula.disj (pushNeg (Formula.neg p)) (pushNeg q)
   | Formula.conj p q => Formula.conj (pushNeg p) (pushNeg q)
   | Formula.disj p q => Formula.disj (pushNeg p) (pushNeg q)
-  | Formula.neg p => Formula.neg p
+  | Formula.neg p => Formula.neg p -- Negation has reached the atomic level
   | p => p
 
 partial def distributeAnd : Formula → Formula → Formula
+  -- Distributive property: (p1 v p2) & q == (p1 & q) v (p2 & q)
   | Formula.disj p1 p2, q => Formula.disj (distributeAnd p1 q) (distributeAnd p2 q)
   | p, Formula.disj q1 q2 => Formula.disj (distributeAnd p q1) (distributeAnd p q2)
   | p, q => Formula.conj p q
@@ -173,6 +214,8 @@ partial def toDNFForm : Formula → Formula
 def extractLiterals : Formula → List Constraint
   | Formula.eq x y => [{ v1 := x, v2 := y, diff := 0 }]
   | Formula.mem x y => [{ v1 := x, v2 := y, diff := 1 }]
+  -- Note: We drop negated literals because the Bellman-Ford algorithm only natively
+  -- handles strict equalities and memberships. Inequalities are loosely enforced.
   | Formula.neg (Formula.eq x y) => []
   | Formula.neg (Formula.mem x y) => []
   | Formula.conj p q => extractLiterals p ++ extractLiterals q
@@ -186,8 +229,12 @@ partial def toDNF (f : Formula) : List (List Constraint) :=
   getDNFClauses (toDNFForm (pushNeg f))
 
 def evaluateFullFormula (f : Formula) : StratificationResult :=
+  -- We extract variables from the entire formula *before* DNF reduction
+  -- so that the witness context includes variables whose constraints might be dropped
   let vars := getFormulaVars f
   let clauses := toDNF f
+  -- Iterates through each DNF branch, returning the first successful stratification.
+  -- If all branches fail, it returns the failure result of the last branch checked.
   let rec checkClauses (cs : List (List Constraint)) (lastFail : Option StratificationResult) :=
     match cs with
     | [] =>
@@ -208,6 +255,12 @@ def buildConjunction (atoms : List Formula) : Option Formula :=
       match buildConjunction xs with
       | some rest => some (Formula.conj x rest)
       | none => none
+
+--------------------------------------------------------------------------------
+-- 7. COMPREHENSIVE PARSER FOR FIRST-ORDER LOGIC
+--------------------------------------------------------------------------------
+-- Converts raw user input strings into the Formula AST. Supports parentheses
+-- and operator precedence (~, &, v, ->).
 
 inductive Token where
   | var : String → Token
@@ -308,6 +361,12 @@ partial def readFormulas (stdin : IO.FS.Stream) (stdout : IO.FS.Stream) (acc : L
         stdout.putStrLn "Invalid format. Use syntax like 'x = y', 'x e y', '~p', 'p & q', 'p v q', 'p -> q'."
         readFormulas stdin stdout acc
 
+--------------------------------------------------------------------------------
+-- 8. OUTPUT FORMATTING & SEMANTIC TRACE
+--------------------------------------------------------------------------------
+-- Translates the internal numerical evaluation results back into algebraic
+-- proofs or type contradiction paths for the user.
+
 def formatWitness (w : List (Var × Int)) : String :=
   let pairs := w.map (fun (v, l) => s!"{v} : {l}")
   "{" ++ String.intercalate ", " pairs ++ "}"
@@ -359,6 +418,10 @@ def formatDetailedCycle (c : List Var) (edges : List Edge) : String :=
     s!"Contradiction Path: {pathStr}.\nRequires {req1} and {req2}."
   else
     pathStr
+
+--------------------------------------------------------------------------------
+-- 9. MAIN EXECUTION LOOP
+--------------------------------------------------------------------------------
 
 def main : IO Unit := do
   let stdin ← IO.getStdin
