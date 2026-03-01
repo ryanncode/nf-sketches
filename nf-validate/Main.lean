@@ -105,8 +105,19 @@ inductive StratificationResult where
   | success (witness : List (Var × Int))
   | failure (cycle : List Var) (edges : List Edge)
 
-partial def evaluateClause (constraints : List Constraint) : StratificationResult :=
-  let vars := getVars constraints
+partial def getFormulaVarsAux : Formula → List Var
+  | Formula.eq x y => [x, y]
+  | Formula.mem x y => [x, y]
+  | Formula.neg p => getFormulaVarsAux p
+  | Formula.conj p q => getFormulaVarsAux p ++ getFormulaVarsAux q
+  | Formula.disj p q => getFormulaVarsAux p ++ getFormulaVarsAux q
+  | Formula.impl p q => getFormulaVarsAux p ++ getFormulaVarsAux q
+  | Formula.univ x p => x :: getFormulaVarsAux p
+
+def getFormulaVars (f : Formula) : List Var :=
+  nub (getFormulaVarsAux f)
+
+partial def evaluateClause (vars : List Var) (constraints : List Constraint) : StratificationResult :=
   let edges := buildEdges constraints
   let n := vars.length
 
@@ -136,7 +147,7 @@ partial def evaluateClause (constraints : List Constraint) : StratificationResul
 
 partial def evaluateStratification (f : Formula) : StratificationResult :=
   let constraints := extractConstraints f
-  evaluateClause constraints
+  evaluateClause (getFormulaVars f) constraints
 
 partial def pushNeg : Formula → Formula
   | Formula.neg (Formula.neg p) => pushNeg p
@@ -174,13 +185,20 @@ partial def getDNFClauses : Formula → List (List Constraint)
 partial def toDNF (f : Formula) : List (List Constraint) :=
   getDNFClauses (toDNFForm (pushNeg f))
 
-def evaluateFullFormula (f : Formula) : Bool :=
+def evaluateFullFormula (f : Formula) : StratificationResult :=
+  let vars := getFormulaVars f
   let clauses := toDNF f
-  clauses.any (fun constraints =>
-    match evaluateClause constraints with
-    | StratificationResult.success _ => true
-    | StratificationResult.failure _ _ => false
-  )
+  let rec checkClauses (cs : List (List Constraint)) (lastFail : Option StratificationResult) :=
+    match cs with
+    | [] =>
+        match lastFail with
+        | some fail => fail
+        | none => StratificationResult.failure [] []
+    | c :: rest =>
+        match evaluateClause vars c with
+        | StratificationResult.success w => StratificationResult.success w
+        | StratificationResult.failure cycle edges => checkClauses rest (some (StratificationResult.failure cycle edges))
+  checkClauses clauses none
 
 def buildConjunction (atoms : List Formula) : Option Formula :=
   match atoms with
@@ -356,7 +374,10 @@ def main : IO Unit := do
   | none => stdout.putStrLn "Execution terminated. No formulas were entered."
   | some f =>
       stdout.putStrLn "\nEvaluating constraint graph with DNF conversion and cycle detection..."
-      if evaluateFullFormula f then
+      match evaluateFullFormula f with
+      | StratificationResult.success witness =>
           stdout.putStrLn "Result: The formula is stratifiable."
-      else
+          stdout.putStrLn s!"Witness Context: {formatWitness witness}"
+      | StratificationResult.failure cycle edges =>
           stdout.putStrLn "Result: Not stratifiable. A type contradiction was detected in all branches."
+          stdout.putStrLn (formatDetailedCycle cycle edges)
