@@ -1,0 +1,10 @@
+name = "nf-validate"
+version = "0.1.0"
+defaultTargets = ["nf-validate"]
+
+[[lean_lib]]
+name = "NfValidate"
+
+[[lean_exe]]
+name = "nf-validate"
+root = "Main"
