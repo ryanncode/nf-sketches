@@ -99,7 +99,7 @@ partial def getCycleForward (pred : List (Var × Var)) (start : Var) (n : Nat) :
 
 inductive StratificationResult where
   | success (witness : List (Var × Int))
-  | failure (cycle : List Var)
+  | failure (cycle : List Var) (edges : List Edge)
 
 partial def evaluateStratification (f : Formula) : StratificationResult :=
   let constraints := extractConstraints f
@@ -128,8 +128,8 @@ partial def evaluateStratification (f : Formula) : StratificationResult :=
       if du + e.weight < dv then some e.dst else none
     )
     match conflictNode with
-    | some node => StratificationResult.failure (getCycleForward finalPred node n)
-    | none => StratificationResult.failure []
+    | some node => StratificationResult.failure (getCycleForward finalPred node n) edges
+    | none => StratificationResult.failure [] edges
 
 def buildConjunction (atoms : List Formula) : Option Formula :=
   match atoms with
@@ -165,8 +165,53 @@ def formatWitness (w : List (Var × Int)) : String :=
   let pairs := w.map (fun (v, l) => s!"{v} : {l}")
   "{" ++ String.intercalate ", " pairs ++ "}"
 
-def formatCycle (c : List Var) : String :=
-  String.intercalate " -> " c
+-- Helper to convert a list of variables into pairs of adjacent nodes
+def cycleToPairs (c : List Var) : List (Var × Var) :=
+  match c with
+  | [] => []
+  | _ :: [] => []
+  | x :: y :: rest => (x, y) :: cycleToPairs (y :: rest)
+
+-- Helper to find the weight of a specific edge
+def findWeight (src dst : Var) (edges : List Edge) : Int :=
+  match edges.find? (fun e => e.src == src && e.dst == dst) with
+  | some e => e.weight
+  | none => 0
+
+-- Reconstructs the detailed path string
+def formatDetailedCycle (c : List Var) (edges : List Edge) : String :=
+  let pairs := cycleToPairs c
+
+  -- 1. Build the path string (e.g., x ∈ y (+1) → y ∈ z (+1))
+  let pathStrings := pairs.map (fun (src, dst) =>
+    let w := findWeight src dst edges
+    if w == 1 then s!"{src} ∈ {dst} (+1)"
+    else if w == 0 then s!"{src} = {dst} (0)"
+    else s!"{dst} ∈ {src} (-1)" -- Handles reverse edges if they appear in the cycle
+  )
+  let pathStr := String.intercalate " → " pathStrings
+
+  -- 2. Build the algebraic summary
+  -- This requires extracting the start, end, and accumulating the weights
+  if pairs.length >= 2 then
+    let startVar := c.head!
+    let endVar := c.reverse.tail!.head!
+
+    -- Sum weights of the forward path
+    let forwardPairs := pairs.dropLast
+    let forwardWeight := forwardPairs.foldl (fun acc (s, d) => acc + findWeight s d edges) 0
+
+    -- Get the weight of the back edge
+    let backEdgePair := pairs.getLast!
+    let backWeight := findWeight backEdgePair.1 backEdgePair.2 edges
+
+    let req1 := s!"l({endVar}) = l({startVar}) + {forwardWeight}"
+    let req2 := if backWeight == 0 then s!"l({endVar}) = l({startVar})"
+                else s!"l({endVar}) = l({startVar}) + {-backWeight}"
+
+    s!"Contradiction Path: {pathStr}.\nRequires {req1} and {req2}."
+  else
+    pathStr
 
 def main : IO Unit := do
   let stdin ← IO.getStdin
@@ -186,6 +231,6 @@ def main : IO Unit := do
       | StratificationResult.success witness =>
           stdout.putStrLn "Result: The formula is stratifiable."
           stdout.putStrLn s!"Witness Context: {formatWitness witness}"
-      | StratificationResult.failure cycle =>
+      | StratificationResult.failure cycle edges =>
           stdout.putStrLn "Result: Not stratifiable. A type contradiction was detected."
-          stdout.putStrLn s!"Contradictory Graph Cycle: {formatCycle cycle}"
+          stdout.putStrLn (formatDetailedCycle cycle edges)
