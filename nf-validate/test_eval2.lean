@@ -6,5 +6,7 @@ theorem evaluateClause_sound (vars : List Var) (constraints : List Constraint) (
   (h_eval : evaluateClause vars constraints = StratificationResult.success M) :
   SatisfiesGraph (lookup M) (buildEdges constraints) := by
   unfold evaluateClause at h_eval
-  -- Need to extract the fact that hasCycle = false and M = finalDist
+  dsimp at h_eval
+  revert h_eval
+  -- split
   sorry

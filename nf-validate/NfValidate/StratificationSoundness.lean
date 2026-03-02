@@ -199,10 +199,85 @@ Bridging evaluation to soundness.
 theorem evaluateClause_sound (vars : List Var) (constraints : List Constraint) (M : List (Var × Int))
   (h_eval : evaluateClause vars constraints = StratificationResult.success M) :
   SatisfiesGraph (lookup M) (buildEdges constraints) := by
-  -- Bridging operational evaluation with graph semantics requires
-  -- proving properties about loop termination and final state equivalence,
-  -- which is formalized in Phase 3 invariants.
-  sorry
+  unfold evaluateClause at h_eval
+
+  -- Abstract the loop execution
+  have h_loop : ∃ finalDist finalPred,
+    evaluateClause.loop (buildEdges constraints) (vars.length - 1) (vars.map fun v => (v, 0)) [] = (finalDist, finalPred) := ⟨_, _, rfl⟩
+
+  rcases h_loop with ⟨finalDist, finalPred, h_eq⟩
+
+  -- Reduce let bindings so rw can match
+  change (
+    match evaluateClause.loop (buildEdges constraints) (vars.length - 1) (List.map (fun v => (v, 0)) vars) [] with
+    | (finalDist, finalPred) =>
+      match relaxEdges (buildEdges constraints) finalDist finalPred with
+      | (fst, fst_1, hasCycle) =>
+        if (!hasCycle) = true then StratificationResult.success finalDist
+        else
+          have conflictNode := List.findSome? (fun e =>
+            if lookup finalDist e.src + e.weight < lookup finalDist e.dst then some e.dst else none) (buildEdges constraints);
+          match conflictNode with
+          | some node => StratificationResult.failure (getCycleForward finalPred node vars.length) (buildEdges constraints)
+          | none => StratificationResult.failure [] (buildEdges constraints)
+  ) = StratificationResult.success M at h_eval
+
+  -- Rewrite h_eval with the abstracted result
+  rw [h_eq] at h_eval
+  dsimp only at h_eval
+
+  -- Now analyze the final relaxEdges call
+  have h_relax := relaxEdges_converged (buildEdges constraints) finalDist finalPred
+
+  match h_relax_res : relaxEdges (buildEdges constraints) finalDist finalPred with
+  | (d', p', hasCycle) =>
+    -- In the success case, hasCycle must be false
+    have h_hasCycle_false : hasCycle = false := by
+      cases hasCycle
+      · rfl
+      · revert h_eval
+        -- If hasCycle = true, then !true = false, so the if takes the else branch which is a failure
+        -- but it equals success M
+        intro h_eval
+        have h_relax_true : (relaxEdges (buildEdges constraints) finalDist finalPred).2.2 = true := by
+          rw [h_relax_res]
+        rw [h_relax_true] at h_eval
+        dsimp at h_eval
+        split at h_eval
+        · contradiction
+        · contradiction
+
+    -- M must be finalDist
+    have h_M_eq : M = finalDist := by
+      cases hasCycle
+      · revert h_eval
+        have h_relax_false : (relaxEdges (buildEdges constraints) finalDist finalPred).2.2 = false := by
+          rw [h_relax_res]
+        rw [h_relax_false]
+        dsimp
+        intro h_eval
+        injection h_eval with h_eq_M
+        exact h_eq_M.symm
+      · contradiction
+
+    -- Apply the invariant
+    have h_converged := h_relax (by rw [h_relax_res]; exact h_hasCycle_false)
+
+    -- Now show SatisfiesGraph
+    intro e he
+    have h_le := h_converged e he
+    dsimp [SatisfiesEdge]
+
+    subst h_M_eq
+
+    have h_dist_eq : (relaxEdges (buildEdges constraints) M finalPred).1 = M := by
+      apply foldl_false_dist_eq
+      change (relaxEdges (buildEdges constraints) M finalPred).2.2 = false
+      rw [h_relax_res]
+      exact h_hasCycle_false
+
+    rw [h_dist_eq] at h_le
+    omega
 
 theorem stratification_sound (f : Formula) (M : List (Var × Int))
   (h_eval : evaluateStratification f = StratificationResult.success M) :
