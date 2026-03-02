@@ -10,9 +10,9 @@ the typing rules are satisfied.
 -/
 inductive IsStratified : Formula → (Var → Int) → Prop where
   | eq (x y : Var) (ctx : Var → Int)
-      (h : ctx x = ctx y) : IsStratified (Formula.eq x y) ctx
+      (h : ctx x = ctx y) : IsStratified (Formula.atom (Atomic.eq x y)) ctx
   | mem (x y : Var) (ctx : Var → Int)
-      (h : ctx y = ctx x + 1) : IsStratified (Formula.mem x y) ctx
+      (h : ctx y = ctx x + 1) : IsStratified (Formula.atom (Atomic.mem x y)) ctx
   | neg (f : Formula) (ctx : Var → Int)
       (h : IsStratified f ctx) : IsStratified (Formula.neg f) ctx
   | conj (f g : Formula) (ctx : Var → Int)
@@ -30,7 +30,7 @@ Proves that `extractConstraints` for an `eq` formula inserts the correct
 0-difference constraint.
 -/
 theorem extractConstraints_eq (x y : Var) :
-  { v1 := x, v2 := y, diff := 0 } ∈ extractConstraints (Formula.eq x y) := by
+  { v1 := x, v2 := y, diff := 0 } ∈ extractConstraints (Formula.atom (Atomic.eq x y)) := by
   simp [extractConstraints]
 
 /--
@@ -39,7 +39,7 @@ Proves that `extractConstraints` for a `mem` formula inserts the correct
 1-difference constraint.
 -/
 theorem extractConstraints_mem (x y : Var) :
-  { v1 := x, v2 := y, diff := 1 } ∈ extractConstraints (Formula.mem x y) := by
+  { v1 := x, v2 := y, diff := 1 } ∈ extractConstraints (Formula.atom (Atomic.mem x y)) := by
   simp [extractConstraints]
 
 /--
@@ -133,20 +133,22 @@ theorem stratified_of_satisfies (f : Formula) (d : Var → Int)
   (h_sat : SatisfiesGraph d (buildEdges (extractConstraints f))) :
   IsStratified f d := by
   induction f with
-  | eq x y =>
-    apply IsStratified.eq
-    apply stratified_eq_of_bounds x y d _ h_sat
-    · have h := buildEdges_containment { v1 := x, v2 := y, diff := 0 } (extractConstraints (Formula.eq x y)) (by simp [extractConstraints])
-      exact h.1
-    · have h := buildEdges_containment { v1 := x, v2 := y, diff := 0 } (extractConstraints (Formula.eq x y)) (by simp [extractConstraints])
-      exact h.2
-  | mem x y =>
-    apply IsStratified.mem
-    apply stratified_mem_of_bounds x y d _ h_sat
-    · have h := buildEdges_containment { v1 := x, v2 := y, diff := 1 } (extractConstraints (Formula.mem x y)) (by simp [extractConstraints])
-      exact h.1
-    · have h := buildEdges_containment { v1 := x, v2 := y, diff := 1 } (extractConstraints (Formula.mem x y)) (by simp [extractConstraints])
-      exact h.2
+  | atom a =>
+    cases a with
+    | eq x y =>
+      apply IsStratified.eq
+      apply stratified_eq_of_bounds x y d _ h_sat
+      · have h := buildEdges_containment { v1 := x, v2 := y, diff := 0 } (extractConstraints (Formula.atom (Atomic.eq x y))) (by simp [extractConstraints])
+        exact h.1
+      · have h := buildEdges_containment { v1 := x, v2 := y, diff := 0 } (extractConstraints (Formula.atom (Atomic.eq x y))) (by simp [extractConstraints])
+        exact h.2
+    | mem x y =>
+      apply IsStratified.mem
+      apply stratified_mem_of_bounds x y d _ h_sat
+      · have h := buildEdges_containment { v1 := x, v2 := y, diff := 1 } (extractConstraints (Formula.atom (Atomic.mem x y))) (by simp [extractConstraints])
+        exact h.1
+      · have h := buildEdges_containment { v1 := x, v2 := y, diff := 1 } (extractConstraints (Formula.atom (Atomic.mem x y))) (by simp [extractConstraints])
+        exact h.2
   | neg f ih =>
     apply IsStratified.neg
     apply ih

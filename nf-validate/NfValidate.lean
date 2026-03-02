@@ -8,15 +8,22 @@ abbrev Var := String
 --------------------------------------------------------------------------------
 -- Defines the structure of logical formulas in our language.
 
+inductive Atomic where
+  | eq : Var → Var → Atomic
+  | mem : Var → Var → Atomic
+  deriving Repr, BEq
+
 inductive Formula where
-  | eq : Var → Var → Formula
-  | mem : Var → Var → Formula
+  | atom : Atomic → Formula
   | neg : Formula → Formula
   | conj : Formula → Formula → Formula
   | disj : Formula → Formula → Formula
   | impl : Formula → Formula → Formula
   | univ : Var → Formula → Formula
   deriving Repr, BEq
+
+def Formula.eq (x y : Var) : Formula := Formula.atom (Atomic.eq x y)
+def Formula.mem (x y : Var) : Formula := Formula.atom (Atomic.mem x y)
 
 --------------------------------------------------------------------------------
 -- 2. CONSTRAINT GENERATION
@@ -30,8 +37,8 @@ structure Constraint where
   deriving Repr, BEq
 
 def extractConstraints : Formula → List Constraint
-  | Formula.eq x y => [{ v1 := x, v2 := y, diff := 0 }]
-  | Formula.mem x y => [{ v1 := x, v2 := y, diff := 1 }]
+  | Formula.atom (Atomic.eq x y) => [{ v1 := x, v2 := y, diff := 0 }]
+  | Formula.atom (Atomic.mem x y) => [{ v1 := x, v2 := y, diff := 1 }]
   | Formula.neg p => extractConstraints p
   | Formula.conj p q => extractConstraints p ++ extractConstraints q
   | Formula.disj p q => extractConstraints p ++ extractConstraints q
@@ -146,8 +153,8 @@ inductive StratificationResult where
   | failure (cycle : List Var) (edges : List Edge)
 
 def getFormulaVarsAux : Formula → List Var
-  | Formula.eq x y => [x, y]
-  | Formula.mem x y => [x, y]
+  | Formula.atom (Atomic.eq x y) => [x, y]
+  | Formula.atom (Atomic.mem x y) => [x, y]
   | Formula.neg p => getFormulaVarsAux p
   | Formula.conj p q => getFormulaVarsAux p ++ getFormulaVarsAux q
   | Formula.disj p q => getFormulaVarsAux p ++ getFormulaVarsAux q
@@ -197,16 +204,14 @@ def evaluateStratification (f : Formula) : StratificationResult :=
 -- engine to test multiple possible mathematical realities independently.
 
 def formulaSize : Formula → Nat
-  | Formula.eq _ _ => 1
-  | Formula.mem _ _ => 1
+  | Formula.atom _ => 1
   | Formula.neg p => 1 + formulaSize p
   | Formula.conj p q => 1 + formulaSize p + formulaSize q
   | Formula.disj p q => 1 + formulaSize p + formulaSize q
   | Formula.impl p q => 1 + formulaSize p + formulaSize q
   | Formula.univ _ p => 1 + formulaSize p
 
-@[simp] theorem size_eq (x y) : formulaSize (Formula.eq x y) = 1 := rfl
-@[simp] theorem size_mem (x y) : formulaSize (Formula.mem x y) = 1 := rfl
+@[simp] theorem size_atom (a) : formulaSize (Formula.atom a) = 1 := rfl
 @[simp] theorem size_neg (p) : formulaSize (Formula.neg p) = 1 + formulaSize p := rfl
 @[simp] theorem size_conj (p q) : formulaSize (Formula.conj p q) = 1 + formulaSize p + formulaSize q := rfl
 @[simp] theorem size_disj (p q) : formulaSize (Formula.disj p q) = 1 + formulaSize p + formulaSize q := rfl
@@ -274,12 +279,12 @@ def toDNFForm : Formula → Formula
   | p => p
 
 def extractLiterals : Formula → List Constraint
-  | Formula.eq x y => [{ v1 := x, v2 := y, diff := 0 }]
-  | Formula.mem x y => [{ v1 := x, v2 := y, diff := 1 }]
+  | Formula.atom (Atomic.eq x y) => [{ v1 := x, v2 := y, diff := 0 }]
+  | Formula.atom (Atomic.mem x y) => [{ v1 := x, v2 := y, diff := 1 }]
   -- Note: We drop negated literals because the Bellman-Ford algorithm only natively
   -- handles strict equalities and memberships. Inequalities are loosely enforced.
-  | Formula.neg (Formula.eq _ _) => []
-  | Formula.neg (Formula.mem _ _) => []
+  | Formula.neg (Formula.atom (Atomic.eq _ _)) => []
+  | Formula.neg (Formula.atom (Atomic.mem _ _)) => []
   | Formula.conj p q => extractLiterals p ++ extractLiterals q
   | _ => []
 
@@ -362,8 +367,8 @@ partial def tokenize (s : String) : List Token :=
 
 partial def parseAtomic (toks : List Token) : Option (Formula × List Token) :=
   match toks with
-  | Token.var x :: Token.eq :: Token.var y :: rest => some (Formula.eq x y, rest)
-  | Token.var x :: Token.mem :: Token.var y :: rest => some (Formula.mem x y, rest)
+  | Token.var x :: Token.eq :: Token.var y :: rest => some (Formula.atom (Atomic.eq x y), rest)
+  | Token.var x :: Token.mem :: Token.var y :: rest => some (Formula.atom (Atomic.mem x y), rest)
   | Token.lparen :: _ =>
       -- forward declaration workaround: call parseImpl
       none -- replaced below
