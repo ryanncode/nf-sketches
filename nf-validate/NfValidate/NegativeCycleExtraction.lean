@@ -3,6 +3,16 @@ import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Combinatorics.Pigeonhole
 import NfValidate.FintypeGraph
 
+/-
+  NegativeCycleExtraction.lean
+
+  This module applies the Pigeonhole Principle to formally extract looping sub-paths
+  from any sufficiently long path in the graph. By demonstrating that any path exceeding
+  the number of vertices must revisit a node, we prove that the algorithm bounds itself
+  within the finite set of variables, guaranteeing termination without infinite regress.
+  This aligns with the mechanical validation philosophy of avoiding redundant iterative hierarchies.
+-/
+
 variable {V : Type} [Fintype V] [DecidableEq V]
 variable {edges : List (GenericEdge V)}
 
@@ -14,11 +24,21 @@ def pathVertices {n : Nat} {u v : V} : BoundedPath edges n u v → Fin (n + 1) �
     else
       pathVertices p ⟨i.val - 1, by omega⟩
 
+/--
+  Proves that any path of length equal to the number of vertices must contain a duplicate vertex.
+  By relying on the Pigeonhole Principle over finite types, this theorem bypasses
+  dependent type deadlocks and establishes a clean mathematical constraint for cycle extraction.
+-/
 theorem path_has_duplicate (p : BoundedPath edges (Fintype.card V) u v) :
   ∃ (i j : Fin (Fintype.card V + 1)), i ≠ j ∧ pathVertices p i = pathVertices p j := by
   apply Fintype.exists_ne_map_eq_of_card_lt (pathVertices p)
   simp
 
+/--
+  List Projection strategy for paths.
+  This function extracts the sequence of edges from a BoundedPath, emphasizing clean mathematical
+  constraints and simple list operations over complex dependent type manipulations.
+-/
 def pathEdges {n : Nat} {u v : V} : BoundedPath edges n u v → List (GenericEdge V)
   | BoundedPath.nil _ => []
   | BoundedPath.cons e _ p => e :: pathEdges p

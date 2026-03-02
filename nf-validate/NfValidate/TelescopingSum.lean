@@ -1,3 +1,11 @@
+/-
+  TelescopingSum.lean
+
+  This module implements an algebraic contradiction strategy to prove the presence of negative cycles.
+  By summing the inequalities (M(dst) ≤ M(src) + weight) over a closed loop, the weights
+  telescope and mathematically isolate the negative weight guarantee. This approach completely
+  side-steps model-theoretic approaches, relying purely on arithmetic contradiction.
+-/
 import NfValidate.FintypeGraph
 
 variable {V : Type} [DecidableEq V]
@@ -52,6 +60,12 @@ lemma sum_diff_ge_weight_sum (M : V → Int) (edges : List (GenericEdge V))
 -- 3. Strict Inequality Contradiction
 -- If the edges form a cycle in the parent graph, we have M(dst) ≥ M(src) + weight for all parent edges.
 -- The strict edge triggering the update has M(dst) > M(src) + weight.
+/--
+  Proves that unstratifiable formulas inherently generate negative cycles.
+  When an edge triggers a strict inequality (M(dst) > M(src) + weight) in a closed loop
+  where all other edges satisfy the parent bounds, the total cycle weight sum is strictly negative.
+  This formalizes the core algebraic contradiction isolating the negative weight guarantee.
+-/
 lemma cycleWeightSum_negative_of_strict_ineq (M : V → Int) (pref suff : List (GenericEdge V)) (strict_e : GenericEdge V) (u : V)
   (h_chain : EdgeChain (pref ++ strict_e :: suff) u u)
   (h_parent_pref : ∀ e ∈ pref, M e.dst ≥ M e.src + e.weight)

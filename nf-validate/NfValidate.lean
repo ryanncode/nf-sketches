@@ -1,6 +1,19 @@
 import Init.Data.List.Basic
 import Init.System.IO
 
+/-!
+# NF Validate: Core Syntax and Evaluation Pipeline
+
+This module implements the core AST and evaluation engine for validating the stratification
+of formulas in Quine's New Foundations (NF).
+
+A key architectural decision is the bifurcation of the Abstract Syntax Tree (AST) into
+dedicated atomic and compound types. This frames our functional programming choices as a
+direct response to the limitations of classical Natural Deduction, separating the
+targeted set theory constraints (which require geometric validation) from standard
+first-order logical mechanics.
+-/
+
 abbrev Var := String
 
 --------------------------------------------------------------------------------
@@ -8,11 +21,25 @@ abbrev Var := String
 --------------------------------------------------------------------------------
 -- Defines the structure of logical formulas in our language.
 
+/--
+The `Atomic` type isolates the foundational relations of set theory: equality and membership.
+By separating these into a dedicated type, we establish a structural boundary that allows
+the constraint generation engine to focus exclusively on the targeted set theory constraints
+that dictate type levels, distinct from the broader boolean logic.
+-/
 inductive Atomic where
   | eq : Var → Var → Atomic
   | mem : Var → Var → Atomic
   deriving Repr, BEq
 
+/--
+The `Formula` type represents the compound logical structure.
+It wraps the `Atomic` relations and defines the standard first-order mechanics (negation,
+conjunction, disjunction, implication, and universal quantification). This bifurcation
+from the atomic constraints enables the evaluation pipeline to process logical branching
+(like DNF conversion) independently of the geometric bounds checking, addressing the
+limitations of classical Natural Deduction when dealing with stratification.
+-/
 inductive Formula where
   | atom : Atomic → Formula
   | neg : Formula → Formula

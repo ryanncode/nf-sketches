@@ -2,11 +2,25 @@ import NfValidate
 import NfValidate.GraphSemantics
 import NfValidate.BellmanFordInvariants
 
+/-!
+# Stratification Soundness: Bridging Geometry and Syntax
+
+This module establishes the core soundness theorem of the validator It formally maps the
+architectural separation between the geometric bounds of the constraint graph (distance
+maps, edge weights, and cycle detection) and the syntactic grammar of Quine's New Foundations (NF).
+
+By proving that satisfiability in the geometric domain implies stratification in the syntactic domain,
+we validate the functional compilation pipeline.
+-/
+
 /--
 Semantics of Quine's New Foundations Stratification.
-A formula is stratified if there exists a typing context `ctx`
-assigning an integer type level to each variable such that
-the typing rules are satisfied.
+
+This defines the target syntactic conditions for a valid formula. A formula is stratified
+if there exists a typing context `ctx` assigning an integer type level to each variable
+such that the typing rules are satisfied. Crucially, this isolates the syntactic
+requirements, allowing us to build a rigorous, verified bridge from the mechanical graph
+validation without relying on standard model-theoretic proofs.
 -/
 inductive IsStratified : Formula → (Var → Int) → Prop where
   | eq (x y : Var) (ctx : Var → Int)
@@ -281,6 +295,16 @@ theorem evaluateClause_sound (vars : List Var) (constraints : List Constraint) (
     rw [h_dist_eq] at h_le
     omega
 
+/--
+Soundness of the Stratification Validator.
+
+This theorem articulates the final verified bridge: if the mechanical evaluation pipeline
+(which converts the AST into a geometric constraint graph and runs the Bellman-Ford algorithm)
+returns a success with a given distance map `M`, then the original syntactic formula is
+`IsStratified` under that map. This provides a rigorous guarantee of correctness based purely
+on graph-theoretic and computational mechanics, entirely bypassing standard model-theoretic
+proofs.
+-/
 theorem stratification_sound (f : Formula) (M : List (Var × Int))
   (h_eval : evaluateStratification f = StratificationResult.success M) :
   IsStratified f (lookup M) := by

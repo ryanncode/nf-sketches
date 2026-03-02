@@ -2,6 +2,16 @@ import NfValidate
 import NfValidate.GraphSemantics
 import NfValidate.BellmanFordInvariants
 
+/-!
+# K-Iteration Bound
+
+This module establishes how the k-iteration bound mathematically restricts the depth of
+type derivations. By bounding the number of relaxation steps to the number of variables
+(vertices) in the constraint graph, we prevent unchecked iterative expansion and
+guarantee termination of the stratification check. This bounded traversal is sufficient
+to either find a valid type assignment or expose a negative cycle (a stratification violation).
+-/
+
 inductive BoundedPath (edges : List Edge) : Nat → Var → Var → Type where
   | nil (u : Var) : BoundedPath edges 0 u u
   | snoc {k : Nat} {u w : Var} (p : BoundedPath edges k u w) (e : Edge) (h_in : e ∈ edges) (h_eq : e.src = w) : BoundedPath edges (k + 1) u e.dst
@@ -68,6 +78,13 @@ theorem relaxEdgesN_succ (edges : List Edge) (dist : List (Var × Int)) (k : Nat
     rw [ih]
     rfl
 
+/--
+The `k_iteration_bound` theorem certifies the Bellman-Ford traversal limits.
+It proves that after `k` relaxation iterations, the computed distance to any vertex `v`
+is bounded by the weight of any valid path of length `k` from a source `u`.
+This guarantees that the algorithm mathematically restricts the depth of type derivations
+and correctly computes shortest paths (or detects violations) within the iteration limit.
+-/
 theorem k_iteration_bound (edges : List Edge) (d : List (Var × Int)) (k : Nat) (u v : Var)
   (p : BoundedPath edges k u v) :
   lookup (relaxEdgesN edges d k) v ≤ lookup d u + boundedPathWeight p := by

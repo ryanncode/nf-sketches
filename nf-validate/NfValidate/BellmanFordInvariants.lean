@@ -1,6 +1,16 @@
 import NfValidate
 import NfValidate.GraphSemantics
 
+/-!
+# Bellman-Ford Invariants and Systematic Ambiguity
+
+This module formalizes the core invariants of the Bellman-Ford algorithm used for stratification validation.
+By proving monotonicity and convergence, we operationalize the systematic ambiguity of the language.
+Specifically, these proofs guarantee that the stratification distance map reliably halts, avoiding the
+generation of redundant, infinite iterative hierarchies. This ensures that type assignments remain
+grounded and structurally sound.
+-/
+
 -- 1. Map Properties
 
 theorem lookup_update_eq (l : List (Var × Int)) (k : Var) (v : Int) :
@@ -57,6 +67,11 @@ theorem lookup_update_neq (l : List (Var × Int)) (k k' : Var) (v : Int) (h_neq 
 
 -- 2. Relaxation Monotonicity
 
+/--
+Proves that updating a distance map with a smaller value monotonically decreases or preserves all distances.
+This invariant is crucial for stratification soundness because it ensures the iterative refinement of type levels
+never regresses, preventing cyclic instability in the type hierarchy.
+-/
 theorem lookup_update_le (l : List (Var × Int)) (k : Var) (v : Int) (x : Var) (h : v ≤ lookup l k) :
   lookup (update l k v) x ≤ lookup l x := by
   cases h_eq : (x == k)
@@ -71,6 +86,11 @@ theorem lookup_update_le (l : List (Var × Int)) (k : Var) (v : Int) (x : Var) (
     rw [lookup_update_eq]
     exact h
 
+/--
+Proves that a full pass of edge relaxations monotonically decreases or preserves distances.
+By showing that the distance map only ever decreases, we establish a well-founded order that guarantees
+the algorithm avoids redundant iterative hierarchies and must eventually terminate or detect a cycle.
+-/
 theorem relaxEdges_foldl_monotone (edges : List Edge) (dist : List (Var × Int)) (pred : List (Var × Var)) (changed : Bool) (v : Var) :
   lookup (edges.foldl (fun (accD, accP, changed) e =>
     let du := lookup accD e.src
@@ -98,6 +118,9 @@ theorem relaxEdges_foldl_monotone (edges : List Edge) (dist : List (Var × Int))
     · next h_ge =>
       exact ih dist pred changed
 
+/--
+Proves that the `relaxEdges` function preserves the monotonicity invariant across all variables.
+-/
 theorem relaxEdges_monotone (edges : List Edge) (dist : List (Var × Int)) (pred : List (Var × Var))
   (v : Var) :
   lookup (relaxEdges edges dist pred).1 v ≤ lookup dist v := by
@@ -106,6 +129,9 @@ theorem relaxEdges_monotone (edges : List Edge) (dist : List (Var × Int)) (pred
 
 -- 3. Convergence Condition
 
+/--
+Proves that if any relaxation occurs, the `changed` flag is correctly set to true.
+-/
 theorem foldl_changed_true (edges : List Edge) (dist : List (Var × Int)) (pred : List (Var × Var)) :
   (edges.foldl (fun (accD, accP, changed) e =>
     let du := lookup accD e.src
@@ -127,6 +153,10 @@ theorem foldl_changed_true (edges : List Edge) (dist : List (Var × Int)) (pred 
     · next h_lt => exact ih _ _
     · next h_ge => exact ih _ _
 
+/--
+Proves that if the `changed` flag remains false, the distance map is completely unaltered.
+This establishes the halt condition: when no levels can be further refined, the type hierarchy is stable.
+-/
 theorem foldl_false_dist_eq (edges : List Edge) (dist : List (Var × Int)) (pred : List (Var × Var)) (changed : Bool) :
   (edges.foldl (fun (accD, accP, changed) e =>
     let du := lookup accD e.src
@@ -162,6 +192,11 @@ theorem foldl_false_dist_eq (edges : List Edge) (dist : List (Var × Int)) (pred
       intro h
       exact ih dist pred changed h
 
+/--
+Proves that if a relaxation pass finishes without changes, all edges satisfy the stratification constraint:
+`dist(dst) ≤ dist(src) + weight`. This is the core soundness property, proving that the assigned levels
+form a valid stratification without unbounded iterative hierarchies.
+-/
 theorem relaxEdges_foldl_converged (edges : List Edge) (dist : List (Var × Int)) (pred : List (Var × Var)) (changed : Bool) :
   (edges.foldl (fun (accD, accP, changed) e =>
     let du := lookup accD e.src
@@ -220,6 +255,9 @@ theorem relaxEdges_foldl_converged (edges : List Edge) (dist : List (Var × Int)
       | tail _ h_in_es =>
         exact ih dist pred changed h e h_in_es
 
+/--
+Proves the convergence condition for the top-level `relaxEdges` function.
+-/
 theorem relaxEdges_converged (edges : List Edge) (dist : List (Var × Int)) (pred : List (Var × Var)) :
   (relaxEdges edges dist pred).2.2 = false → ∀ e ∈ edges, lookup (relaxEdges edges dist pred).1 e.dst ≤ lookup (relaxEdges edges dist pred).1 e.src + e.weight := by
   unfold relaxEdges

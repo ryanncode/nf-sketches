@@ -1,7 +1,20 @@
 import NfValidate
 
+/-!
+# Graph Semantics for Stratification
+
+This module maps geometric paths and constraint satisfiability directly to the strict
+mathematical definitions of stratification. The graph natively encodes Quine's typing
+rules (e.g., `x ∈ y ⇒ t(x) + 1 = t(y)` and `x = y ⇒ t(x) = t(y)`) as algebraic
+constraints on edge weights, entirely bypassing the need for hierarchical models or
+layered universes. Satisfiability of the graph is thus algebraically equivalent to the
+existence of a valid type assignment.
+-/
+
 /--
-A valid sequence of edges from vertex `u` to vertex `v` where each edge exists in the `edges` list.
+Represents a valid sequence of edges from vertex `u` to vertex `v`.
+In the context of the algebraic constraint translation, a path represents a
+chain of relative type level constraints (typing derivations) between variables.
 -/
 inductive Path (edges : List Edge) : Var → Var → Type where
   | nil (u : Var) : Path edges u u
@@ -16,6 +29,8 @@ def pathWeight {edges : List Edge} {u v : Var} : Path edges u v → Int
 
 /--
 A cycle is a path from a vertex to itself.
+Algebraically, this represents a sequence of type constraints that relate a variable's
+type back to itself, which is critical for detecting stratification violations.
 -/
 abbrev Cycle (edges : List Edge) (u : Var) := Path edges u u
 
@@ -36,6 +51,9 @@ def SatisfiesEdge (d : Var → Int) (e : Edge) : Prop :=
 
 /--
 A context `d` satisfies a whole graph (list of edges) if it satisfies every edge in the graph.
+Under the algebraic constraint translation, this means the context `d` forms a valid
+stratification assignment (type assignment) that strictly adheres to all of Quine's typing rules
+encoded by the graph.
 -/
 def SatisfiesGraph (d : Var → Int) (edges : List Edge) : Prop :=
   ∀ e ∈ edges, SatisfiesEdge d e
