@@ -8,16 +8,21 @@ Standard model-theoretic proofs in Lean frequently reproduce the iterative hiera
 
 These modules formalize the stratification algorithms and explore the unique behavior of structural rules—such as cut-elimination failures—under Quine's systemic ambiguity. By interacting directly with the methodological territory of recent consistency formalizations, this project establishes a rigorous computational baseline that validates structural foundations and operationalizes the core mechanics of syntactic monism.
 
+## The Laboratory vs. The Factory
+
+This Lean 4 repository is not the final home for this logic; it is the theoretical laboratory used to prove the mathematics are sound. Because building a custom, bare-metal logic engine requires abandoning the safety nets of standard dependent type theory, we must first secure cryptographic certainty regarding how Quine's New Foundations operates. By using Lean’s universally trusted kernel to formally prove exactly how our algorithms evaluate stratification, we conduct the rigorous diagnostic work required before forging the actual operational code directly into a custom engine.
+
 ## Core Modules
 
 The repository is divided into three primary modules, separating the core logical constraints from interactive exploration and formal diagnostics.
 
 ### `nf-validate`: The Core Stratification Library
 
-This library operates as an algorithmic syntax checker. Instead of proving theorems within NF, the Lean script takes an abstract syntax tree of a logical formula and algorithmically determines its stratifiability.
+This library operates as an algorithmic syntax checker. Instead of proving theorems within NF, the Lean script takes an abstract syntax tree of a logical formula and algorithmically determines its stratifiability. By completely bypassing traditional model theory, this module reduces set theory validation into a purely geometric shortest-path routing problem.
 
-* **Implementation Mechanics:** The program defines a custom inductive type representing the formulas of first-order logic with a membership relation. A function assigns integer levels to all variables using Bellman-Ford graph evaluation. For every atomic formula `x ∈ y`, the level of `y` must be exactly one greater than the level of `x`. For `x = y`, their levels must be equal.
-* **Theoretical Objective:** Stratification functions strictly as a grammatical constraint. Coding this validator operationalizes the systematic ambiguity of the language, serving as the computational baseline required to investigate the complexity class of NF.
+* **Implementation Mechanics:** The program defines a custom inductive type representing the formulas of first-order logic with a membership relation. A function assigns integer levels to all variables using Bellman-Ford graph evaluation. Equality constraints (`x = y`) are encoded as bidirectional edges with a weight of 0, and membership constraints (`x ∈ y`) are translated into edges with a weight of 1.
+* **Theoretical Objective:** Stratification functions strictly as a grammatical constraint. Coding this validator operationalizes the systematic ambiguity of the language. Classical paradoxes like Russell's paradox do not require semantic interpretation to be resolved; they mathematically manifest as negative weight cycles during the Bellman-Ford traversal.
+* **Formal Verification of Geometric Soundness:** The repository proves the algorithm's internal monotonicity and convergence to guarantee the search map never regresses into cyclic instability. A formalized K-Iteration bound mathematically restricts the depth of type derivations strictly to the number of variables present, guaranteeing termination without unchecked iterative expansion. Ultimately, the `stratification_sound` theorem proves that computational satisfiability in the geometric domain inherently guarantees valid syntax, securing a soundness proof entirely independent of traditional model-theoretic structures.
 
 ### `parse-strat`: The Interactive Sandbox
 
@@ -30,8 +35,9 @@ This program provides a tactile, responsive REPL environment for testing edge ca
 
 This project formalizes the structural proof theory required to navigate the complexities of the axiom of extensionality. It builds a deep embedding of Gentzen's Sequent Calculus in Lean, restricting the comprehension rules strictly to formulas passing the `nf-validate` stratification checker.
 
-* **Implementation Mechanics:** The script encodes the structural rules alongside the logical rules for a basic sequent calculus. The diagnostic engine executes canonical failure pathways (such as the Impredicative Singleton or the Kuratowski Ordered Pair Type-Shift) to observe the exact mathematical breakdown of proof normalization.
-* **Theoretical Objective:** Marcel Crabbé proved cut-elimination for the stratified fragment of NF's comprehension scheme. Embedding this specific calculus in Lean creates the exact diagnostic environment needed to track logical detours and formally witness where proof normalization breaks down under syntactic constraints.
+* **Algorithmic Gatekeeping:** The system mechanically restricts classical deductive freedom. While standard theorem provers invoke comprehension rules whenever a formula is well-formed, this environment mathematically locks the `compL` (Comprehension Left) rule. The logic engine refuses to process a set comprehension unless it is supplied with a `StratificationWitness` generated by the external Bellman-Ford algorithm.
+* **Sabotaging Normalization:** The diagnostic engine (`reduceCut`) executes canonical failure pathways (such as the Impredicative Singleton). Rather than building a traditional normalizer to smooth out intermediate lemmas, this engine intentionally bypasses standard structural permutations to force logical detours directly into the `compL` rule.
+* **Theoretical Objective:** Marcel Crabbé proved cut-elimination fails in NF. By intentionally sabotaging proof normalization, the program mathematically visualizes the exact algebraic contradictions—the negative cycles—that cause systemic ambiguity to break down deductive logic. The failures are the data.
 
 ### `untyped-comb`: Untyped Combinators (Future Work)
 
@@ -95,6 +101,8 @@ The architectural requirements for formalizing Quine's New Foundations demand a 
 
 ---
 
-## Conclusion
+## Research Applications and Next Steps
 
-This project provides a computationally rigorous foundation for exploring the mechanical limits of formal logic. By offering both interactive sandboxes and automated diagnostic tools, it enables researchers to witness the exact boundaries of a stratified universe and provides the necessary infrastructure to further investigate the computational potential of Quine's New Foundations.
+This repository serves as a computationally rigorous baseline for exploring the mechanical limits of formal logic under Quine's systemic ambiguity. By providing both interactive REPL sandboxes and automated cut-elimination diagnostics, the tools enable researchers to mathematically witness the exact boundaries of a stratified universe.
+
+These modules provide the verified infrastructure necessary to further investigate the computational potential of New Foundations, laying the groundwork for future implementations of untyped combinatory logic and custom, non-hierarchical logic engines.
