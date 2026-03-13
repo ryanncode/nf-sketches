@@ -246,7 +246,7 @@ def reduceCut {Γ Δ : Context} (A : Formula) (d1 : Derivation ⟨Γ, A :: Δ⟩
                          | Var.free s => s
                          | Var.bound 0 => "x"
                          | _ => "?"
-          Except.error (ReductionError.StratificationFailure s!"{subst_src} ↦ {dst_str}" cycle edges)
+          Except.error (ReductionError.StratificationFailure s!"substitution [{subst_src} ↦ {dst_str}]" cycle edges)
 
       | StratificationResult.success _ =>
           -- 2. FIX: The substitution was stratifiable (Impredicative Singleton).
