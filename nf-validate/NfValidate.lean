@@ -209,7 +209,7 @@ def evaluateClause (vars : List Var) (constraints : List Constraint) : Stratific
 
   let (finalDist, finalPred) := loop (n - 1) initialDist initialPred
 
-  let (_, _, hasCycle) := relaxEdges edges finalDist finalPred
+  let (_, cyclePred, hasCycle) := relaxEdges edges finalDist finalPred
   if not hasCycle then
     StratificationResult.success finalDist
   else
@@ -219,7 +219,7 @@ def evaluateClause (vars : List Var) (constraints : List Constraint) : Stratific
       if du + e.weight < dv then some e.dst else none
     )
     match conflictNode with
-    | some node => StratificationResult.failure (getCycleForward finalPred node n) edges
+    | some node => StratificationResult.failure (getCycleForward cyclePred node n) edges
     | none => StratificationResult.failure [] edges
 
 def evaluateStratification (f : Formula) : StratificationResult :=
@@ -356,7 +356,14 @@ def formatDetailedCycle (cycle : List Var) (edges : List Edge) : String :=
     | [] => ""
     | [v] => s!"{reprStr v}"
     | u :: v :: rest =>
-        let edge := edges.find? (fun e => e.src == u && e.dst == v)
+        -- Bellman-Ford traverses the shortest path, so we must extract the minimum weight edge
+        let candidateEdges := edges.filter (fun e => e.src == u && e.dst == v)
+        let edge := candidateEdges.foldl (fun minOpt e =>
+          match minOpt with
+          | none => some e
+          | some min_e => if e.weight < min_e.weight then some e else some min_e
+        ) (none : Option Edge)
+
         let weightStr := match edge with
                          | some e => s!" --({e.weight})--> "
                          | none => " --(?)--> "

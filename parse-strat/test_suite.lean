@@ -1,5 +1,5 @@
 import NfValidate
-import Main
+import ParseStrat
 
 open Formula
 
@@ -11,6 +11,22 @@ def isSuccess (res : StratificationResult) : Bool :=
 
 def isFailure (res : StratificationResult) : Bool :=
   not (isSuccess res)
+
+def assertTest (name : String) (f : Formula) (expectSuccess : Bool) : String :=
+  match evaluateFullFormula f with
+  | StratificationResult.success witness =>
+      if expectSuccess then
+        s!"[PASS] {name}\n  Result: Stratifiable\n  Witness: {formatWitness witness}\n"
+      else
+        s!"[FAIL] {name}\n  Expected Unstratifiable, but found valid assignment:\n  Witness: {formatWitness witness}\n"
+
+  | StratificationResult.failure cycle edges =>
+      if not expectSuccess then
+        let cycleDetail := formatDetailedCycleSandbox cycle edges
+        s!"[PASS] {name}\n  Result: Unstratifiable\n  {cycleDetail}\n"
+      else
+        let cycleDetail := formatDetailedCycleSandbox cycle edges
+        s!"[FAIL] {name}\n  Expected Stratifiable, but found contradiction:\n  {cycleDetail}\n"
 
 -- Override mem and eq to use Var.free
 def mem (x y : String) : Formula := Formula.atom (Atomic.mem (Var.free x) (Var.free y))
@@ -90,16 +106,16 @@ def paradox_eq_cycle : Formula :=
 -- Execution and Verification Assertions
 --------------------------------------------------------------------------------
 
-#eval if isSuccess (evaluateFullFormula test_base_mem) then "Pass: Base Mem" else "Fail: Base Mem"
-#eval if isSuccess (evaluateFullFormula test_base_eq) then "Pass: Base Eq" else "Fail: Base Eq"
-#eval if isSuccess (evaluateFullFormula test_transitive) then "Pass: Transitive Shift" else "Fail: Transitive Shift"
-#eval if isSuccess (evaluateFullFormula test_disj_success) then "Pass: DNF Partial Success" else "Fail: DNF Partial Success"
-#eval if isSuccess (evaluateFullFormula test_neg_conj) then "Pass: Negation Push" else "Fail: Negation Push"
-#eval if isSuccess (evaluateFullFormula test_impl) then "Pass: Implication" else "Fail: Implication"
-#eval if isSuccess (evaluateFullFormula test_univ) then "Pass: Universal" else "Fail: Universal"
+#eval! IO.print (assertTest "Base Mem" test_base_mem true)
+#eval! IO.print (assertTest "Base Eq" test_base_eq true)
+#eval! IO.print (assertTest "Transitive Shift" test_transitive true)
+#eval! IO.print (assertTest "DNF Partial Success" test_disj_success true)
+#eval! IO.print (assertTest "Negation Push" test_neg_conj true)
+#eval! IO.print (assertTest "Implication" test_impl true)
+#eval! IO.print (assertTest "Universal" test_univ true)
 
-#eval if isFailure (evaluateFullFormula paradox_all_fail) then "Pass: DNF Total Failure" else "Fail: DNF Total Failure"
-#eval if isFailure (evaluateFullFormula paradox_russell) then "Pass: Russell Paradox" else "Fail: Russell Paradox"
-#eval if isFailure (evaluateFullFormula paradox_2cycle) then "Pass: 2-Cycle" else "Fail: 2-Cycle"
-#eval if isFailure (evaluateFullFormula paradox_3cycle) then "Pass: 3-Cycle" else "Fail: 3-Cycle"
-#eval if isFailure (evaluateFullFormula paradox_eq_cycle) then "Pass: Equality Cycle" else "Fail: Equality Cycle"
+#eval! IO.print (assertTest "DNF Total Failure" paradox_all_fail false)
+#eval! IO.print (assertTest "Russell Paradox" paradox_russell false)
+#eval! IO.print (assertTest "2-Cycle" paradox_2cycle false)
+#eval! IO.print (assertTest "3-Cycle" paradox_3cycle false)
+#eval! IO.print (assertTest "Equality Cycle" paradox_eq_cycle false)
