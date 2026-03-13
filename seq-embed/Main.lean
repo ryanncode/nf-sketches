@@ -11,69 +11,68 @@ structure Sequent where
   delta : Context -- Succedents (Right)
   deriving Repr, BEq
 
--- To model comprehension, we need existential quantification and biconditionals.
--- We construct these from the primitive AST operators.
+-- Syntactic sugar for biconditional and existential quantification
 def mkIff (p q : Formula) : Formula :=
   Formula.conj (Formula.impl p q) (Formula.impl q p)
 
-def mkExists (x : Var) (p : Formula) : Formula :=
-  Formula.neg (Formula.univ x (Formula.neg p))
+def mkExists (n : String) (p : Formula) : Formula :=
+  Formula.neg (Formula.univ n (Formula.neg p))
 
 -- Constructs the NF Comprehension Axiom body: ∃x ∀y (y ∈ x ↔ φ)
-def mkComprehensionAxiom (x y : Var) (phi : Formula) : Formula :=
-  mkExists x (Formula.univ y (mkIff (Formula.mem y x) phi))
+-- In locally nameless, inside ∀y, y is `bound 0` and x is `bound 1`.
+def mkComprehensionAxiom (n_x n_y : String) (phi : Formula) : Formula :=
+  mkExists n_x (Formula.univ n_y (mkIff (Formula.mem (Var.bound 0) (Var.bound 1)) phi))
+
+-- Constructs the Extensionality Axiom: ∀x ∀y (∀z (z ∈ x ↔ z ∈ y) → x = y)
+-- Inside ∀z, z is `bound 0`, y is `bound 1`, x is `bound 2`.
+def mkExtensionalityAxiom : Formula :=
+  Formula.univ "x" (Formula.univ "y" (Formula.impl
+    (Formula.univ "z" (mkIff (Formula.mem (Var.bound 0) (Var.bound 2)) (Formula.mem (Var.bound 0) (Var.bound 1))))
+    (Formula.eq (Var.bound 1) (Var.bound 0))))
 
 --------------------------------------------------------------------------------
--- VARIABLE SUBSTITUTION & FRESH VARIABLES
+-- LOCALLY NAMELESS SUBSTITUTION & FRESH VARIABLES
 --------------------------------------------------------------------------------
+
+def freeVarsVar : Var → List Var
+  | Var.free x => [Var.free x]
+  | Var.bound _ => []
 
 def freeVars : Formula → List Var
-  | Formula.atom (Atomic.eq y z) => [y, z]
-  | Formula.atom (Atomic.mem y z) => [y, z]
+  | Formula.atom (Atomic.eq y z) => freeVarsVar y ++ freeVarsVar z
+  | Formula.atom (Atomic.mem y z) => freeVarsVar y ++ freeVarsVar z
   | Formula.neg p => freeVars p
   | Formula.conj p q => freeVars p ++ freeVars q
   | Formula.disj p q => freeVars p ++ freeVars q
   | Formula.impl p q => freeVars p ++ freeVars q
-  | Formula.univ y p => (freeVars p).filter (· != y)
+  | Formula.univ _ p => freeVars p
 
-partial def freshVar (avoid : List Var) (base : Var) : Var :=
-  if avoid.contains base then
-    freshVar avoid (base ++ "'")
-  else
-    base
+def openVar (k : Nat) (t : Var) (v : Var) : Var :=
+  match v with
+  | Var.bound i => if i == k then t else v
+  | Var.free _ => v
 
-def substVar (v : Var) (x : Var) (t : Var) : Var :=
-  if v == x then t else v
+def openFormula (k : Nat) (t : Var) : Formula → Formula
+  | Formula.atom (Atomic.eq y z) => Formula.atom (Atomic.eq (openVar k t y) (openVar k t z))
+  | Formula.atom (Atomic.mem y z) => Formula.atom (Atomic.mem (openVar k t y) (openVar k t z))
+  | Formula.neg p => Formula.neg (openFormula k t p)
+  | Formula.conj p q => Formula.conj (openFormula k t p) (openFormula k t q)
+  | Formula.disj p q => Formula.disj (openFormula k t p) (openFormula k t q)
+  | Formula.impl p q => Formula.impl (openFormula k t p) (openFormula k t q)
+  | Formula.univ n p => Formula.univ n (openFormula (k + 1) t p)
 
-partial def subst (x : Var) (t : Var) (f : Formula) : Formula :=
-  match f with
-  | Formula.atom (Atomic.eq y z) => Formula.eq (substVar y x t) (substVar z x t)
-  | Formula.atom (Atomic.mem y z) => Formula.mem (substVar y x t) (substVar z x t)
-  | Formula.neg p => Formula.neg (subst x t p)
-  | Formula.conj p q => Formula.conj (subst x t p) (subst x t q)
-  | Formula.disj p q => Formula.disj (subst x t p) (subst x t q)
-  | Formula.impl p q => Formula.impl (subst x t p) (subst x t q)
-  | Formula.univ y p =>
-      if y == x then
-        Formula.univ y p
-      else if y == t then
-        let fresh := freshVar (freeVars p ++ [x, t]) y
-        let p' := subst y fresh p
-        Formula.univ fresh (subst x t p')
-      else
-        Formula.univ y (subst x t p)
+def instantiate (t : Var) (f : Formula) : Formula := openFormula 0 t f
 
 --------------------------------------------------------------------------------
 -- 2. STRATIFIED SEQUENT CALCULUS
 --------------------------------------------------------------------------------
 
 -- Derivations are modeled as an inductive family indexed by Sequents.
--- This establishes the "deep embedding" required to isolate the deductive system.
 inductive Derivation : Sequent → Type
   -- Identity
   | ax {Γ Δ : Context} (A : Formula) (hL : A ∈ Γ) (hR : A ∈ Δ) : Derivation ⟨Γ, Δ⟩
 
-  -- Structural Rules (Weakening & Contraction)
+  -- Structural Rules
   | weakenL {Γ Δ : Context} (A : Formula) :
       Derivation ⟨Γ, Δ⟩ → Derivation ⟨A :: Γ, Δ⟩
   | weakenR {Γ Δ : Context} (A : Formula) :
@@ -84,8 +83,12 @@ inductive Derivation : Sequent → Type
   | contractR {Γ Δ : Context} (A : Formula) :
       Derivation ⟨Γ, A :: A :: Δ⟩ → Derivation ⟨Γ, A :: Δ⟩
 
+  | exchangeL {Γ Δ : Context} (A B : Formula) :
+      Derivation ⟨A :: B :: Γ, Δ⟩ → Derivation ⟨B :: A :: Γ, Δ⟩
+  | exchangeR {Γ Δ : Context} (A B : Formula) :
+      Derivation ⟨Γ, A :: B :: Δ⟩ → Derivation ⟨Γ, B :: A :: Δ⟩
+
   -- The Cut Rule
-  -- Central to Aim 1: Tracking logical detours and proof normalization breakdowns.
   | cut {Γ Δ : Context} (A : Formula) :
       Derivation ⟨Γ, A :: Δ⟩ → Derivation ⟨A :: Γ, Δ⟩ → Derivation ⟨Γ, Δ⟩
 
@@ -114,67 +117,39 @@ inductive Derivation : Sequent → Type
       Derivation ⟨A :: Γ, Δ⟩ → Derivation ⟨Γ, Formula.neg A :: Δ⟩
 
   -- Logical Rules: Universal Quantification
-  | univL {Γ Δ : Context} (x : Var) (A : Formula) (t : Var) :
-      Derivation ⟨subst x t A :: Γ, Δ⟩ → Derivation ⟨Formula.univ x A :: Γ, Δ⟩
-  | univR {Γ Δ : Context} (x : Var) (A : Formula) (y : Var)
-      (h_fresh_gamma : ∀ F ∈ Γ, y ∉ freeVars F)
-      (h_fresh_delta : ∀ F ∈ Δ, y ∉ freeVars F) :
-      Derivation ⟨Γ, subst x y A :: Δ⟩ → Derivation ⟨Γ, Formula.univ x A :: Δ⟩
+  | univL {Γ Δ : Context} (n : String) (A : Formula) (t : Var) :
+      Derivation ⟨instantiate t A :: Γ, Δ⟩ → Derivation ⟨Formula.univ n A :: Γ, Δ⟩
+  | univR {Γ Δ : Context} (n : String) (A : Formula) (y : String)
+      (h_fresh_gamma : ∀ F ∈ Γ, Var.free y ∉ freeVars F)
+      (h_fresh_delta : ∀ F ∈ Δ, Var.free y ∉ freeVars F) :
+      Derivation ⟨Γ, instantiate (Var.free y) A :: Δ⟩ → Derivation ⟨Γ, Formula.univ n A :: Δ⟩
 
   -- Logical Rules: Existential Quantification
-  | existsL {Γ Δ : Context} (x : Var) (A : Formula) (y : Var)
-      (h_fresh_gamma : ∀ F ∈ Γ, y ∉ freeVars F)
-      (h_fresh_delta : ∀ F ∈ Δ, y ∉ freeVars F) :
-      Derivation ⟨subst x y A :: Γ, Δ⟩ → Derivation ⟨mkExists x A :: Γ, Δ⟩
-  | existsR {Γ Δ : Context} (x : Var) (A : Formula) (t : Var) :
-      Derivation ⟨Γ, subst x t A :: Δ⟩ → Derivation ⟨Γ, mkExists x A :: Δ⟩
+  | existsL {Γ Δ : Context} (n : String) (A : Formula) (y : String)
+      (h_fresh_gamma : ∀ F ∈ Γ, Var.free y ∉ freeVars F)
+      (h_fresh_delta : ∀ F ∈ Δ, Var.free y ∉ freeVars F) :
+      Derivation ⟨instantiate (Var.free y) A :: Γ, Δ⟩ → Derivation ⟨mkExists n A :: Γ, Δ⟩
+  | existsR {Γ Δ : Context} (n : String) (A : Formula) (t : Var) :
+      Derivation ⟨Γ, instantiate t A :: Δ⟩ → Derivation ⟨Γ, mkExists n A :: Δ⟩
 
   ------------------------------------------------------------------------------
-  -- 3. RESTRICTED COMPREHENSION RULE
+  -- 3. SET-THEORETIC AXIOMS
   ------------------------------------------------------------------------------
-  -- This is the strict bridge to the Bellman-Ford algorithmic validator.
-  -- The derivation step requires a proof that evaluating the formula's stratification
-  -- results in a successful numerical witness.
-  | compL {Γ Δ : Context} (x y : Var) (phi : Formula) (witness : List (Var × Int))
-      (h_strat : evaluateStratification phi = StratificationResult.success witness) :
-      Derivation ⟨mkComprehensionAxiom x y phi :: Γ, Δ⟩
+
+  -- Extensionality Axiom
+  | extensionality {Γ Δ : Context} :
+      Derivation ⟨mkExtensionalityAxiom :: Γ, Δ⟩
+
+  -- Restricted Comprehension Rule
+  -- Gated by the pure stratification validator from NfValidate.
+  | compL {Γ Δ : Context} (n_x n_y : String) (phi : Formula) (w : StratificationWitness)
+      (h_strat : checkStrat phi = some w) :
+      Derivation ⟨mkComprehensionAxiom n_x n_y phi :: Γ, Δ⟩
 
 --------------------------------------------------------------------------------
 -- 4. BASIC INPUT/OUTPUT EXECUTABLE
 --------------------------------------------------------------------------------
--- Evaluates raw input against the computational restrictions of the calculus.
-
-partial def loop (stdin : IO.FS.Stream) (stdout : IO.FS.Stream) : IO Unit := do
-  stdout.putStr "> "
-  stdout.flush
-  let line ← stdin.getLine
-  let input := line.trimAscii.toString
-
-  if input == "quit" then
-    pure ()
-  else if input == "" then
-    loop stdin stdout
-  else
-    match parseFormula input with
-    | some phi =>
-        stdout.putStrLn "AST parsed successfully."
-        match evaluateStratification phi with
-        | StratificationResult.success _ =>
-            stdout.putStrLn "Result: Stratification verified."
-            stdout.putStrLn "Status: ELIGIBLE for compL derivation step."
-        | StratificationResult.failure _ _ =>
-            stdout.putStrLn "Result: Type-level contradiction detected."
-            stdout.putStrLn "Status: REJECTED by compL (compilation failure)."
-    | none =>
-        stdout.putStrLn "Invalid format. Please check your syntax."
-    loop stdin stdout
 
 def main : IO Unit := do
-  let stdin ← IO.getStdin
-  let stdout ← IO.getStdout
-
-  stdout.putStrLn "=== Stratified Sequent Calculus Environment ==="
-  stdout.putStrLn "Enter a formula to test its eligibility for the Comprehension Axiom (compL)."
-  stdout.putStrLn "Type 'quit' to exit."
-
-  loop stdin stdout
+  IO.println "=== Stratified Sequent Calculus Environment ==="
+  IO.println "Environment initialized with locally nameless AST and Gentzen rules."
