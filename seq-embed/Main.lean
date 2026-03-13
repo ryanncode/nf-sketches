@@ -28,8 +28,8 @@ def mkComprehensionAxiom (x y : Var) (phi : Formula) : Formula :=
 --------------------------------------------------------------------------------
 
 def freeVars : Formula → List Var
-  | Formula.eq y z => [y, z]
-  | Formula.mem y z => [y, z]
+  | Formula.atom (Atomic.eq y z) => [y, z]
+  | Formula.atom (Atomic.mem y z) => [y, z]
   | Formula.neg p => freeVars p
   | Formula.conj p q => freeVars p ++ freeVars q
   | Formula.disj p q => freeVars p ++ freeVars q
@@ -47,8 +47,8 @@ def substVar (v : Var) (x : Var) (t : Var) : Var :=
 
 partial def subst (x : Var) (t : Var) (f : Formula) : Formula :=
   match f with
-  | Formula.eq y z => Formula.eq (substVar y x t) (substVar z x t)
-  | Formula.mem y z => Formula.mem (substVar y x t) (substVar z x t)
+  | Formula.atom (Atomic.eq y z) => Formula.eq (substVar y x t) (substVar z x t)
+  | Formula.atom (Atomic.mem y z) => Formula.mem (substVar y x t) (substVar z x t)
   | Formula.neg p => Formula.neg (subst x t p)
   | Formula.conj p q => Formula.conj (subst x t p) (subst x t q)
   | Formula.disj p q => Formula.disj (subst x t p) (subst x t q)
