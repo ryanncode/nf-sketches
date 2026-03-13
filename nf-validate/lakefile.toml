@@ -4,6 +4,7 @@ defaultTargets = ["nf-validate"]
 
 [[lean_lib]]
 name = "NfValidate"
+globs = ["NfValidate.**"]
 
 [[lean_lib]]
 name = "test_eval_suite"

@@ -16,7 +16,7 @@ first-order logical mechanics.
 inductive Var where
   | free : String → Var
   | bound : Nat → Var
-  deriving Repr, BEq
+  deriving Repr, DecidableEq
 
 --------------------------------------------------------------------------------
 -- 1. ABSTRACT SYNTAX TREE (AST)
@@ -32,7 +32,7 @@ that dictate type levels, distinct from the broader boolean logic.
 inductive Atomic where
   | eq : Var → Var → Atomic
   | mem : Var → Var → Atomic
-  deriving Repr, BEq
+  deriving Repr, DecidableEq
 
 /--
 The `Formula` type represents the compound logical structure.
@@ -49,7 +49,7 @@ inductive Formula where
   | disj : Formula → Formula → Formula
   | impl : Formula → Formula → Formula
   | univ : String → Formula → Formula
-  deriving Repr, BEq
+  deriving Repr, DecidableEq
 
 def Formula.eq (x y : Var) : Formula := Formula.atom (Atomic.eq x y)
 def Formula.mem (x y : Var) : Formula := Formula.atom (Atomic.mem x y)
@@ -63,7 +63,7 @@ structure Constraint where
   v1 : Var
   v2 : Var
   diff : Int
-  deriving Repr, BEq
+  deriving Repr, DecidableEq
 
 def extractConstraints : Formula → List Constraint
   | Formula.atom (Atomic.eq x y) => [{ v1 := x, v2 := y, diff := 0 }]
@@ -83,7 +83,7 @@ structure Edge where
   src : Var
   dst : Var
   weight : Int
-  deriving Repr, BEq
+  deriving Repr, DecidableEq
 
 def buildEdges : List Constraint → List Edge
   | [] => []

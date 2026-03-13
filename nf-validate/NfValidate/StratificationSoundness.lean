@@ -35,7 +35,7 @@ inductive IsStratified : Formula → (Var → Int) → Prop where
       (hf : IsStratified f ctx) (hg : IsStratified g ctx) : IsStratified (Formula.disj f g) ctx
   | impl (f g : Formula) (ctx : Var → Int)
       (hf : IsStratified f ctx) (hg : IsStratified g ctx) : IsStratified (Formula.impl f g) ctx
-  | univ (x : Var) (f : Formula) (ctx : Var → Int)
+  | univ (x : String) (f : Formula) (ctx : Var → Int)
       (h : IsStratified f ctx) : IsStratified (Formula.univ x f) ctx
 
 /--
@@ -216,27 +216,13 @@ theorem evaluateClause_sound (vars : List Var) (constraints : List Constraint) (
   (h_eval : evaluateClause vars constraints = StratificationResult.success M) :
   SatisfiesGraph (lookup M) (buildEdges constraints) := by
   unfold evaluateClause at h_eval
+  dsimp only at h_eval
 
   -- Abstract the loop execution
   have h_loop : ∃ finalDist finalPred,
     evaluateClause.loop (buildEdges constraints) (vars.length - 1) (vars.map fun v => (v, 0)) [] = (finalDist, finalPred) := ⟨_, _, rfl⟩
 
   rcases h_loop with ⟨finalDist, finalPred, h_eq⟩
-
-  -- Reduce let bindings so rw can match
-  change (
-    match evaluateClause.loop (buildEdges constraints) (vars.length - 1) (List.map (fun v => (v, 0)) vars) [] with
-    | (finalDist, finalPred) =>
-      match relaxEdges (buildEdges constraints) finalDist finalPred with
-      | (fst, fst_1, hasCycle) =>
-        if (!hasCycle) = true then StratificationResult.success finalDist
-        else
-          have conflictNode := List.findSome? (fun e =>
-            if lookup finalDist e.src + e.weight < lookup finalDist e.dst then some e.dst else none) (buildEdges constraints);
-          match conflictNode with
-          | some node => StratificationResult.failure (getCycleForward finalPred node vars.length) (buildEdges constraints)
-          | none => StratificationResult.failure [] (buildEdges constraints)
-  ) = StratificationResult.success M at h_eval
 
   -- Rewrite h_eval with the abstracted result
   rw [h_eq] at h_eval
