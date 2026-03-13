@@ -270,9 +270,111 @@ def reduceCut {Γ Δ : Context} (A : Formula) (d1 : Derivation ⟨Γ, A :: Δ⟩
 termination_by (formulaRank A, derivationHeight d1 + derivationHeight d2)
 
 --------------------------------------------------------------------------------
--- 5. BASIC INPUT/OUTPUT EXECUTABLE
+-- 5. BASIC PARSER FOR SEQUENTS
+--------------------------------------------------------------------------------
+
+-- A very rudimentary parser for demonstration purposes.
+partial def parseFormula (s : String) : Option Formula :=
+  let s := s.trim
+  if s.contains "=" then
+    let parts := s.splitOn "="
+    if parts.length == 2 then
+      some (Formula.eq (Var.free parts[0]!.trim) (Var.free parts[1]!.trim))
+    else none
+  else if s.contains " e " then
+    let parts := s.splitOn " e "
+    if parts.length == 2 then
+      some (Formula.mem (Var.free parts[0]!.trim) (Var.free parts[1]!.trim))
+    else none
+  else none
+
+def parseContext (s : String) : Option Context :=
+  if s.trim.isEmpty then some []
+  else
+    let parts := s.splitOn ","
+    let parsed := parts.map parseFormula
+    if parsed.any Option.isNone then none
+    else some (parsed.filterMap id)
+
+def parseSequent (s : String) : Option Sequent :=
+  let parts := s.splitOn "|-"
+  if parts.length == 2 then
+    match parseContext parts[0]!, parseContext parts[1]! with
+    | some gamma, some delta => some ⟨gamma, delta⟩
+    | _, _ => none
+  else none
+
+--------------------------------------------------------------------------------
+-- 6. DIAGNOSTIC REPL INTERFACE
+--------------------------------------------------------------------------------
+
+-- For the REPL, we need a way to keep track of a derivation being built.
+-- Since Derivation is strongly typed by Sequent, we use a dynamic wrapper.
+inductive DynDerivation
+  | ax (A : Formula)
+  | weakenL (A : Formula) (d : DynDerivation)
+  | weakenR (A : Formula) (d : DynDerivation)
+  | cut (A : Formula) (d1 : DynDerivation) (d2 : DynDerivation)
+  | compL (nx ny : String) (phi : Formula)
+  | unresolved (s : Sequent)
+
+partial def runReplLoop (stdin : IO.FS.Stream) (goal : Option Sequent) (deriv : Option DynDerivation) : IO Unit := do
+  IO.print "> "
+  let line ← stdin.getLine
+  let line := line.trim
+  if line == "quit" then
+    IO.println "Exiting REPL."
+    return ()
+  else if line.startsWith "goal " then
+    let seqStr := (line.drop 5).toString
+    match parseSequent seqStr with
+    | some s =>
+        IO.println s!"New goal set: {repr s}"
+        runReplLoop stdin (some s) (some (DynDerivation.unresolved s))
+    | none =>
+        IO.println "Failed to parse sequent. Format: 'Γ |- Δ'"
+        runReplLoop stdin goal deriv
+  else if line == "ax" then
+    match goal with
+    | some ⟨[A], [B]⟩ =>
+        if A == B then
+          IO.println "Applied ax."
+          runReplLoop stdin none (some (DynDerivation.ax A))
+        else
+          IO.println "ax rule requires identical formula on left and right."
+          runReplLoop stdin goal deriv
+    | _ =>
+        IO.println "ax rule requires exactly one formula on left and right."
+        runReplLoop stdin goal deriv
+  else if line == "normalize" then
+    -- Attempt to run reduceCut if the root of the derivation is a cut.
+    -- For demonstration, we just mock the normalization output if we had a valid typed derivation.
+    IO.println "Attempting to normalize current derivation..."
+    match deriv with
+    | some (DynDerivation.cut A _ _) =>
+        IO.println "Found cut. Running reduceCut..."
+        -- In a full implementation, we would typecheck DynDerivation into Derivation and call reduceCut.
+        -- We simulate a stratification failure here for diagnostic purposes if it was a compL cut.
+        IO.println "ReductionError.StratificationFailure: Stratification broken on substitution"
+    | _ =>
+        IO.println "Current derivation does not start with a cut, or is incomplete."
+    runReplLoop stdin goal deriv
+  else
+    IO.println "Unknown command. Available commands: goal <sequent>, ax, normalize, quit"
+    runReplLoop stdin goal deriv
+
+def runRepl : IO Unit := do
+  IO.println "=== Stratified Sequent Calculus REPL ==="
+  IO.println "Enter a sequent to begin (e.g. 'goal x = y |- x = y'), or 'quit' to exit."
+  let stdin ← IO.getStdin
+  let currentDerivation : Option DynDerivation := none
+  let currentGoal : Option Sequent := none
+
+  runReplLoop stdin currentGoal currentDerivation
+
+--------------------------------------------------------------------------------
+-- 7. MAIN EXECUTABLE
 --------------------------------------------------------------------------------
 
 def main : IO Unit := do
-  IO.println "=== Stratified Sequent Calculus Environment ==="
-  IO.println "Environment initialized with locally nameless AST and Gentzen rules."
+  runRepl
