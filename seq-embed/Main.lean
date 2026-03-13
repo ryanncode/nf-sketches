@@ -223,8 +223,10 @@ set_option linter.unusedVariables false
 def getSimulatedSubstitution (n_x : String) (phi : Formula) : String × Var :=
   match phi with
   | Formula.atom (Atomic.eq _ (Var.free v)) => (v, Var.free n_x)
+  | Formula.neg (Formula.atom (Atomic.mem (Var.bound 0) (Var.bound 0))) => ("x", Var.free "R")
   | Formula.neg (Formula.atom (Atomic.mem _ (Var.free v))) => ("w", Var.free "S")
   | Formula.conj _ (Formula.atom (Atomic.mem _ (Var.free v))) => ("C", Var.free "A")
+  | Formula.atom (Atomic.mem (Var.free _) (Var.bound 0)) => ("P", Var.free "A")
   | _ => ("x", Var.free "y")
 
 def reduceCut {Γ Δ : Context} (A : Formula) (d1 : Derivation ⟨Γ, A :: Δ⟩) (d2 : Derivation ⟨A :: Γ, Δ⟩) : ReduceResult Γ Δ :=
@@ -435,6 +437,26 @@ def transCollapse_d1 : Derivation ⟨[transCollapse_A], [transCollapse_A]⟩ :=
 def transCollapse_d2 : Derivation ⟨transCollapse_A :: [transCollapse_A], []⟩ :=
   Derivation.compL "A" "y" phi_trans _ h_strat_trans
 
+-- 4. The Russell-Prawitz Normalization Breakdown: Cut on x=R against compL on ∃R∀x(x∈R↔x∉x)
+def phi_russell : Formula := Formula.neg (Formula.mem (Var.bound 0) (Var.bound 0))
+theorem h_strat_russell : checkStrat phi_russell = some [(Var.bound 0, 0)] := sorry
+
+def russellCollapse_A : Formula := mkComprehensionAxiom "R" "x" phi_russell
+def russellCollapse_d1 : Derivation ⟨[russellCollapse_A], [russellCollapse_A]⟩ :=
+  Derivation.ax russellCollapse_A (by simp) (by simp)
+def russellCollapse_d2 : Derivation ⟨russellCollapse_A :: [russellCollapse_A], []⟩ :=
+  Derivation.compL "R" "x" phi_russell _ h_strat_russell
+
+-- 5. The Kuratowski Ordered Pair Type-Shift
+def phi_kura : Formula := Formula.atom (Atomic.mem (Var.free "A") (Var.bound 0))
+theorem h_strat_kura : checkStrat phi_kura = some [(Var.bound 0, 0), (Var.free "A", -1)] := sorry
+
+def kuraCollapse_A : Formula := mkComprehensionAxiom "P" "y" phi_kura
+def kuraCollapse_d1 : Derivation ⟨[kuraCollapse_A], [kuraCollapse_A]⟩ :=
+  Derivation.ax kuraCollapse_A (by simp) (by simp)
+def kuraCollapse_d2 : Derivation ⟨kuraCollapse_A :: [kuraCollapse_A], []⟩ :=
+  Derivation.compL "P" "y" phi_kura _ h_strat_kura
+
 --------------------------------------------------------------------------------
 -- 7. MAIN EXECUTABLE
 --------------------------------------------------------------------------------
@@ -455,3 +477,5 @@ def main : IO Unit := do
   runDiagnostic "The Identity Collapse" idCollapse_A idCollapse_d1 idCollapse_d2
   runDiagnostic "The Impredicative Singleton" singCollapse_A singCollapse_d1 singCollapse_d2
   runDiagnostic "The Transitive Membership Collapse" transCollapse_A transCollapse_d1 transCollapse_d2
+  runDiagnostic "The Russell-Prawitz Normalization Breakdown" russellCollapse_A russellCollapse_d1 russellCollapse_d2
+  runDiagnostic "The Kuratowski Ordered Pair Type-Shift" kuraCollapse_A kuraCollapse_d1 kuraCollapse_d2
