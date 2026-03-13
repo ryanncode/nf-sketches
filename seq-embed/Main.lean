@@ -195,6 +195,22 @@ def derivationHeight {Γ Δ : Context} : Derivation ⟨Γ, Δ⟩ → Nat
   | .extensionality => 0
   | .compL _ _ _ _ _ => 0
 
+@[simp]
+theorem formulaRank_openFormula (k : Nat) (t : Var) (p : Formula) :
+    formulaRank (openFormula k t p) = formulaRank p := by
+  induction p generalizing k with
+  | atom a => cases a <;> rfl
+  | neg p ih => simp [openFormula, formulaRank, ih]
+  | conj p q ih1 ih2 => simp [openFormula, formulaRank, ih1, ih2]
+  | disj p q ih1 ih2 => simp [openFormula, formulaRank, ih1, ih2]
+  | impl p q ih1 ih2 => simp [openFormula, formulaRank, ih1, ih2]
+  | univ n p ih => simp [openFormula, formulaRank, ih]
+
+@[simp]
+theorem formulaRank_instantiate (t : Var) (p : Formula) :
+    formulaRank (instantiate t p) = formulaRank p := by
+  simp [instantiate]
+
 inductive ReductionError
   | StratificationFailure (msg : String)
   | NotImplemented (msg : String)
@@ -262,6 +278,53 @@ def reduceCut {Γ Δ : Context} (A : Formula) (d1 : Derivation ⟨Γ, A :: Δ⟩
       | .weakenR _ d1_sub =>
           Except.ok d1_sub
       | _ => Except.error (ReductionError.NotImplemented "Other reductions not implemented")
+  | .negL A2 d2_sub =>
+      match d1 with
+      | .negR _ d1_sub =>
+          have h1 : formulaRank A2 < formulaRank (Formula.neg A2) := by
+            simp [formulaRank]
+          reduceCut A2 d2_sub d1_sub
+      | .weakenR _ d1_sub =>
+          Except.ok d1_sub
+      | _ => Except.error (ReductionError.NotImplemented "Other reductions not implemented")
+  | .univL n A2 t d2_sub =>
+      match d1 with
+      | .univR _ _ y _ _ d1_sub =>
+          have h1 : formulaRank (instantiate t A2) < formulaRank (Formula.univ n A2) := by
+            simp [formulaRank]
+          Except.error (ReductionError.NotImplemented "univ principal reduction not fully implemented due to derivation substitution")
+      | .weakenR _ d1_sub => Except.ok d1_sub
+      | _ => Except.error (ReductionError.NotImplemented "Other reductions not implemented")
+  | .existsL n A2 y _ _ d2_sub =>
+      match d1 with
+      | .existsR _ _ t d1_sub =>
+          have h1 : formulaRank (instantiate t A2) < formulaRank (mkExists n A2) := by
+            simp [mkExists, formulaRank]
+            omega
+          Except.error (ReductionError.NotImplemented "exists principal reduction not fully implemented due to derivation substitution")
+      | .weakenR _ d1_sub => Except.ok d1_sub
+      | _ => Except.error (ReductionError.NotImplemented "Other reductions not implemented")
+  -- Targeted Structural Permutations
+  | .contractL A2 d2_sub =>
+      have h : derivationHeight d2_sub < derivationHeight (.contractL A2 d2_sub) := by
+        simp [derivationHeight]
+      Except.error (ReductionError.NotImplemented "contractL permutation bypassed")
+  | .contractR A2 d2_sub =>
+      have h : derivationHeight d2_sub < derivationHeight (.contractR A2 d2_sub) := by
+        simp [derivationHeight]
+      Except.error (ReductionError.NotImplemented "contractR permutation bypassed")
+  | .exchangeL A2 B2 d2_sub =>
+      have h : derivationHeight d2_sub < derivationHeight (.exchangeL A2 B2 d2_sub) := by
+        simp [derivationHeight]
+      Except.error (ReductionError.NotImplemented "exchangeL permutation bypassed")
+  | .exchangeR A2 B2 d2_sub =>
+      have h : derivationHeight d2_sub < derivationHeight (.exchangeR A2 B2 d2_sub) := by
+        simp [derivationHeight]
+      Except.error (ReductionError.NotImplemented "exchangeR permutation bypassed")
+  | .weakenR A2 d2_sub =>
+      have h : derivationHeight d2_sub < derivationHeight (.weakenR A2 d2_sub) := by
+        simp [derivationHeight]
+      Except.error (ReductionError.NotImplemented "weakenR permutation bypassed")
   | _ =>
       match d1 with
       | .weakenR _ d1_sub =>
