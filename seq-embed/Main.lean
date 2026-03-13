@@ -442,18 +442,9 @@ def transCollapse_d2 : Derivation ⟨transCollapse_A :: [transCollapse_A], []⟩
 def runDiagnostic (testName : String) {Γ Δ : Context} (A : Formula) (d1 : Derivation ⟨Γ, A :: Δ⟩) (d2 : Derivation ⟨A :: Γ, Δ⟩) : IO Unit := do
   IO.println s!"\n=== {testName} ==="
   match reduceCut A d1 d2 with
-  | Except.error (ReductionError.StratificationFailure _ _ _) =>
-      if testName == "The Identity Collapse" then
-        IO.println "[ERROR] Stratification broken on substitution [z ↦ A]"
-        IO.println "Algebraic Contradiction Path: Var.free \"A\" --(-1)--> Var.bound 0 --(0)--> Var.free \"A\""
-      else if testName == "The Impredicative Singleton" then
-        IO.println "[ERROR] Stratification broken on instantiation [x ↦ S]"
-        IO.println "Algebraic Contradiction Path: Var.free \"S\" --(-1)--> Var.free \"S\""
-      else if testName == "The Transitive Membership Collapse" then
-        IO.println "[ERROR] Stratification broken on substitution [C ↦ A]"
-        IO.println "Algebraic Contradiction Path: Var.free \"A\" --(-1)--> Var.free \"B\" --(-1)--> Var.bound 0 --(1)--> Var.free \"A\""
-      else
-        IO.println "[ERROR] Unknown Stratification Failure"
+  | Except.error (ReductionError.StratificationFailure msg cycle edges) =>
+      IO.println s!"[ERROR] Stratification broken on {msg}"
+      IO.println s!"Algebraic Contradiction Path: {formatDetailedCycle cycle edges}"
   | Except.error (ReductionError.NotImplemented msg) =>
       IO.println s!"[ERROR] Not Implemented: {msg}"
   | Except.ok _ =>
