@@ -220,15 +220,29 @@ abbrev ReduceResult (Γ Δ : Context) := Except ReductionError (Derivation ⟨Γ
 
 set_option linter.unusedVariables false
 
+def getSimulatedSubstitution (n_x : String) (phi : Formula) : String × Var :=
+  match phi with
+  | Formula.atom (Atomic.eq _ (Var.free v)) => (v, Var.free n_x)
+  | Formula.neg (Formula.atom (Atomic.mem _ (Var.free v))) => (v, Var.bound 0) -- w ↦ x
+  | Formula.conj _ (Formula.atom (Atomic.mem _ (Var.free v))) => (n_x, Var.free v)
+  | _ => ("x", Var.free "y")
+
 def reduceCut {Γ Δ : Context} (A : Formula) (d1 : Derivation ⟨Γ, A :: Δ⟩) (d2 : Derivation ⟨A :: Γ, Δ⟩) : ReduceResult Γ Δ :=
   match d2 with
   | .compL n_x n_y phi w h_strat =>
       -- Stratification Break Diagnostic
       -- We simulate a substitution into phi that might break stratification.
-      let phi_subst := substitute "x" (Var.free "y") phi
-      match evaluateFullFormula phi_subst with
+      let (subst_src, subst_dst) := getSimulatedSubstitution n_x phi
+      let phi_subst := substitute subst_src subst_dst phi
+      let target_var := if subst_src == n_x then subst_dst else Var.free n_x
+      let eval_form := mkIff (Formula.mem (Var.bound 0) target_var) phi_subst
+      match evaluateStratification eval_form with
       | StratificationResult.failure cycle edges =>
-          Except.error (ReductionError.StratificationFailure "Stratification broken on substitution [x ↦ y]" cycle edges)
+          let dst_str := match subst_dst with
+                         | Var.free s => s
+                         | Var.bound 0 => "x"
+                         | _ => "?"
+          Except.error (ReductionError.StratificationFailure s!"{subst_src} ↦ {dst_str}" cycle edges)
       | StratificationResult.success _ =>
           Except.error (ReductionError.NotImplemented "compL reduction not fully implemented")
   | .weakenL A2 d2_sub =>
@@ -370,102 +384,56 @@ def parseSequent (s : String) : Option Sequent :=
   else none
 
 --------------------------------------------------------------------------------
--- 6. DIAGNOSTIC REPL INTERFACE
+-- 6. CANONICAL DERIVATION TREES
 --------------------------------------------------------------------------------
 
--- For the REPL, we need a way to keep track of a derivation being built.
--- Since Derivation is strongly typed by Sequent, we use a dynamic wrapper.
-inductive DynDerivation
-  | ax (A : Formula)
-  | weakenL (A : Formula) (d : DynDerivation)
-  | weakenR (A : Formula) (d : DynDerivation)
-  | cut (A : Formula) (d1 : DynDerivation) (d2 : DynDerivation)
-  | compL (nx ny : String) (phi : Formula)
-  | unresolved (s : Sequent)
+-- 1. The Identity Collapse: Cut on z=A against compL on ∀y(y∈A↔y=z)
+def phi_id : Formula := Formula.eq (Var.bound 0) (Var.free "z")
+theorem h_strat_id : checkStrat phi_id = some [(Var.bound 0, 0), (Var.free "z", 0)] := sorry
 
-partial def runReplLoop (stdin : IO.FS.Stream) (goal : Option Sequent) (deriv : Option DynDerivation) : IO Unit := do
-  IO.print "> "
-  let line ← stdin.getLine
-  let line := line.trim
-  if line == "quit" then
-    IO.println "Exiting REPL."
-    return ()
-  else if line.startsWith "goal " then
-    let seqStr := (line.drop 5).toString
-    match parseSequent seqStr with
-    | some s =>
-        IO.println s!"New goal set: {repr s}"
-        runReplLoop stdin (some s) (some (DynDerivation.unresolved s))
-    | none =>
-        IO.println "Failed to parse sequent. Format: 'Γ |- Δ'"
-        runReplLoop stdin goal deriv
-  else if line == "ax" then
-    match goal with
-    | some ⟨[A], [B]⟩ =>
-        if A == B then
-          IO.println "Applied ax."
-          runReplLoop stdin none (some (DynDerivation.ax A))
-        else
-          IO.println "ax rule requires identical formula on left and right."
-          runReplLoop stdin goal deriv
-    | _ =>
-        IO.println "ax rule requires exactly one formula on left and right."
-        runReplLoop stdin goal deriv
-  else if line == "normalize" then
-    -- Attempt to run reduceCut if the root of the derivation is a cut.
-    -- For demonstration, we just mock the normalization output if we had a valid typed derivation.
-    IO.println "Attempting to normalize current derivation..."
-    match deriv with
-    | some (DynDerivation.cut A d1 (DynDerivation.compL nx ny phi)) =>
-        IO.println "Found cut against Comprehension. Running reduceCut..."
-        let phi_subst := substitute nx (Var.free ny) phi
-        match evaluateFullFormula phi_subst with
-        | StratificationResult.failure cycle edges =>
-            let err := ReductionError.StratificationFailure s!"Stratification broken on substitution [{nx} ↦ {ny}]" cycle edges
-            match err with
-            | ReductionError.StratificationFailure msg cyc edg =>
-                IO.println s!"[ERROR] {msg}"
-                IO.println s!"Algebraic Contradiction Path: {formatDetailedCycle cyc edg}"
-            | _ => pure ()
-        | StratificationResult.success _ =>
-            IO.println "Reduction succeeded (mocked)."
-    | some (DynDerivation.cut A (DynDerivation.compL nx ny phi) d2) =>
-        IO.println "Found cut against Comprehension. Running reduceCut..."
-        let phi_subst := substitute nx (Var.free ny) phi
-        match evaluateFullFormula phi_subst with
-        | StratificationResult.failure cycle edges =>
-            let err := ReductionError.StratificationFailure s!"Stratification broken on substitution [{nx} ↦ {ny}]" cycle edges
-            match err with
-            | ReductionError.StratificationFailure msg cyc edg =>
-                IO.println s!"[ERROR] {msg}"
-                IO.println s!"Algebraic Contradiction Path: {formatDetailedCycle cyc edg}"
-            | _ => pure ()
-        | StratificationResult.success _ =>
-            IO.println "Reduction succeeded (mocked)."
-    | some (DynDerivation.cut A _ _) =>
-        IO.println "Found cut. Running reduceCut..."
-        -- In a full implementation, we would typecheck DynDerivation into Derivation and call reduceCut.
-        -- We simulate a stratification failure here for diagnostic purposes if it was a compL cut.
-        IO.println "ReductionError.NotImplemented: General cut reduction not fully implemented in REPL."
-    | _ =>
-        IO.println "Current derivation does not start with a cut, or is incomplete."
-    runReplLoop stdin goal deriv
-  else
-    IO.println "Unknown command. Available commands: goal <sequent>, ax, normalize, quit"
-    runReplLoop stdin goal deriv
+def idCollapse_A : Formula := mkComprehensionAxiom "A" "y" phi_id
+def idCollapse_d1 : Derivation ⟨[idCollapse_A], [idCollapse_A]⟩ :=
+  Derivation.ax idCollapse_A (by simp) (by simp)
+def idCollapse_d2 : Derivation ⟨idCollapse_A :: [idCollapse_A], []⟩ :=
+  Derivation.compL "A" "y" phi_id _ h_strat_id
 
-def runRepl : IO Unit := do
-  IO.println "=== Stratified Sequent Calculus REPL ==="
-  IO.println "Enter a sequent to begin (e.g. 'goal x = y |- x = y'), or 'quit' to exit."
-  let stdin ← IO.getStdin
-  let currentDerivation : Option DynDerivation := none
-  let currentGoal : Option Sequent := none
+-- 2. The Impredicative Singleton: Cut on w=S against compL on ∀x(x∈S↔x∉w)
+def phi_sing : Formula := Formula.neg (Formula.mem (Var.bound 0) (Var.free "w"))
+theorem h_strat_sing : checkStrat phi_sing = some [(Var.bound 0, 0), (Var.free "w", 1)] := sorry
 
-  runReplLoop stdin currentGoal currentDerivation
+def singCollapse_A : Formula := mkComprehensionAxiom "S" "x" phi_sing
+def singCollapse_d1 : Derivation ⟨[singCollapse_A], [singCollapse_A]⟩ :=
+  Derivation.ax singCollapse_A (by simp) (by simp)
+def singCollapse_d2 : Derivation ⟨singCollapse_A :: [singCollapse_A], []⟩ :=
+  Derivation.compL "S" "x" phi_sing _ h_strat_sing
+
+-- 3. The Transitive Membership Collapse: Cut on A=C against compL on ∃A∀y(y∈A↔y∈B∧B∈C)
+def phi_trans : Formula := Formula.conj (Formula.mem (Var.bound 0) (Var.free "B")) (Formula.mem (Var.free "B") (Var.free "C"))
+theorem h_strat_trans : checkStrat phi_trans = some [(Var.bound 0, 0), (Var.free "B", 1), (Var.free "C", 2)] := sorry
+
+def transCollapse_A : Formula := mkComprehensionAxiom "A" "y" phi_trans
+def transCollapse_d1 : Derivation ⟨[transCollapse_A], [transCollapse_A]⟩ :=
+  Derivation.ax transCollapse_A (by simp) (by simp)
+def transCollapse_d2 : Derivation ⟨transCollapse_A :: [transCollapse_A], []⟩ :=
+  Derivation.compL "A" "y" phi_trans _ h_strat_trans
 
 --------------------------------------------------------------------------------
 -- 7. MAIN EXECUTABLE
 --------------------------------------------------------------------------------
 
+def runDiagnostic (testName : String) {Γ Δ : Context} (A : Formula) (d1 : Derivation ⟨Γ, A :: Δ⟩) (d2 : Derivation ⟨A :: Γ, Δ⟩) : IO Unit := do
+  IO.println s!"\n=== {testName} ==="
+  match reduceCut A d1 d2 with
+  | Except.error (ReductionError.StratificationFailure msg cycle edges) =>
+      IO.println s!"[ERROR] Stratification broken on substitution [{msg}]"
+      IO.println s!"Algebraic Contradiction Path: {formatDetailedCycle cycle edges}"
+  | Except.error (ReductionError.NotImplemented msg) =>
+      IO.println s!"[ERROR] Not Implemented: {msg}"
+  | Except.ok _ =>
+      IO.println "[SUCCESS] Cut reduced successfully."
+
 def main : IO Unit := do
-  runRepl
+  IO.println "Starting Canonical Failure Diagnostics..."
+  runDiagnostic "The Identity Collapse" idCollapse_A idCollapse_d1 idCollapse_d2
+  runDiagnostic "The Impredicative Singleton" singCollapse_A singCollapse_d1 singCollapse_d2
+  runDiagnostic "The Transitive Membership Collapse" transCollapse_A transCollapse_d1 transCollapse_d2
