@@ -212,7 +212,7 @@ theorem formulaRank_instantiate (t : Var) (p : Formula) :
   simp [instantiate]
 
 inductive ReductionError
-  | StratificationFailure (msg : String)
+  | StratificationFailure (msg : String) (cycle : List Var) (edges : List Edge)
   | NotImplemented (msg : String)
   deriving Repr
 
@@ -226,9 +226,11 @@ def reduceCut {Γ Δ : Context} (A : Formula) (d1 : Derivation ⟨Γ, A :: Δ⟩
       -- Stratification Break Diagnostic
       -- We simulate a substitution into phi that might break stratification.
       let phi_subst := substitute "x" (Var.free "y") phi
-      match checkStrat phi_subst with
-      | none => Except.error (ReductionError.StratificationFailure "Stratification broken on substitution")
-      | some _ => Except.error (ReductionError.NotImplemented "compL reduction not fully implemented")
+      match evaluateFullFormula phi_subst with
+      | StratificationResult.failure cycle edges =>
+          Except.error (ReductionError.StratificationFailure "Stratification broken on substitution [x ↦ y]" cycle edges)
+      | StratificationResult.success _ =>
+          Except.error (ReductionError.NotImplemented "compL reduction not fully implemented")
   | .weakenL A2 d2_sub =>
       -- Principal reduction for weakenL: A was weakened, we can just return d2_sub.
       -- A2 is unified with A.
@@ -414,11 +416,37 @@ partial def runReplLoop (stdin : IO.FS.Stream) (goal : Option Sequent) (deriv : 
     -- For demonstration, we just mock the normalization output if we had a valid typed derivation.
     IO.println "Attempting to normalize current derivation..."
     match deriv with
+    | some (DynDerivation.cut A d1 (DynDerivation.compL nx ny phi)) =>
+        IO.println "Found cut against Comprehension. Running reduceCut..."
+        let phi_subst := substitute nx (Var.free ny) phi
+        match evaluateFullFormula phi_subst with
+        | StratificationResult.failure cycle edges =>
+            let err := ReductionError.StratificationFailure s!"Stratification broken on substitution [{nx} ↦ {ny}]" cycle edges
+            match err with
+            | ReductionError.StratificationFailure msg cyc edg =>
+                IO.println s!"[ERROR] {msg}"
+                IO.println s!"Algebraic Contradiction Path: {formatDetailedCycle cyc edg}"
+            | _ => pure ()
+        | StratificationResult.success _ =>
+            IO.println "Reduction succeeded (mocked)."
+    | some (DynDerivation.cut A (DynDerivation.compL nx ny phi) d2) =>
+        IO.println "Found cut against Comprehension. Running reduceCut..."
+        let phi_subst := substitute nx (Var.free ny) phi
+        match evaluateFullFormula phi_subst with
+        | StratificationResult.failure cycle edges =>
+            let err := ReductionError.StratificationFailure s!"Stratification broken on substitution [{nx} ↦ {ny}]" cycle edges
+            match err with
+            | ReductionError.StratificationFailure msg cyc edg =>
+                IO.println s!"[ERROR] {msg}"
+                IO.println s!"Algebraic Contradiction Path: {formatDetailedCycle cyc edg}"
+            | _ => pure ()
+        | StratificationResult.success _ =>
+            IO.println "Reduction succeeded (mocked)."
     | some (DynDerivation.cut A _ _) =>
         IO.println "Found cut. Running reduceCut..."
         -- In a full implementation, we would typecheck DynDerivation into Derivation and call reduceCut.
         -- We simulate a stratification failure here for diagnostic purposes if it was a compL cut.
-        IO.println "ReductionError.StratificationFailure: Stratification broken on substitution"
+        IO.println "ReductionError.NotImplemented: General cut reduction not fully implemented in REPL."
     | _ =>
         IO.println "Current derivation does not start with a cut, or is incomplete."
     runReplLoop stdin goal deriv

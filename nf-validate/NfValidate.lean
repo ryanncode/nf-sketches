@@ -340,5 +340,17 @@ def checkStrat (f : Formula) : Option StratificationWitness :=
   | StratificationResult.success w => some w
   | StratificationResult.failure _ _ => none
 
+def formatDetailedCycle (cycle : List Var) (edges : List Edge) : String :=
+  let rec formatEdges (cvars : List Var) : String :=
+    match cvars with
+    | [] => ""
+    | [v] => s!"{reprStr v}"
+    | u :: v :: rest =>
+        let edge := edges.find? (fun e => e.src == u && e.dst == v)
+        let weightStr := match edge with
+                         | some e => s!" --({e.weight})--> "
+                         | none => " --(?)--> "
+        s!"{reprStr u}{weightStr}" ++ formatEdges (v :: rest)
+  formatEdges cycle
 
 def nfMain : IO Unit := pure ()
