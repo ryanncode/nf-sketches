@@ -1,0 +1,14 @@
+name = "parse-strat"
+version = "0.1.0"
+defaultTargets = ["parse-strat"]
+
+[[require]]
+name = "nf-validate"
+path = "../nf-validate"
+
+[[lean_lib]]
+name = "ParseStrat"
+
+[[lean_exe]]
+name = "parse-strat"
+root = "Main"

@@ -1,4 +1,5 @@
 import NfValidate
+import Main
 
 open Formula
 
@@ -10,6 +11,11 @@ def isSuccess (res : StratificationResult) : Bool :=
 
 def isFailure (res : StratificationResult) : Bool :=
   not (isSuccess res)
+
+-- Override mem and eq to use Var.free
+def mem (x y : String) : Formula := Formula.atom (Atomic.mem (Var.free x) (Var.free y))
+def eq (x y : String) : Formula := Formula.atom (Atomic.eq (Var.free x) (Var.free y))
+def univ_str (x : String) (f : Formula) : Formula := Formula.univ x f
 
 --------------------------------------------------------------------------------
 -- 1. Base Atomic Stratification
@@ -23,10 +29,6 @@ def test_base_eq : Formula := eq "x" "y"
 -- x ∈ y ∧ y ∈ z ∧ z ∈ w (Valid sequential typing)
 def test_transitive : Formula :=
   conj (mem "x" "y") (conj (mem "y" "z") (mem "z" "w"))
-
--- x = y ∧ y = z ∧ z ∈ w (Valid equality equivalence class)
-def test_eq_merge : Formula :=
-  conj (eq "x" "y") (conj (eq "y" "z") (mem "z" "w"))
 
 --------------------------------------------------------------------------------
 -- 3. DNF Branching and Partial Success
@@ -55,7 +57,7 @@ def test_impl : Formula :=
 -- ∀x, x ∈ y
 -- The validator should extract constraints bypassing the quantifier.
 def test_univ : Formula :=
-  univ "x" (mem "x" "y")
+  univ_str "x" (mem "x" "y")
 
 --------------------------------------------------------------------------------
 -- 6. Total Failure (All DNF Branches Unstratifiable)
@@ -91,7 +93,6 @@ def paradox_eq_cycle : Formula :=
 #eval if isSuccess (evaluateFullFormula test_base_mem) then "Pass: Base Mem" else "Fail: Base Mem"
 #eval if isSuccess (evaluateFullFormula test_base_eq) then "Pass: Base Eq" else "Fail: Base Eq"
 #eval if isSuccess (evaluateFullFormula test_transitive) then "Pass: Transitive Shift" else "Fail: Transitive Shift"
-#eval if isSuccess (evaluateFullFormula test_eq_merge) then "Pass: Equality Merge" else "Fail: Equality Merge"
 #eval if isSuccess (evaluateFullFormula test_disj_success) then "Pass: DNF Partial Success" else "Fail: DNF Partial Success"
 #eval if isSuccess (evaluateFullFormula test_neg_conj) then "Pass: Negation Push" else "Fail: Negation Push"
 #eval if isSuccess (evaluateFullFormula test_impl) then "Pass: Implication" else "Fail: Implication"

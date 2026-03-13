@@ -253,7 +253,8 @@ def formulaSize : Formula → Nat
 def pushNeg : Formula → Formula
   | Formula.neg (Formula.neg p) =>
       have : formulaSize p < formulaSize (Formula.neg (Formula.neg p)) := by simp; omega
-      pushNeg p
+      pushNeg p -- Double negation elimination
+  -- De Morgan's laws: push negation through conjunction/disjunction and flip the operator
   | Formula.neg (Formula.conj p q) =>
       have : formulaSize (Formula.neg p) < formulaSize (Formula.neg (Formula.conj p q)) := by simp <;> try omega
       have : formulaSize (Formula.neg q) < formulaSize (Formula.neg (Formula.conj p q)) := by simp <;> try omega
@@ -262,10 +263,12 @@ def pushNeg : Formula → Formula
       have : formulaSize (Formula.neg p) < formulaSize (Formula.neg (Formula.disj p q)) := by simp <;> try omega
       have : formulaSize (Formula.neg q) < formulaSize (Formula.neg (Formula.disj p q)) := by simp <;> try omega
       Formula.conj (pushNeg (Formula.neg p)) (pushNeg (Formula.neg q))
+  -- Implication equivalence: ~(p -> q) == p & ~q
   | Formula.neg (Formula.impl p q) =>
       have : formulaSize p < formulaSize (Formula.neg (Formula.impl p q)) := by simp <;> try omega
       have : formulaSize (Formula.neg q) < formulaSize (Formula.neg (Formula.impl p q)) := by simp <;> try omega
       Formula.conj (pushNeg p) (pushNeg (Formula.neg q))
+  -- Implication equivalence: p -> q == ~p v q
   | Formula.impl p q =>
       have : formulaSize (Formula.neg p) < formulaSize (Formula.impl p q) := by simp <;> try omega
       have : formulaSize q < formulaSize (Formula.impl p q) := by simp <;> try omega
@@ -278,13 +281,14 @@ def pushNeg : Formula → Formula
       have : formulaSize p < formulaSize (Formula.disj p q) := by simp <;> try omega
       have : formulaSize q < formulaSize (Formula.disj p q) := by simp <;> try omega
       Formula.disj (pushNeg p) (pushNeg q)
-  | Formula.neg p => Formula.neg p
+  | Formula.neg p => Formula.neg p -- Negation has reached the atomic level
   | p => p
 termination_by f => formulaSize f
 decreasing_by
   all_goals assumption
 
 def distributeAnd : Formula → Formula → Formula
+  -- Distributive property: (p1 v p2) & q == (p1 & q) v (p2 & q)
   | Formula.disj p1 p2, q =>
       have : formulaSize p1 + formulaSize q < formulaSize (Formula.disj p1 p2) + formulaSize q := by rw [size_disj]; omega
       have : formulaSize p2 + formulaSize q < formulaSize (Formula.disj p1 p2) + formulaSize q := by rw [size_disj]; omega
@@ -306,6 +310,8 @@ def toDNFForm : Formula → Formula
 def extractLiterals : Formula → List Constraint
   | Formula.atom (Atomic.eq x y) => [{ v1 := x, v2 := y, diff := 0 }]
   | Formula.atom (Atomic.mem x y) => [{ v1 := x, v2 := y, diff := 1 }]
+  -- Note: We drop negated literals because the Bellman-Ford algorithm only natively
+  -- handles strict equalities and memberships. Inequalities are loosely enforced.
   | Formula.neg (Formula.atom (Atomic.eq _ _)) => []
   | Formula.neg (Formula.atom (Atomic.mem _ _)) => []
   | Formula.conj p q => extractLiterals p ++ extractLiterals q
@@ -319,8 +325,12 @@ def toDNF (f : Formula) : List (List Constraint) :=
   getDNFClauses (toDNFForm (pushNeg f))
 
 def evaluateFullFormula (f : Formula) : StratificationResult :=
+  -- We extract variables from the entire formula *before* DNF reduction
+  -- so that the witness context includes variables whose constraints might be dropped
   let vars := getFormulaVars f
   let clauses := toDNF f
+  -- Iterates through each DNF branch, returning the first successful stratification.
+  -- If all branches fail, it returns the failure result of the last branch checked.
   let rec checkClauses (cs : List (List Constraint)) (lastFail : Option StratificationResult) :=
     match cs with
     | [] =>
