@@ -1,6 +1,15 @@
 import NfValidate
 import ParseStrat
 
+/-!
+# ParseStrat: Automated Test Suite
+
+This module provides an automated test suite for the `nf-validate` strict
+stratification engine. It verifies the detection of topological cycles,
+demonstrating the algorithmic boundaries where strict global leveling
+mathematically halts.
+-/
+
 open Formula
 
 -- Helper functions to assert the result type during compilation

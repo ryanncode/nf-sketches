@@ -1,7 +1,19 @@
 import NfValidate
 
--- This module serves as the root of the `ParseStrat` library.
--- Shared formatting and diagnostic helper functions.
+/-!
+# ParseStrat: Shared Library and Formatting Tools
+
+This module serves as the root of the `ParseStrat` library, providing shared
+formatting and diagnostic helper functions that translate the internal
+numerical evaluation results of `nf-validate` back into readable algebraic
+proofs and type contradiction paths.
+-/
+
+--------------------------------------------------------------------------------
+-- 1. VARIABLE AND WITNESS FORMATTING
+--------------------------------------------------------------------------------
+-- Basic string conversion for variables and the successful stratification
+-- witness context.
 
 def varToString : Var → String
   | Var.free s => s
@@ -10,6 +22,12 @@ def varToString : Var → String
 def formatWitness (w : List (Var × Int)) : String :=
   let pairs := w.map (fun (v, l) => s!"{varToString v} : {l}")
   "{" ++ String.intercalate ", " pairs ++ "}"
+
+--------------------------------------------------------------------------------
+-- 2. CYCLE PATH RECONSTRUCTION & FORMATTING
+--------------------------------------------------------------------------------
+-- Translates the raw nodes and edges returned by the Bellman-Ford failure
+-- case into a human-readable algebraic contradiction path.
 
 -- Helper to convert a list of variables into pairs of adjacent nodes
 def cycleToPairs (c : List Var) : List (Var × Var) :=
@@ -35,9 +53,13 @@ def findWeight (src dst : Var) (edges : List Edge) : Int :=
   | some e => e.weight
   | none => 0
 
--- Reconstructs the detailed path string
 deriving instance Inhabited for Var
 
+/--
+Reconstructs the detailed path string from a given cycle and list of edges.
+It dynamically calculates the total algebraic contradiction weight and formats
+the output to explicitly demonstrate the unstratifiable nature of the cycle.
+-/
 def formatDetailedCycleSandbox (c : List Var) (edges : List Edge) : String :=
   let pairs := cycleToPairs c
 

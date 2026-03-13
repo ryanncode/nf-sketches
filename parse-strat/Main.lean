@@ -1,6 +1,16 @@
 import NfValidate
 import ParseStrat
 
+/-!
+# ParseStrat: Interactive REPL Sandbox
+
+This module provides an interactive Read-Eval-Print Loop (REPL) for the
+`nf-validate` strict stratification engine. It allows researchers to manually
+input set-theoretic formulas using standard ASCII syntax and immediately
+observe the constraint generation, cycle detection, and algebraic
+contradiction paths.
+-/
+
 def buildConjunction (atoms : List Formula) : Option Formula :=
   match atoms with
   | [] => none
@@ -11,7 +21,7 @@ def buildConjunction (atoms : List Formula) : Option Formula :=
       | none => none
 
 --------------------------------------------------------------------------------
--- 7. COMPREHENSIVE PARSER FOR FIRST-ORDER LOGIC
+-- 1. COMPREHENSIVE PARSER FOR FIRST-ORDER LOGIC
 --------------------------------------------------------------------------------
 -- Converts raw user input strings into the Formula AST. Supports parentheses
 -- and operator precedence (~, &, v, ->).
@@ -119,13 +129,10 @@ partial def readFormulas (stdin : IO.FS.Stream) (stdout : IO.FS.Stream) (acc : L
         readFormulas stdin stdout acc
 
 --------------------------------------------------------------------------------
--- 8. OUTPUT FORMATTING & SEMANTIC TRACE
+-- 2. MAIN EXECUTION LOOP
 --------------------------------------------------------------------------------
--- Translates the internal numerical evaluation results back into algebraic
--- proofs or type contradiction paths for the user.
---------------------------------------------------------------------------------
--- 9. MAIN EXECUTION LOOP
---------------------------------------------------------------------------------
+-- Drives the REPL, collecting user input and parsing it into a compound
+-- formula, then passing it to the `nf-validate` evaluator.
 
 def main : IO Unit := do
   let stdin ← IO.getStdin
