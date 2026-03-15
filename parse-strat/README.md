@@ -38,7 +38,7 @@ Type 'done' to evaluate the combined formula.
 Evaluating constraint graph with DNF conversion and cycle detection...
 Result: Not stratifiable. A type contradiction was detected in all branches.
 Contradiction Path: x = z (0) → y ∈ z (-1) → x ∈ y (-1).
-Requires l(y) = l(x) + -1 and l(y) = l(x) + 1.
+Requires l(x) = l(x) + -2.
 ```
 
 ## Testing
