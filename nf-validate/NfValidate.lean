@@ -58,6 +58,9 @@ def Formula.mem (x y : Var) : Formula := Formula.atom (Atomic.mem x y)
 -- 2. CONSTRAINT GENERATION
 --------------------------------------------------------------------------------
 -- Converts atomic formulas into numerical constraints for the Bellman-Ford graph.
+-- Note: This currently extracts constraints globally across the entire formula,
+-- establishing the baseline of strict global stratification. Future iterations
+-- aiming for weak stratification will need to partition this by binding scope.
 
 structure Constraint where
   v1 : Var

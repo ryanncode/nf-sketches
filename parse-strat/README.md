@@ -1,10 +1,10 @@
 # Parse-Strat: The Interactive Sandbox
 
-This module provides an interactive Read-Eval-Print Loop (REPL) environment for exploring Quine's New Foundations (NF) set theory. It serves as a tactile front-end to the core `nf-validate` logic library.
+This module provides an interactive Read-Eval-Print Loop (REPL) environment for exploring the **strict stratification constraints** of Quine's New Foundations (NF). It serves as a tactile front-end to the core `nf-validate` strict stratification logic library.
 
 ## Purpose and Scope
 
-While the main `seq-embed` diagnostic tool executes hardcoded, canonical proofs, `parse-strat` is designed for organic exploration. It allows researchers to manually test the boundaries of Quine's systemic ambiguity and observe the mechanical work of the algorithm in real-time without compromising the mathematical integrity of the formal verification suite.
+While the main `seq-embed` diagnostic tool executes hardcoded, canonical proofs, `parse-strat` is designed for organic exploration. It allows researchers to manually test the boundaries of **strict global stratification** and observe the mechanical work of the topological algorithm in real-time. By actively triggering negative-weight cycles, users can visualize the exact algebraic type-level contradictions that arise when terms lose substitution closure, verifying the baseline limitations of strict stratification prior to weak scoping.
 
 By separating runtime string parsing from compile-time theorem proving, this module provides an exploratory sandbox while keeping the foundational logic pure.
 

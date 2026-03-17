@@ -14,11 +14,12 @@ we validate the functional compilation pipeline.
 -/
 
 /--
-Semantics of Quine's New Foundations Stratification.
+Semantics of Quine's New Foundations Strict Global Stratification.
 
-This defines the target syntactic conditions for a valid formula. A formula is stratified
-if there exists a typing context `ctx` assigning an integer type level to each variable
-such that the typing rules are satisfied. Crucially, this isolates the syntactic
+This defines the target syntactic conditions for a valid formula under strict
+global evaluation. A formula is stratified if there exists a typing context `ctx`
+assigning an integer type level to each variable across the entire formula such
+that the typing rules are satisfied. Crucially, this isolates the syntactic
 requirements, allowing us to build a rigorous, verified bridge from the mechanical graph
 validation without relying on standard model-theoretic proofs.
 -/

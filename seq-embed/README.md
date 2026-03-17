@@ -4,9 +4,9 @@ This project provides a formal deductive environment in Lean 4 for navigating th
 
 ## Core Objective
 
-Rather than functioning as a generalized, interactive theorem prover, this module acts as a highly specialized, automated diagnostic tool. The primary objective is to execute logic organically as a mechanical process and observe the exact mathematical breakdown of proof normalization under Quine's systemic ambiguity.
+Rather than functioning as a generalized, interactive theorem prover, this module acts as a highly specialized, automated diagnostic tool. The primary objective is to execute logic organically as a mechanical process and observe the exact mathematical breakdown of proof normalization under strict global stratification.
 
-Marcel Crabbé proved that cut-elimination holds for predicative fragments of NF but fails explicitly when cuts interact with stratified comprehension. This codebase operationalizes that failure, acting as a direct, automated witness to the structural limits of a stratified universe.
+Marcel Crabbé proved that if a system restricts itself exclusively to strictly stratifiable terms, the set of terms loses closure under substitution. When substitution closure fails, cut-elimination fails trivially, even for obviously valid sequents. This codebase operationalizes that failure. By enforcing strict global stratification across the sequent context, the `reduceCut` engine acts as a direct, automated witness to the grammatical substitution collisions that deadlock the calculus.
 
 ## Architecture and Execution
 
@@ -19,7 +19,9 @@ The repository features a complete, formally verified execution pipeline that tr
 
 ## Canonical Failure Diagnostics
 
-When the executable runs, it processes five canonical test cases. Each case is designed to force a specific logical variable to occupy two different, contradictory "type levels" simultaneously. The engine surfaces the resulting negative-weight cycles, which represent the mathematical collapse of syntactic stratification:
+When the executable runs, it processes five canonical test cases. Each case is designed as a deliberate stress-test that forces an impredicative substitution. Because the `reduceCut` engine enforces strict global stratification, these valid logical substitutions are rejected due to rigid, global type-level assignments. 
+
+The engine surfaces the resulting negative-weight cycles, which represent the grammatical collisions caused by the lack of substitution closure:
 
 1. **The Identity Collapse:** Demonstrates the simplest failure of type-level assignment. The system attempts to define a set $A$ whose members are exactly the element $z$, governed by the comprehension formula $∀ y(y ∈ A ↔ y = z)$. Stratification requires $A$ to be one level higher than $z$. The diagnostic then forces a logical cut asserting that $z$ and $A$ are identical ($z = A$), immediately collapsing the required level difference and triggering a cycle.
 2. **The Impredicative Singleton:** Models a variation of Russell's paradox. It defines a set $S$ containing elements that do not contain a specific variable $w$, governed by the comprehension formula $∀ x(x ∈ S ↔ x ∉ w)$. The diagnostic forces the substitution $w = S$. The initial formula remains stratifiable, but the engine catches the breakdown at the exact moment of instantiation, proving that the paradox lies in the self-referential application of the rule.

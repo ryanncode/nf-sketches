@@ -27,7 +27,7 @@ Standard variable substitution functions well across normal logical connectives 
 
 Complex, branching logical statements are algorithmically flattened into Disjunctive Normal Form (DNF). The validator distributes conjunctions over disjunctions and pushes negations down to the atomic level using verified implementations of De Morgan's laws.
 
-Once flattened, the atomic formulas are translated into a directed graph. The grammatical rules of NF are converted into integer difference inequalities:
+Once flattened, the entire formula is translated into a single directed graph, establishing a baseline of **strict global stratification**. The grammatical rules of NF are converted into integer difference inequalities:
 
 * $x ∈ y$ generates a forward edge $(x, y)$ with weight 1 and a backward edge $(y, x)$ with weight -1.
 * $x = y$ generates bidirectional zero-weight edges.

@@ -1,14 +1,14 @@
 import NfValidate
 
 /-!
-# Graph Semantics for Stratification
+# Graph Semantics for Strict Global Stratification
 
 This module maps geometric paths and constraint satisfiability directly to the strict
-mathematical definitions of stratification. The graph natively encodes Quine's typing
+mathematical definitions of global stratification. The graph natively encodes Quine's typing
 rules (e.g., `x ∈ y ⇒ t(x) + 1 = t(y)` and `x = y ⇒ t(x) = t(y)`) as algebraic
 constraints on edge weights, entirely bypassing the need for hierarchical models or
 layered universes. Satisfiability of the graph is thus algebraically equivalent to the
-existence of a valid type assignment.
+existence of a valid global type assignment.
 -/
 
 /--

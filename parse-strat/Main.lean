@@ -5,7 +5,7 @@ import ParseStrat
 # ParseStrat: Interactive REPL Sandbox
 
 This module provides an interactive Read-Eval-Print Loop (REPL) for the
-`nf-validate` stratification engine. It allows researchers to manually
+`nf-validate` strict stratification engine. It allows researchers to manually
 input set-theoretic formulas using standard ASCII syntax and immediately
 observe the constraint generation, cycle detection, and algebraic
 contradiction paths.

@@ -4,10 +4,10 @@ import ParseStrat
 /-!
 # ParseStrat: Automated Test Suite
 
-This module provides an automated test suite for the `nf-validate` stratification
-engine. It defines various test cases (both stratifiable and unstratifiable) and
-asserts that the engine correctly identifies them, explicitly printing the
-mathematical trace outputs (witness contexts or contradiction paths) for verification.
+This module provides an automated test suite for the `nf-validate` strict
+stratification engine. It verifies the detection of topological cycles,
+demonstrating the algorithmic boundaries where strict global leveling
+mathematically halts.
 -/
 
 open Formula
