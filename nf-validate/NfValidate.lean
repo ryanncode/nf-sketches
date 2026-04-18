@@ -213,7 +213,7 @@ def getCycleForward (pred : List (ScopedVar × ScopedVar)) (start : ScopedVar) (
 -- of simple constraints, evaluating each for stratifiability.
 
 inductive StratificationResult where
-  | success (witness : List (ScopedVar × Int))
+  | success (witness : List (Nat × List (Var × Int)))
   | failure (cycle : List ScopedVar) (edges : List Edge)
 
 def getFormulaVarsAux (scope : Nat) : Formula → List ScopedVar
@@ -295,18 +295,18 @@ def dagShortestPath (vars : List ScopedVar) (edges : List Edge) (sorted : List S
     ) dist
   ) initialDist
 
-def evaluateClause (vars : List ScopedVar) (constraints : List Constraint) : StratificationResult :=
+def evaluateClause (vars : List ScopedVar) (constraints : List Constraint) : Except (List ScopedVar × List Edge) (List (ScopedVar × Int)) :=
   let edges := buildEdges constraints
   let n := vars.length
 
   if n == 0 then
-    StratificationResult.success []
+    Except.ok []
   else
     -- Try O(V+E) DAG Topological Sort First
     match (none : Option (List ScopedVar)) with
     | some sorted =>
         let finalDist := dagShortestPath vars edges sorted
-        StratificationResult.success finalDist
+        Except.ok finalDist
     | none =>
         -- Fallback to Bellman-Ford for non-DAGs (containing cycles)
         let initialDist : List (ScopedVar × Int) := vars.map (fun v => (v, (0 : Int)))
@@ -323,7 +323,7 @@ def evaluateClause (vars : List ScopedVar) (constraints : List Constraint) : Str
 
         let (_, cyclePred, hasCycle) := relaxEdges edges finalDist finalPred
         if not hasCycle then
-          StratificationResult.success finalDist
+          Except.ok finalDist
         else
           let conflictNode := edges.findSome? (fun e =>
             let du := lookup finalDist e.src
@@ -331,20 +331,22 @@ def evaluateClause (vars : List ScopedVar) (constraints : List Constraint) : Str
             if du + e.weight < dv then some e.dst else none
           )
           match conflictNode with
-          | some node => StratificationResult.failure (getCycleForward cyclePred node n) edges
-          | none => StratificationResult.failure [] edges
+          | some node => Except.error (getCycleForward cyclePred node n, edges)
+          | none => Except.error ([], edges)
 
 def evaluateClausePartitioned (vars : List ScopedVar) (constraints : List Constraint) : StratificationResult :=
   let scopes := nub (vars.map (fun v => v.2))
-  let rec evalScopes (ss : List Nat) (accDist : List (ScopedVar × Int)) :=
+  let rec evalScopes (ss : List Nat) (accWitness : List (Nat × List (Var × Int))) :=
     match ss with
-    | [] => StratificationResult.success accDist
+    | [] => StratificationResult.success accWitness
     | s :: rest =>
       let sVars := vars.filter (fun v => v.2 == s)
       let sConstraints := constraints.filter (fun c => c.v1.2 == s)
       match evaluateClause sVars sConstraints with
-      | StratificationResult.success dist => evalScopes rest (accDist ++ dist)
-      | StratificationResult.failure cycle edges => StratificationResult.failure cycle edges
+      | Except.ok dist =>
+          let scopeDist := dist.map (fun ⟨⟨v, _⟩, weight⟩ => (v, weight))
+          evalScopes rest ((s, scopeDist) :: accWitness)
+      | Except.error (cycle, edges) => StratificationResult.failure cycle edges
   evalScopes scopes []
 
 def evaluateStratification (f : Formula) : StratificationResult :=
@@ -493,7 +495,17 @@ def evaluateFullFormula (f : Formula) : StratificationResult :=
         | StratificationResult.failure cycle edges => checkClauses rest (some (StratificationResult.failure cycle edges))
   checkClauses clauses none
 
-abbrev StratificationWitness := List (ScopedVar × Int)
+abbrev StratificationWitness := List (Nat × List (Var × Int))
+
+def lookupScope (w : StratificationWitness) (scope : Nat) : List (Var × Int) :=
+  match w with
+  | [] => []
+  | (s, l) :: xs => if scope == s then l else lookupScope xs scope
+
+def lookupVarWeight (l : List (Var × Int)) (v : Var) : Int :=
+  match l with
+  | [] => 0
+  | (v', weight) :: xs => if v == v' then weight else lookupVarWeight xs v
 
 /--
 Verifies if a StratificationWitness satisfies NFI (Impredicative Subsystem) bounds.
@@ -504,8 +516,10 @@ For simplicity in this validator, we track if any variable exceeds the base elem
 Assuming the base element is Var.bound 0 at scope 0.
 -/
 def satisfiesNFI (w : StratificationWitness) : Bool :=
-  let baseWeight := lookup w (Var.bound 0, 0)
-  w.all (fun ⟨_, weight⟩ => weight <= baseWeight + 1)
+  w.all (fun ⟨s, l⟩ =>
+    let baseWeight := lookupVarWeight l (Var.bound 0)
+    l.all (fun ⟨_, weight⟩ => weight <= baseWeight + 1)
+  )
 
 /--
 Verifies if a StratificationWitness satisfies NFP (Predicative Subsystem) bounds.
@@ -514,11 +528,13 @@ internal bound variable vertex exceeds the integer weight of the base element ve
 Assuming the base element is Var.bound 0 at scope 0.
 -/
 def satisfiesNFP (w : StratificationWitness) : Bool :=
-  let baseWeight := lookup w (Var.bound 0, 0)
-  w.all (fun ⟨v, weight⟩ =>
-    match v with
-    | (Var.bound _, _) => weight <= baseWeight
-    | _ => weight <= baseWeight + 1
+  w.all (fun ⟨s, l⟩ =>
+    let baseWeight := lookupVarWeight l (Var.bound 0)
+    l.all (fun ⟨v, weight⟩ =>
+      match v with
+      | Var.bound _ => weight <= baseWeight
+      | _ => weight <= baseWeight + 1
+    )
   )
 
 def checkStrat (f : Formula) : Option StratificationWitness :=
@@ -593,15 +609,20 @@ def nfMain : IO Unit := do
   | some w =>
       IO.println "Stratification Successful (General Weak Stratification)."
       IO.println s!"Witness: {reprStr w}"
-      let baseWeight := lookup w (Var.bound 1, 1) -- 'n' is bound 1 at scope 1
+      let baseWeight := lookupVarWeight (lookupScope w 1) (Var.bound 1) -- 'n' is bound 1 at scope 1
       IO.println s!"Base Element (n) Weight: {baseWeight}"
 
-      -- Let's define custom checks using scope 1 since we used scope 1 for univ
-      let nfiPass := w.all (fun ⟨_, weight⟩ => weight <= baseWeight + 1)
-      let nfpPass := w.all (fun ⟨v, weight⟩ =>
-        match v with
-        | (Var.bound _, _) => weight <= baseWeight
-        | _ => weight <= baseWeight + 1
+      let nfiPass := w.all (fun ⟨s, l⟩ =>
+        let base_w := lookupVarWeight l (Var.bound 1)
+        l.all (fun ⟨_, weight⟩ => weight <= base_w + 1)
+      )
+      let nfpPass := w.all (fun ⟨s, l⟩ =>
+        let base_w := lookupVarWeight l (Var.bound 1)
+        l.all (fun ⟨v, weight⟩ =>
+          match v with
+          | Var.bound _ => weight <= base_w
+          | _ => weight <= base_w + 1
+        )
       )
 
       IO.println s!"NFI (Impredicative) Check: {if nfiPass then "PASS" else "FAIL"}"
