@@ -104,14 +104,18 @@ def substituteVar (x : String) (t : Var) : Var → Var
   | Var.free y => if x == y then t else Var.free y
   | Var.bound i => Var.bound i
 
+def shiftScopeVar (s : Nat) : Var → Var
+  | Var.free y => Var.free y
+  | Var.bound i => Var.bound i
+
 def shiftScope : Nat → Formula → Formula
-  | s, Formula.atom (Atomic.eq y z) => Formula.atom (Atomic.eq y z)
-  | s, Formula.atom (Atomic.mem y z) => Formula.atom (Atomic.mem y z)
-  | s, Formula.atom (Atomic.qpair p y z) => Formula.atom (Atomic.qpair p y z)
-  | s, Formula.atom (Atomic.qproj1 z p) => Formula.atom (Atomic.qproj1 z p)
-  | s, Formula.atom (Atomic.qproj2 z p) => Formula.atom (Atomic.qproj2 z p)
-  | s, Formula.atom (Atomic.app z u v) => Formula.atom (Atomic.app z u v)
-  | s, Formula.atom (Atomic.lam z y b) => Formula.atom (Atomic.lam z y b)
+  | s, Formula.atom (Atomic.eq y z) => Formula.atom (Atomic.eq (shiftScopeVar s y) (shiftScopeVar s z))
+  | s, Formula.atom (Atomic.mem y z) => Formula.atom (Atomic.mem (shiftScopeVar s y) (shiftScopeVar s z))
+  | s, Formula.atom (Atomic.qpair p y z) => Formula.atom (Atomic.qpair (shiftScopeVar s p) (shiftScopeVar s y) (shiftScopeVar s z))
+  | s, Formula.atom (Atomic.qproj1 z p) => Formula.atom (Atomic.qproj1 (shiftScopeVar s z) (shiftScopeVar s p))
+  | s, Formula.atom (Atomic.qproj2 z p) => Formula.atom (Atomic.qproj2 (shiftScopeVar s z) (shiftScopeVar s p))
+  | s, Formula.atom (Atomic.app z u v) => Formula.atom (Atomic.app (shiftScopeVar s z) (shiftScopeVar s u) (shiftScopeVar s v))
+  | s, Formula.atom (Atomic.lam z y b) => Formula.atom (Atomic.lam (shiftScopeVar s z) (shiftScopeVar s y) (shiftScopeVar s b))
   | s, Formula.neg p => Formula.neg (shiftScope s p)
   | s, Formula.conj p q => Formula.conj (shiftScope s p) (shiftScope s q)
   | s, Formula.disj p q => Formula.disj (shiftScope s p) (shiftScope s q)
@@ -397,9 +401,9 @@ def reduceCut {Γ Δ : Context} (A : Formula) (d1 : Derivation ⟨Γ, A :: Δ⟩
               let flattened_vars := nub (ext_vars.map (fun v => (revertVar v.1, 0)))
 
               match evaluateClause flattened_vars flattened_constraints with
-              | StratificationResult.failure cycle edges =>
+              | Except.error (cycle, edges) =>
                   Except.error (ReductionError.StratificationFailure s!"Extensionality Collision! Structure cannot normalize {reprStr t_mem} = {reprStr t_phi}" cycle edges)
-              | StratificationResult.success _ =>
+              | Except.ok _ =>
                   Except.error (ReductionError.NotImplemented "Substitution Closure Guaranteed: dynamic re-leveling succeeded, but Extensionality failed to catch the collision.")
   | .weakenL A2 d2_sub =>
       -- Principal reduction for weakenL: A was weakened, we can just return d2_sub.
@@ -552,7 +556,7 @@ def parseSequent (s : String) : Option Sequent :=
 
 -- 1. The Identity Collapse: Cut on z=A against compL on ∀y(y∈A↔y=z)
 def phi_id : Formula := Formula.eq (Var.bound 0) (Var.free "z")
-theorem h_strat_id : checkStrat phi_id = some [((Var.bound 0, 0), 0), ((Var.free "z", 0), 0)] := sorry
+theorem h_strat_id : checkStrat phi_id = some [(0, [(Var.bound 0, (0 : Int)), (Var.free "z", (0 : Int))])] := sorry
 
 def idCollapse_A : Formula := mkComprehensionAxiom "A" "y" phi_id
 def idCollapse_d1 : Derivation ⟨[idCollapse_A], [idCollapse_A]⟩ :=
@@ -562,7 +566,7 @@ def idCollapse_d2 : Derivation ⟨idCollapse_A :: [idCollapse_A], []⟩ :=
 
 -- 2. The Impredicative Singleton: Cut on w=S against compL on ∀x(x∈S↔x∉w)
 def phi_sing : Formula := Formula.neg (Formula.mem (Var.bound 0) (Var.free "w"))
-theorem h_strat_sing : checkStrat phi_sing = some [((Var.bound 0, 0), 0), ((Var.free "w", 0), 1)] := sorry
+theorem h_strat_sing : checkStrat phi_sing = some [(0, [(Var.bound 0, (0 : Int)), (Var.free "w", (1 : Int))])] := sorry
 
 def singCollapse_A : Formula := mkComprehensionAxiom "S" "x" phi_sing
 def singCollapse_d1 : Derivation ⟨[singCollapse_A], [singCollapse_A]⟩ :=
@@ -572,7 +576,7 @@ def singCollapse_d2 : Derivation ⟨singCollapse_A :: [singCollapse_A], []⟩ :=
 
 -- 3. The Transitive Membership Collapse: Cut on A=C against compL on ∃A∀y(y∈A↔y∈B∧B∈C)
 def phi_trans : Formula := Formula.conj (Formula.mem (Var.bound 0) (Var.free "B")) (Formula.mem (Var.free "B") (Var.free "C"))
-theorem h_strat_trans : checkStrat phi_trans = some [((Var.bound 0, 0), 0), ((Var.free "B", 0), 1), ((Var.free "C", 0), 2)] := sorry
+theorem h_strat_trans : checkStrat phi_trans = some [(0, [(Var.bound 0, (0 : Int)), (Var.free "B", (1 : Int)), (Var.free "C", (2 : Int))])] := sorry
 
 def transCollapse_A : Formula := mkComprehensionAxiom "A" "y" phi_trans
 def transCollapse_d1 : Derivation ⟨[transCollapse_A], [transCollapse_A]⟩ :=
@@ -582,7 +586,7 @@ def transCollapse_d2 : Derivation ⟨transCollapse_A :: [transCollapse_A], []⟩
 
 -- 4. The Russell-Prawitz Normalization Breakdown: Cut on x=R against compL on ∃R∀x(x∈R↔x∉x)
 def phi_russell : Formula := Formula.neg (Formula.mem (Var.bound 0) (Var.bound 0))
-theorem h_strat_russell : checkStrat phi_russell = some [((Var.bound 0, 0), 0)] := sorry
+theorem h_strat_russell : checkStrat phi_russell = some [(0, [(Var.bound 0, (0 : Int))])] := sorry
 
 def russellCollapse_A : Formula := mkComprehensionAxiom "R" "x" phi_russell
 def russellCollapse_d1 : Derivation ⟨[russellCollapse_A], [russellCollapse_A]⟩ :=
@@ -592,7 +596,7 @@ def russellCollapse_d2 : Derivation ⟨russellCollapse_A :: [russellCollapse_A],
 
 -- 5. The Kuratowski Ordered Pair Type-Shift
 def phi_kura : Formula := Formula.atom (Atomic.mem (Var.free "A") (Var.bound 0))
-theorem h_strat_kura : checkStrat phi_kura = some [((Var.bound 0, 0), 0), ((Var.free "A", 0), -1)] := sorry
+theorem h_strat_kura : checkStrat phi_kura = some [(0, [(Var.bound 0, (0 : Int)), (Var.free "A", (-1 : Int))])] := sorry
 
 def kuraCollapse_A : Formula := mkComprehensionAxiom "P" "y" phi_kura
 def kuraCollapse_d1 : Derivation ⟨[kuraCollapse_A], [kuraCollapse_A]⟩ :=

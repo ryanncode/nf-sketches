@@ -160,6 +160,16 @@ def flattenGraphAux (sccs : List (List ScopedVar)) : Nat → Nat → Formula →
       let (rz, s1, wz) := wrapProj scope seed z (expandVar sccs z scope)
       let (rp, s2, wp) := wrapProj scope s1 p (expandVar sccs p scope)
       (wz (wp (Formula.atom (Atomic.qproj2 rz rp))), s2)
+  | scope, seed, Formula.atom (Atomic.app z u v) =>
+      let (rz, s1, wz) := wrapProj scope seed z (expandVar sccs z scope)
+      let (ru, s2, wu) := wrapProj scope s1 u (expandVar sccs u scope)
+      let (rv, s3, wv) := wrapProj scope s2 v (expandVar sccs v scope)
+      (wz (wu (wv (Formula.atom (Atomic.app rz ru rv)))), s3)
+  | scope, seed, Formula.atom (Atomic.lam z x t) =>
+      let (rz, s1, wz) := wrapProj scope seed z (expandVar sccs z scope)
+      let (rx, s2, wx) := wrapProj scope s1 x (expandVar sccs x scope)
+      let (rt, s3, wt) := wrapProj scope s2 t (expandVar sccs t scope)
+      (wz (wx (wt (Formula.atom (Atomic.lam rz rx rt)))), s3)
   | scope, seed, Formula.neg p =>
       let (p', s') := flattenGraphAux sccs scope seed p
       (Formula.neg p', s')
