@@ -30,7 +30,9 @@ def pathVertices {n : Nat} {u v : V} : BoundedPath edges n u v → Fin (n + 1) �
   dependent type deadlocks and establishes a clean mathematical constraint for cycle extraction.
 -/
 theorem path_has_duplicate (p : BoundedPath edges (Fintype.card V) u v) :
-  ∃ (i j : Fin (Fintype.card V + 1)), i ≠ j ∧ pathVertices p i = pathVertices p j := sorry
+  ∃ (i j : Fin (Fintype.card V + 1)), i ≠ j ∧ pathVertices p i = pathVertices p j := by
+  apply Fintype.exists_ne_map_eq_of_card_lt
+  simp
 def pathEdges {n : Nat} {u v : V} : BoundedPath edges n u v → List (GenericEdge V)
   | BoundedPath.nil _ => []
   | BoundedPath.cons e _ p => e :: pathEdges p
