@@ -77,19 +77,19 @@ structure Constraint where
 
 def extractConstraintsAux (scope : Nat) : Formula → List Constraint
   | Formula.atom (Atomic.eq x y) => [{ v1 := (x, scope), v2 := (y, scope), diff := 0 }]
-  | Formula.atom (Atomic.mem x y) => [{ v1 := (x, scope), v2 := (y, scope), diff := 1 }]
+  | Formula.atom (Atomic.mem x y) => [{ v1 := (x, scope), v2 := (y, scope), diff := 1, directed := true }]
   | Formula.atom (Atomic.qpair p x y) =>
       -- p = <x, y>_Q. Quine pairs are homogeneous, so p, x, and y are all at the same type level.
       -- To avoid bidirectional cycles that would ruin DAG flattening, we establish directed 0-weight edges
       -- from the components to the pair.
-      [{ v1 := (x, scope), v2 := (p, scope), diff := 0 },
-       { v1 := (y, scope), v2 := (p, scope), diff := 0 }]
+      [{ v1 := (x, scope), v2 := (p, scope), diff := 0, directed := true },
+       { v1 := (y, scope), v2 := (p, scope), diff := 0, directed := true }]
   | Formula.atom (Atomic.qproj1 z p) =>
       -- z = π_1(p). Directed 0-weight edge from p to z.
-      [{ v1 := (p, scope), v2 := (z, scope), diff := 0 }]
+      [{ v1 := (p, scope), v2 := (z, scope), diff := 0, directed := true }]
   | Formula.atom (Atomic.qproj2 z p) =>
       -- z = π_2(p). Directed 0-weight edge from p to z.
-      [{ v1 := (p, scope), v2 := (z, scope), diff := 0 }]
+      [{ v1 := (p, scope), v2 := (z, scope), diff := 0, directed := true }]
   | Formula.neg p => extractConstraintsAux scope p
   | Formula.conj p q => extractConstraintsAux scope p ++ extractConstraintsAux scope q
   | Formula.disj p q => extractConstraintsAux scope p ++ extractConstraintsAux scope q
@@ -218,6 +218,67 @@ def getFormulaVarsAux (scope : Nat) : Formula → List ScopedVar
 def getFormulaVars (f : Formula) : List ScopedVar :=
   nub (getFormulaVarsAux 0 f)
 
+def lookupNat (l : List (ScopedVar × Nat)) (k : ScopedVar) : Nat :=
+  match l with
+  | [] => 0
+  | (k', v) :: xs => if k == k' then v else lookupNat xs k
+
+def updateNat (l : List (ScopedVar × Nat)) (k : ScopedVar) (v : Nat) : List (ScopedVar × Nat) :=
+  match l with
+  | [] => [(k, v)]
+  | (k', v') :: xs => if k == k' then (k, v) :: xs else (k', v') :: updateNat xs k v
+
+def computeInDegrees (vars : List ScopedVar) (edges : List Edge) : List (ScopedVar × Nat) :=
+  let init := vars.map (fun v => (v, 0))
+  edges.foldl (fun acc e =>
+    let currentIn := lookupNat acc e.dst
+    updateNat acc e.dst (currentIn + 1)
+  ) init
+
+def topologicalSort (vars : List ScopedVar) (edges : List Edge) : Option (List ScopedVar) :=
+  let inDegrees := computeInDegrees vars edges
+  let initQueue := inDegrees.filter (fun p => p.2 == 0) |>.map (·.1)
+
+  let rec loop (fuel : Nat) (queue : List ScopedVar) (inDegs : List (ScopedVar × Nat)) (sorted : List ScopedVar) : List ScopedVar :=
+    match fuel with
+    | 0 => sorted.reverse
+    | f + 1 =>
+        match queue with
+        | [] => sorted.reverse
+        | u :: qs =>
+            let outgoing := edges.filter (fun e => e.src == u)
+            let (newQueue, newInDegs) := outgoing.foldl (fun (q, degs) e =>
+              let v := e.dst
+              let deg := lookupNat degs v
+              let nextDeg := deg - 1
+              let degs' := updateNat degs v nextDeg
+              if nextDeg == 0 then
+                (v :: q, degs')
+              else
+                (q, degs')
+            ) (qs, inDegs)
+            loop f newQueue newInDegs (u :: sorted)
+
+  let sorted := loop vars.length initQueue inDegrees []
+  if sorted.length == vars.length then
+    some sorted
+  else
+    none
+
+def dagShortestPath (vars : List ScopedVar) (edges : List Edge) (sorted : List ScopedVar) : List (ScopedVar × Int) :=
+  let initialDist : List (ScopedVar × Int) := vars.map (fun v => (v, (0 : Int)))
+  sorted.foldl (fun dist u =>
+    let outgoing := edges.filter (fun e => e.src == u)
+    outgoing.foldl (fun d e =>
+      let du := lookup d u
+      let dv := lookup d e.dst
+      if du + e.weight < dv then
+        update d e.dst (du + e.weight)
+      else
+        d
+    ) dist
+  ) initialDist
+
 def evaluateClause (vars : List ScopedVar) (constraints : List Constraint) : StratificationResult :=
   let edges := buildEdges constraints
   let n := vars.length
@@ -225,30 +286,37 @@ def evaluateClause (vars : List ScopedVar) (constraints : List Constraint) : Str
   if n == 0 then
     StratificationResult.success []
   else
-    let initialDist : List (ScopedVar × Int) := vars.map (fun v => (v, (0 : Int)))
-    let initialPred : List (ScopedVar × ScopedVar) := []
+    -- Try O(V+E) DAG Topological Sort First
+    match topologicalSort vars edges with
+    | some sorted =>
+        let finalDist := dagShortestPath vars edges sorted
+        StratificationResult.success finalDist
+    | none =>
+        -- Fallback to Bellman-Ford for non-DAGs (containing cycles)
+        let initialDist : List (ScopedVar × Int) := vars.map (fun v => (v, (0 : Int)))
+        let initialPred : List (ScopedVar × ScopedVar) := []
 
-    let rec loop (i : Nat) (d : List (ScopedVar × Int)) (p : List (ScopedVar × ScopedVar)) :=
-      match i with
-      | 0 => (d, p)
-      | j + 1 =>
-        let (d', p', changed) := relaxEdges edges d p
-        if not changed then (d', p') else loop j d' p'
+        let rec loop (i : Nat) (d : List (ScopedVar × Int)) (p : List (ScopedVar × ScopedVar)) :=
+          match i with
+          | 0 => (d, p)
+          | j + 1 =>
+            let (d', p', changed) := relaxEdges edges d p
+            if not changed then (d', p') else loop j d' p'
 
-    let (finalDist, finalPred) := loop (n - 1) initialDist initialPred
+        let (finalDist, finalPred) := loop (n - 1) initialDist initialPred
 
-    let (_, cyclePred, hasCycle) := relaxEdges edges finalDist finalPred
-    if not hasCycle then
-      StratificationResult.success finalDist
-    else
-      let conflictNode := edges.findSome? (fun e =>
-        let du := lookup finalDist e.src
-        let dv := lookup finalDist e.dst
-        if du + e.weight < dv then some e.dst else none
-      )
-      match conflictNode with
-      | some node => StratificationResult.failure (getCycleForward cyclePred node n) edges
-      | none => StratificationResult.failure [] edges
+        let (_, cyclePred, hasCycle) := relaxEdges edges finalDist finalPred
+        if not hasCycle then
+          StratificationResult.success finalDist
+        else
+          let conflictNode := edges.findSome? (fun e =>
+            let du := lookup finalDist e.src
+            let dv := lookup finalDist e.dst
+            if du + e.weight < dv then some e.dst else none
+          )
+          match conflictNode with
+          | some node => StratificationResult.failure (getCycleForward cyclePred node n) edges
+          | none => StratificationResult.failure [] edges
 
 def evaluateClausePartitioned (vars : List ScopedVar) (constraints : List Constraint) : StratificationResult :=
   let scopes := nub (vars.map (fun v => v.2))
@@ -360,14 +428,14 @@ def toDNFForm : Formula → Formula
 
 def extractLiteralsAux (scope : Nat) : Formula → List Constraint
   | Formula.atom (Atomic.eq x y) => [{ v1 := (x, scope), v2 := (y, scope), diff := 0 }]
-  | Formula.atom (Atomic.mem x y) => [{ v1 := (x, scope), v2 := (y, scope), diff := 1 }]
+  | Formula.atom (Atomic.mem x y) => [{ v1 := (x, scope), v2 := (y, scope), diff := 1, directed := true }]
   | Formula.atom (Atomic.qpair p x y) =>
-      [{ v1 := (x, scope), v2 := (p, scope), diff := 0 },
-       { v1 := (y, scope), v2 := (p, scope), diff := 0 }]
+      [{ v1 := (x, scope), v2 := (p, scope), diff := 0, directed := true },
+       { v1 := (y, scope), v2 := (p, scope), diff := 0, directed := true }]
   | Formula.atom (Atomic.qproj1 z p) =>
-      [{ v1 := (p, scope), v2 := (z, scope), diff := 0 }]
+      [{ v1 := (p, scope), v2 := (z, scope), diff := 0, directed := true }]
   | Formula.atom (Atomic.qproj2 z p) =>
-      [{ v1 := (p, scope), v2 := (z, scope), diff := 0 }]
+      [{ v1 := (p, scope), v2 := (z, scope), diff := 0, directed := true }]
   -- Note: We drop negated literals because the Bellman-Ford algorithm only natively
   -- handles strict equalities and memberships. Inequalities are loosely enforced.
   | Formula.neg (Formula.atom (Atomic.eq _ _)) => []
