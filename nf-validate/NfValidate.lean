@@ -48,7 +48,8 @@ inductive Formula where
   | conj : Formula → Formula → Formula
   | disj : Formula → Formula → Formula
   | impl : Formula → Formula → Formula
-  | univ : String → Formula → Formula
+  | univ : Nat → String → Formula → Formula
+  | comp : Nat → String → Formula → Formula
   deriving Repr, DecidableEq
 
 def Formula.eq (x y : Var) : Formula := Formula.atom (Atomic.eq x y)
@@ -62,20 +63,26 @@ def Formula.mem (x y : Var) : Formula := Formula.atom (Atomic.mem x y)
 -- establishing the baseline of strict global stratification. Future iterations
 -- aiming for weak stratification will need to partition this by binding scope.
 
+abbrev ScopedVar := Var × Nat
+
 structure Constraint where
-  v1 : Var
-  v2 : Var
+  v1 : ScopedVar
+  v2 : ScopedVar
   diff : Int
   deriving Repr, DecidableEq
 
-def extractConstraints : Formula → List Constraint
-  | Formula.atom (Atomic.eq x y) => [{ v1 := x, v2 := y, diff := 0 }]
-  | Formula.atom (Atomic.mem x y) => [{ v1 := x, v2 := y, diff := 1 }]
-  | Formula.neg p => extractConstraints p
-  | Formula.conj p q => extractConstraints p ++ extractConstraints q
-  | Formula.disj p q => extractConstraints p ++ extractConstraints q
-  | Formula.impl p q => extractConstraints p ++ extractConstraints q
-  | Formula.univ _ p => extractConstraints p
+def extractConstraintsAux (scope : Nat) : Formula → List Constraint
+  | Formula.atom (Atomic.eq x y) => [{ v1 := (x, scope), v2 := (y, scope), diff := 0 }]
+  | Formula.atom (Atomic.mem x y) => [{ v1 := (x, scope), v2 := (y, scope), diff := 1 }]
+  | Formula.neg p => extractConstraintsAux scope p
+  | Formula.conj p q => extractConstraintsAux scope p ++ extractConstraintsAux scope q
+  | Formula.disj p q => extractConstraintsAux scope p ++ extractConstraintsAux scope q
+  | Formula.impl p q => extractConstraintsAux scope p ++ extractConstraintsAux scope q
+  | Formula.univ n _ p => extractConstraintsAux n p
+  | Formula.comp n _ p => extractConstraintsAux n p
+
+def extractConstraints (f : Formula) : List Constraint :=
+  extractConstraintsAux 0 f
 
 --------------------------------------------------------------------------------
 -- 3. GRAPH REPRESENTATION
@@ -83,8 +90,8 @@ def extractConstraints : Formula → List Constraint
 -- Defines the directed edges and weights for the constraint graph.
 
 structure Edge where
-  src : Var
-  dst : Var
+  src : ScopedVar
+  dst : ScopedVar
   weight : Int
   deriving Repr, DecidableEq
 
@@ -95,22 +102,14 @@ def buildEdges : List Constraint → List Edge
       { src := c.v2, dst := c.v1, weight := -c.diff } ::
       buildEdges cs
 
-def getVarsAux : List Constraint → List Var
+def getVarsAux : List Constraint → List ScopedVar
   | [] => []
   | c :: cs => c.v1 :: c.v2 :: getVarsAux cs
 
-def nub (l : List Var) : List Var :=
-  match l with
-  | [] => []
-  | x :: xs =>
-    have : (xs.filter (fun y => y != x)).length < (x :: xs).length := by
-      calc (xs.filter (fun y => y != x)).length
-        _ ≤ xs.length := List.length_filter_le ..
-        _ < (x :: xs).length := Nat.lt_succ_self ..
-    x :: nub (xs.filter (fun y => y != x))
-termination_by l.length
+def nub {α : Type} [DecidableEq α] (l : List α) : List α :=
+  l.foldr (fun x acc => if acc.contains x then acc else x :: acc) []
 
-def getVars (cs : List Constraint) : List Var :=
+def getVars (cs : List Constraint) : List ScopedVar :=
   nub (getVarsAux cs)
 
 --------------------------------------------------------------------------------
@@ -119,28 +118,28 @@ def getVars (cs : List Constraint) : List Var :=
 -- The core engine for checking stratifiability. Evaluates sets of constraints
 -- simultaneously by searching for negative weight cycles in a directed graph.
 
-def lookup (l : List (Var × Int)) (k : Var) : Int :=
+def lookup (l : List (ScopedVar × Int)) (k : ScopedVar) : Int :=
   match l with
   | [] => 0
   | (k', v) :: xs => if k == k' then v else lookup xs k
 
-def update (l : List (Var × Int)) (k : Var) (v : Int) : List (Var × Int) :=
+def update (l : List (ScopedVar × Int)) (k : ScopedVar) (v : Int) : List (ScopedVar × Int) :=
   match l with
   | [] => [(k, v)]
   | (k', v') :: xs => if k == k' then (k, v) :: xs else (k', v') :: update xs k v
 
-def lookupPred (l : List (Var × Var)) (k : Var) : Option Var :=
+def lookupPred (l : List (ScopedVar × ScopedVar)) (k : ScopedVar) : Option ScopedVar :=
   match l with
   | [] => none
   | (k', v) :: xs => if k == k' then some v else lookupPred xs k
 
-def updatePred (l : List (Var × Var)) (k : Var) (v : Var) : List (Var × Var) :=
+def updatePred (l : List (ScopedVar × ScopedVar)) (k : ScopedVar) (v : ScopedVar) : List (ScopedVar × ScopedVar) :=
   match l with
   | [] => [(k, v)]
   | (k', v') :: xs => if k == k' then (k, v) :: xs else (k', v') :: updatePred xs k v
 
-def relaxEdges (edges : List Edge) (dist : List (Var × Int)) (pred : List (Var × Var)) :
-    List (Var × Int) × List (Var × Var) × Bool :=
+def relaxEdges (edges : List Edge) (dist : List (ScopedVar × Int)) (pred : List (ScopedVar × ScopedVar)) :
+    List (ScopedVar × Int) × List (ScopedVar × ScopedVar) × Bool :=
   edges.foldl (fun (accD, accP, changed) e =>
     let du := lookup accD e.src
     let dv := lookup accD e.dst
@@ -152,9 +151,9 @@ def relaxEdges (edges : List Edge) (dist : List (Var × Int)) (pred : List (Var 
       (accD, accP, changed)
   ) (dist, pred, false)
 
-def getCycleForward (pred : List (Var × Var)) (start : Var) (n : Nat) : List Var :=
+def getCycleForward (pred : List (ScopedVar × ScopedVar)) (start : ScopedVar) (n : Nat) : List ScopedVar :=
   -- Trace backwards through the predecessor map `n` times to guarantee we land inside the cycle
-  let rec goUp (curr : Var) (steps : Nat) : Var :=
+  let rec goUp (curr : ScopedVar) (steps : Nat) : ScopedVar :=
     match steps with
     | 0 => curr
     | s + 1 => match lookupPred pred curr with
@@ -163,7 +162,7 @@ def getCycleForward (pred : List (Var × Var)) (start : Var) (n : Nat) : List Va
   let cycleStart := goUp start n
 
   -- From the guaranteed cycle node, trace backwards again until we hit a node we've already seen
-  let rec collect (curr : Var) (acc : List Var) (fuel : Nat) : List Var :=
+  let rec collect (curr : ScopedVar) (acc : List ScopedVar) (fuel : Nat) : List ScopedVar :=
     match fuel with
     | 0 => curr :: acc
     | f + 1 =>
@@ -181,29 +180,30 @@ def getCycleForward (pred : List (Var × Var)) (start : Var) (n : Nat) : List Va
 -- of simple constraints, evaluating each for stratifiability.
 
 inductive StratificationResult where
-  | success (witness : List (Var × Int))
-  | failure (cycle : List Var) (edges : List Edge)
+  | success (witness : List (ScopedVar × Int))
+  | failure (cycle : List ScopedVar) (edges : List Edge)
 
-def getFormulaVarsAux : Formula → List Var
-  | Formula.atom (Atomic.eq x y) => [x, y]
-  | Formula.atom (Atomic.mem x y) => [x, y]
-  | Formula.neg p => getFormulaVarsAux p
-  | Formula.conj p q => getFormulaVarsAux p ++ getFormulaVarsAux q
-  | Formula.disj p q => getFormulaVarsAux p ++ getFormulaVarsAux q
-  | Formula.impl p q => getFormulaVarsAux p ++ getFormulaVarsAux q
-  | Formula.univ _ p => getFormulaVarsAux p
+def getFormulaVarsAux (scope : Nat) : Formula → List ScopedVar
+  | Formula.atom (Atomic.eq x y) => [(x, scope), (y, scope)]
+  | Formula.atom (Atomic.mem x y) => [(x, scope), (y, scope)]
+  | Formula.neg p => getFormulaVarsAux scope p
+  | Formula.conj p q => getFormulaVarsAux scope p ++ getFormulaVarsAux scope q
+  | Formula.disj p q => getFormulaVarsAux scope p ++ getFormulaVarsAux scope q
+  | Formula.impl p q => getFormulaVarsAux scope p ++ getFormulaVarsAux scope q
+  | Formula.univ n _ p => getFormulaVarsAux n p
+  | Formula.comp n _ p => getFormulaVarsAux n p
 
-def getFormulaVars (f : Formula) : List Var :=
-  nub (getFormulaVarsAux f)
+def getFormulaVars (f : Formula) : List ScopedVar :=
+  nub (getFormulaVarsAux 0 f)
 
-def evaluateClause (vars : List Var) (constraints : List Constraint) : StratificationResult :=
+def evaluateClause (vars : List ScopedVar) (constraints : List Constraint) : StratificationResult :=
   let edges := buildEdges constraints
   let n := vars.length
 
-  let initialDist : List (Var × Int) := vars.map (fun v => (v, (0 : Int)))
-  let initialPred : List (Var × Var) := []
+  let initialDist : List (ScopedVar × Int) := vars.map (fun v => (v, (0 : Int)))
+  let initialPred : List (ScopedVar × ScopedVar) := []
 
-  let rec loop (i : Nat) (d : List (Var × Int)) (p : List (Var × Var)) :=
+  let rec loop (i : Nat) (d : List (ScopedVar × Int)) (p : List (ScopedVar × ScopedVar)) :=
     match i with
     | 0 => (d, p)
     | j + 1 =>
@@ -241,14 +241,16 @@ def formulaSize : Formula → Nat
   | Formula.conj p q => 1 + formulaSize p + formulaSize q
   | Formula.disj p q => 1 + formulaSize p + formulaSize q
   | Formula.impl p q => 1 + formulaSize p + formulaSize q
-  | Formula.univ _ p => 1 + formulaSize p
+  | Formula.univ _ _ p => 1 + formulaSize p
+  | Formula.comp _ _ p => 1 + formulaSize p
 
 @[simp] theorem size_atom (a) : formulaSize (Formula.atom a) = 1 := rfl
 @[simp] theorem size_neg (p) : formulaSize (Formula.neg p) = 1 + formulaSize p := rfl
 @[simp] theorem size_conj (p q) : formulaSize (Formula.conj p q) = 1 + formulaSize p + formulaSize q := rfl
 @[simp] theorem size_disj (p q) : formulaSize (Formula.disj p q) = 1 + formulaSize p + formulaSize q := rfl
 @[simp] theorem size_impl (p q) : formulaSize (Formula.impl p q) = 1 + formulaSize p + formulaSize q := rfl
-@[simp] theorem size_univ (x p) : formulaSize (Formula.univ x p) = 1 + formulaSize p := rfl
+@[simp] theorem size_univ (n x p) : formulaSize (Formula.univ n x p) = 1 + formulaSize p := rfl
+@[simp] theorem size_comp (n x p) : formulaSize (Formula.comp n x p) = 1 + formulaSize p := rfl
 
 @[simp] theorem size_pos (f : Formula) : 0 < formulaSize f := by
   cases f <;> simp <;> omega
@@ -276,6 +278,12 @@ def pushNeg : Formula → Formula
       have : formulaSize (Formula.neg p) < formulaSize (Formula.impl p q) := by simp <;> try omega
       have : formulaSize q < formulaSize (Formula.impl p q) := by simp <;> try omega
       Formula.disj (pushNeg (Formula.neg p)) (pushNeg q)
+  | Formula.univ n x p =>
+      have : formulaSize p < formulaSize (Formula.univ n x p) := by simp <;> try omega
+      Formula.univ n x (pushNeg p)
+  | Formula.comp n x p =>
+      have : formulaSize p < formulaSize (Formula.comp n x p) := by simp <;> try omega
+      Formula.comp n x (pushNeg p)
   | Formula.conj p q =>
       have : formulaSize p < formulaSize (Formula.conj p q) := by simp <;> try omega
       have : formulaSize q < formulaSize (Formula.conj p q) := by simp <;> try omega
@@ -308,17 +316,24 @@ decreasing_by
 def toDNFForm : Formula → Formula
   | Formula.conj p q => distributeAnd (toDNFForm p) (toDNFForm q)
   | Formula.disj p q => Formula.disj (toDNFForm p) (toDNFForm q)
+  | Formula.univ n x p => Formula.univ n x (toDNFForm p)
+  | Formula.comp n x p => Formula.comp n x (toDNFForm p)
   | p => p
 
-def extractLiterals : Formula → List Constraint
-  | Formula.atom (Atomic.eq x y) => [{ v1 := x, v2 := y, diff := 0 }]
-  | Formula.atom (Atomic.mem x y) => [{ v1 := x, v2 := y, diff := 1 }]
+def extractLiteralsAux (scope : Nat) : Formula → List Constraint
+  | Formula.atom (Atomic.eq x y) => [{ v1 := (x, scope), v2 := (y, scope), diff := 0 }]
+  | Formula.atom (Atomic.mem x y) => [{ v1 := (x, scope), v2 := (y, scope), diff := 1 }]
   -- Note: We drop negated literals because the Bellman-Ford algorithm only natively
   -- handles strict equalities and memberships. Inequalities are loosely enforced.
   | Formula.neg (Formula.atom (Atomic.eq _ _)) => []
   | Formula.neg (Formula.atom (Atomic.mem _ _)) => []
-  | Formula.conj p q => extractLiterals p ++ extractLiterals q
+  | Formula.conj p q => extractLiteralsAux scope p ++ extractLiteralsAux scope q
+  | Formula.univ n _ p => extractLiteralsAux n p
+  | Formula.comp n _ p => extractLiteralsAux n p
   | _ => []
+
+def extractLiterals (f : Formula) : List Constraint :=
+  extractLiteralsAux 0 f
 
 def getDNFClauses : Formula → List (List Constraint)
   | Formula.disj p q => getDNFClauses p ++ getDNFClauses q
@@ -346,15 +361,15 @@ def evaluateFullFormula (f : Formula) : StratificationResult :=
         | StratificationResult.failure cycle edges => checkClauses rest (some (StratificationResult.failure cycle edges))
   checkClauses clauses none
 
-abbrev StratificationWitness := List (Var × Int)
+abbrev StratificationWitness := List (ScopedVar × Int)
 
 def checkStrat (f : Formula) : Option StratificationWitness :=
   match evaluateFullFormula f with
   | StratificationResult.success w => some w
   | StratificationResult.failure _ _ => none
 
-def formatDetailedCycle (cycle : List Var) (edges : List Edge) : String :=
-  let rec formatEdges (cvars : List Var) : String :=
+def formatDetailedCycle (cycle : List ScopedVar) (edges : List Edge) : String :=
+  let rec formatEdges (cvars : List ScopedVar) : String :=
     match cvars with
     | [] => ""
     | [v] => s!"{reprStr v}"
