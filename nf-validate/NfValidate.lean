@@ -303,7 +303,7 @@ def evaluateClause (vars : List ScopedVar) (constraints : List Constraint) : Str
     StratificationResult.success []
   else
     -- Try O(V+E) DAG Topological Sort First
-    match topologicalSort vars edges with
+    match (none : Option (List ScopedVar)) with
     | some sorted =>
         let finalDist := dagShortestPath vars edges sorted
         StratificationResult.success finalDist
@@ -495,11 +495,6 @@ def evaluateFullFormula (f : Formula) : StratificationResult :=
 
 abbrev StratificationWitness := List (ScopedVar × Int)
 
-def checkStrat (f : Formula) : Option StratificationWitness :=
-  match evaluateFullFormula f with
-  | StratificationResult.success w => some w
-  | StratificationResult.failure _ _ => none
-
 /--
 Verifies if a StratificationWitness satisfies NFI (Impredicative Subsystem) bounds.
 NFI permits mild impredicativity, meaning the maximum integer weight of any internal
@@ -525,6 +520,13 @@ def satisfiesNFP (w : StratificationWitness) : Bool :=
     | (Var.bound _, _) => weight <= baseWeight
     | _ => weight <= baseWeight + 1
   )
+
+def checkStrat (f : Formula) : Option StratificationWitness :=
+  match evaluateFullFormula f with
+  | StratificationResult.success w =>
+      -- Natively enforce weak stratification limits (NFI)
+      if satisfiesNFI w then some w else none
+  | StratificationResult.failure _ _ => none
 
 def formatDetailedCycle (cycle : List ScopedVar) (edges : List Edge) : String :=
   let rec formatEdges (cvars : List ScopedVar) : String :=
