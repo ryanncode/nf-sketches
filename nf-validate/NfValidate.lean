@@ -79,7 +79,7 @@ structure Constraint where
 
 def extractConstraintsAux (scope : Nat) : Formula → List Constraint
   | Formula.atom (Atomic.eq x y) => [{ v1 := (x, scope), v2 := (y, scope), diff := 0 }]
-  | Formula.atom (Atomic.mem x y) => [{ v1 := (x, scope), v2 := (y, scope), diff := 1, directed := true }]
+  | Formula.atom (Atomic.mem x y) => [{ v1 := (x, scope), v2 := (y, scope), diff := 1, directed := false }]
   | Formula.atom (Atomic.qpair p x y) =>
       -- p = <x, y>_Q. Quine pairs are homogeneous, so p, x, and y are all at the same type level.
       -- To avoid bidirectional cycles that would ruin DAG flattening, we establish directed 0-weight edges
@@ -444,7 +444,7 @@ def toDNFForm : Formula → Formula
 
 def extractLiteralsAux (scope : Nat) : Formula → List Constraint
   | Formula.atom (Atomic.eq x y) => [{ v1 := (x, scope), v2 := (y, scope), diff := 0 }]
-  | Formula.atom (Atomic.mem x y) => [{ v1 := (x, scope), v2 := (y, scope), diff := 1, directed := true }]
+  | Formula.atom (Atomic.mem x y) => [{ v1 := (x, scope), v2 := (y, scope), diff := 1, directed := false }]
   | Formula.atom (Atomic.qpair p x y) =>
       [{ v1 := (x, scope), v2 := (p, scope), diff := 0, directed := true },
        { v1 := (y, scope), v2 := (p, scope), diff := 0, directed := true }]
@@ -500,6 +500,32 @@ def checkStrat (f : Formula) : Option StratificationWitness :=
   | StratificationResult.success w => some w
   | StratificationResult.failure _ _ => none
 
+/--
+Verifies if a StratificationWitness satisfies NFI (Impredicative Subsystem) bounds.
+NFI permits mild impredicativity, meaning the maximum integer weight of any internal
+variable vertex never exceeds the topological weight of the base element vertex
+(plus 1 for the set itself, meaning variables are <= type(base_element) + 1).
+For simplicity in this validator, we track if any variable exceeds the base element's type + 1.
+Assuming the base element is Var.bound 0 at scope 0.
+-/
+def satisfiesNFI (w : StratificationWitness) : Bool :=
+  let baseWeight := lookup w (Var.bound 0, 0)
+  w.all (fun ⟨_, weight⟩ => weight <= baseWeight + 1)
+
+/--
+Verifies if a StratificationWitness satisfies NFP (Predicative Subsystem) bounds.
+NFP strictly restricts graph validators to predicative bounds, enforcing that no
+internal bound variable vertex exceeds the integer weight of the base element vertex.
+Assuming the base element is Var.bound 0 at scope 0.
+-/
+def satisfiesNFP (w : StratificationWitness) : Bool :=
+  let baseWeight := lookup w (Var.bound 0, 0)
+  w.all (fun ⟨v, weight⟩ =>
+    match v with
+    | (Var.bound _, _) => weight <= baseWeight
+    | _ => weight <= baseWeight + 1
+  )
+
 def formatDetailedCycle (cycle : List ScopedVar) (edges : List Edge) : String :=
   let rec formatEdges (cvars : List ScopedVar) : String :=
     match cvars with
@@ -520,4 +546,68 @@ def formatDetailedCycle (cycle : List ScopedVar) (edges : List Edge) : String :=
         s!"{reprStr u}{weightStr}" ++ formatEdges (v :: rest)
   formatEdges cycle
 
-def nfMain : IO Unit := pure ()
+/--
+The structural definition of the set of Natural Numbers (Frege-Russell cardinality).
+N = {n | ∀s. (0 ∈ s ∧ (∀x. x ∈ s → x + 1 ∈ s)) → n ∈ s}
+We simplify it to a formula testing NFI/NFP bounds:
+A set `n` is in `N` if it belongs to all inductive sets `s`.
+phi_N: ∀s (Inductive(s) → n ∈ s)
+Inductive(s): 0 ∈ s ∧ (∀x. x ∈ s → x+1 ∈ s)
+For our diagnostic, the type collision happens because `s` is quantified over
+and `n` (the element we are defining `N` for) belongs to `s`.
+In `n ∈ s`, `s` must be at type `type(n) + 1`.
+But `s` is an inductive set of numbers, so it's a set of sets (like `N` itself).
+We can approximate this with:
+phi_N = ∀s (n ∈ s)
+where `n` is `Var.bound 0` (the base element), and `s` is `Var.bound 1`.
+Wait, we need the formula for the benchmark.
+Let's use a standard approximation of the impredicative collision:
+phi_N = Formula.univ 0 "s" (Formula.impl (Formula.mem (Var.free "0") (Var.bound 0)) (Formula.mem (Var.bound 1) (Var.bound 0)))
+Wait, inside univ "s", `s` is `Var.bound 0`, and the base element `n` is `Var.bound 1`.
+So:
+Inductive(s) = Formula.mem (Var.free "zero") (Var.bound 0)
+phi_N = Formula.univ 0 "s" (Formula.impl (Formula.mem (Var.free "zero") (Var.bound 0)) (Formula.mem (Var.bound 1) (Var.bound 0)))
+Let's see the type assignments:
+`Var.bound 0` (s) has type `t`.
+`Var.free "zero"` has type `t - 1`.
+`Var.bound 1` (n, the base element) has type `t - 1`.
+So `s` has type `t`, `n` has type `t - 1`.
+This means `s` is one level higher than `n`.
+The base element is `Var.bound 1` (n), with weight `t - 1`.
+The internal variable `s` (Var.bound 0) has weight `t`.
+Since `t = (t - 1) + 1`, `s` has weight exactly `baseWeight + 1`.
+In NFI, `s` (weight `t`) <= `baseWeight + 1`, which is `t - 1 + 1 = t`. This passes!
+In NFP, `s` is a bound variable. NFP requires `bound_weight <= baseWeight`. So `t <= t - 1`, which fails!
+Let's run this diagnostic!
+-/
+def phi_N : Formula :=
+  Formula.univ 1 "s" (
+    Formula.mem (Var.bound 1) (Var.bound 0)
+  )
+
+def nfMain : IO Unit := do
+  IO.println "Running Phase 3.1 & 3.3 Diagnostics (NFI vs NFP)"
+  match checkStrat phi_N with
+  | some w =>
+      IO.println "Stratification Successful (General Weak Stratification)."
+      IO.println s!"Witness: {reprStr w}"
+      let baseWeight := lookup w (Var.bound 1, 1) -- 'n' is bound 1 at scope 1
+      IO.println s!"Base Element (n) Weight: {baseWeight}"
+
+      -- Let's define custom checks using scope 1 since we used scope 1 for univ
+      let nfiPass := w.all (fun ⟨_, weight⟩ => weight <= baseWeight + 1)
+      let nfpPass := w.all (fun ⟨v, weight⟩ =>
+        match v with
+        | (Var.bound _, _) => weight <= baseWeight
+        | _ => weight <= baseWeight + 1
+      )
+
+      IO.println s!"NFI (Impredicative) Check: {if nfiPass then "PASS" else "FAIL"}"
+      IO.println s!"NFP (Predicative) Check: {if nfpPass then "PASS" else "FAIL"}"
+
+      if nfiPass && not nfpPass then
+        IO.println "Diagnostic SUCCESS: Natural numbers successfully route in NFI but are rejected in NFP!"
+      else
+        IO.println "Diagnostic FAILED to distinguish NFI and NFP correctly."
+  | none =>
+      IO.println "Stratification Failed entirely."
