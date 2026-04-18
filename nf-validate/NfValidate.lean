@@ -200,34 +200,50 @@ def evaluateClause (vars : List ScopedVar) (constraints : List Constraint) : Str
   let edges := buildEdges constraints
   let n := vars.length
 
-  let initialDist : List (ScopedVar × Int) := vars.map (fun v => (v, (0 : Int)))
-  let initialPred : List (ScopedVar × ScopedVar) := []
-
-  let rec loop (i : Nat) (d : List (ScopedVar × Int)) (p : List (ScopedVar × ScopedVar)) :=
-    match i with
-    | 0 => (d, p)
-    | j + 1 =>
-      let (d', p', changed) := relaxEdges edges d p
-      if not changed then (d', p') else loop j d' p'
-
-  let (finalDist, finalPred) := loop (n - 1) initialDist initialPred
-
-  let (_, cyclePred, hasCycle) := relaxEdges edges finalDist finalPred
-  if not hasCycle then
-    StratificationResult.success finalDist
+  if n == 0 then
+    StratificationResult.success []
   else
-    let conflictNode := edges.findSome? (fun e =>
-      let du := lookup finalDist e.src
-      let dv := lookup finalDist e.dst
-      if du + e.weight < dv then some e.dst else none
-    )
-    match conflictNode with
-    | some node => StratificationResult.failure (getCycleForward cyclePred node n) edges
-    | none => StratificationResult.failure [] edges
+    let initialDist : List (ScopedVar × Int) := vars.map (fun v => (v, (0 : Int)))
+    let initialPred : List (ScopedVar × ScopedVar) := []
+
+    let rec loop (i : Nat) (d : List (ScopedVar × Int)) (p : List (ScopedVar × ScopedVar)) :=
+      match i with
+      | 0 => (d, p)
+      | j + 1 =>
+        let (d', p', changed) := relaxEdges edges d p
+        if not changed then (d', p') else loop j d' p'
+
+    let (finalDist, finalPred) := loop (n - 1) initialDist initialPred
+
+    let (_, cyclePred, hasCycle) := relaxEdges edges finalDist finalPred
+    if not hasCycle then
+      StratificationResult.success finalDist
+    else
+      let conflictNode := edges.findSome? (fun e =>
+        let du := lookup finalDist e.src
+        let dv := lookup finalDist e.dst
+        if du + e.weight < dv then some e.dst else none
+      )
+      match conflictNode with
+      | some node => StratificationResult.failure (getCycleForward cyclePred node n) edges
+      | none => StratificationResult.failure [] edges
+
+def evaluateClausePartitioned (vars : List ScopedVar) (constraints : List Constraint) : StratificationResult :=
+  let scopes := nub (vars.map (fun v => v.2))
+  let rec evalScopes (ss : List Nat) (accDist : List (ScopedVar × Int)) :=
+    match ss with
+    | [] => StratificationResult.success accDist
+    | s :: rest =>
+      let sVars := vars.filter (fun v => v.2 == s)
+      let sConstraints := constraints.filter (fun c => c.v1.2 == s)
+      match evaluateClause sVars sConstraints with
+      | StratificationResult.success dist => evalScopes rest (accDist ++ dist)
+      | StratificationResult.failure cycle edges => StratificationResult.failure cycle edges
+  evalScopes scopes []
 
 def evaluateStratification (f : Formula) : StratificationResult :=
   let constraints := extractConstraints f
-  evaluateClause (getFormulaVars f) constraints
+  evaluateClausePartitioned (getFormulaVars f) constraints
 
 --------------------------------------------------------------------------------
 -- 6. DISJUNCTIVE NORMAL FORM (DNF) REDUCTION
@@ -356,7 +372,7 @@ def evaluateFullFormula (f : Formula) : StratificationResult :=
         | some fail => fail
         | none => StratificationResult.failure [] []
     | c :: rest =>
-        match evaluateClause vars c with
+        match evaluateClausePartitioned vars c with
         | StratificationResult.success w => StratificationResult.success w
         | StratificationResult.failure cycle edges => checkClauses rest (some (StratificationResult.failure cycle edges))
   checkClauses clauses none
