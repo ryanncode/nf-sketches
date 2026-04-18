@@ -16,3 +16,7 @@ git = "https://github.com/leanprover-community/mathlib4.git"
 [[lean_exe]]
 name = "nf-validate"
 root = "Main"
+
+[[lean_exe]]
+name = "profile-acyclic"
+root = "ProfileAcyclic"
