@@ -32,6 +32,9 @@ that dictate type levels, distinct from the broader boolean logic.
 inductive Atomic where
   | eq : Var → Var → Atomic
   | mem : Var → Var → Atomic
+  | qpair : Var → Var → Var → Atomic -- p = <x, y>_Q
+  | qproj1 : Var → Var → Atomic      -- z = π_1(p)
+  | qproj2 : Var → Var → Atomic      -- z = π_2(p)
   deriving Repr, DecidableEq
 
 /--
@@ -69,11 +72,24 @@ structure Constraint where
   v1 : ScopedVar
   v2 : ScopedVar
   diff : Int
+  directed : Bool := false -- If true, only generates a single directional edge
   deriving Repr, DecidableEq
 
 def extractConstraintsAux (scope : Nat) : Formula → List Constraint
   | Formula.atom (Atomic.eq x y) => [{ v1 := (x, scope), v2 := (y, scope), diff := 0 }]
   | Formula.atom (Atomic.mem x y) => [{ v1 := (x, scope), v2 := (y, scope), diff := 1 }]
+  | Formula.atom (Atomic.qpair p x y) =>
+      -- p = <x, y>_Q. Quine pairs are homogeneous, so p, x, and y are all at the same type level.
+      -- To avoid bidirectional cycles that would ruin DAG flattening, we establish directed 0-weight edges
+      -- from the components to the pair.
+      [{ v1 := (x, scope), v2 := (p, scope), diff := 0 },
+       { v1 := (y, scope), v2 := (p, scope), diff := 0 }]
+  | Formula.atom (Atomic.qproj1 z p) =>
+      -- z = π_1(p). Directed 0-weight edge from p to z.
+      [{ v1 := (p, scope), v2 := (z, scope), diff := 0 }]
+  | Formula.atom (Atomic.qproj2 z p) =>
+      -- z = π_2(p). Directed 0-weight edge from p to z.
+      [{ v1 := (p, scope), v2 := (z, scope), diff := 0 }]
   | Formula.neg p => extractConstraintsAux scope p
   | Formula.conj p q => extractConstraintsAux scope p ++ extractConstraintsAux scope q
   | Formula.disj p q => extractConstraintsAux scope p ++ extractConstraintsAux scope q
@@ -98,9 +114,12 @@ structure Edge where
 def buildEdges : List Constraint → List Edge
   | [] => []
   | c :: cs =>
-      { src := c.v1, dst := c.v2, weight := c.diff } ::
-      { src := c.v2, dst := c.v1, weight := -c.diff } ::
-      buildEdges cs
+      if c.directed then
+        { src := c.v1, dst := c.v2, weight := c.diff } :: buildEdges cs
+      else
+        { src := c.v1, dst := c.v2, weight := c.diff } ::
+        { src := c.v2, dst := c.v1, weight := -c.diff } ::
+        buildEdges cs
 
 def getVarsAux : List Constraint → List ScopedVar
   | [] => []
@@ -186,6 +205,9 @@ inductive StratificationResult where
 def getFormulaVarsAux (scope : Nat) : Formula → List ScopedVar
   | Formula.atom (Atomic.eq x y) => [(x, scope), (y, scope)]
   | Formula.atom (Atomic.mem x y) => [(x, scope), (y, scope)]
+  | Formula.atom (Atomic.qpair p x y) => [(p, scope), (x, scope), (y, scope)]
+  | Formula.atom (Atomic.qproj1 z p) => [(z, scope), (p, scope)]
+  | Formula.atom (Atomic.qproj2 z p) => [(z, scope), (p, scope)]
   | Formula.neg p => getFormulaVarsAux scope p
   | Formula.conj p q => getFormulaVarsAux scope p ++ getFormulaVarsAux scope q
   | Formula.disj p q => getFormulaVarsAux scope p ++ getFormulaVarsAux scope q
@@ -339,10 +361,20 @@ def toDNFForm : Formula → Formula
 def extractLiteralsAux (scope : Nat) : Formula → List Constraint
   | Formula.atom (Atomic.eq x y) => [{ v1 := (x, scope), v2 := (y, scope), diff := 0 }]
   | Formula.atom (Atomic.mem x y) => [{ v1 := (x, scope), v2 := (y, scope), diff := 1 }]
+  | Formula.atom (Atomic.qpair p x y) =>
+      [{ v1 := (x, scope), v2 := (p, scope), diff := 0 },
+       { v1 := (y, scope), v2 := (p, scope), diff := 0 }]
+  | Formula.atom (Atomic.qproj1 z p) =>
+      [{ v1 := (p, scope), v2 := (z, scope), diff := 0 }]
+  | Formula.atom (Atomic.qproj2 z p) =>
+      [{ v1 := (p, scope), v2 := (z, scope), diff := 0 }]
   -- Note: We drop negated literals because the Bellman-Ford algorithm only natively
   -- handles strict equalities and memberships. Inequalities are loosely enforced.
   | Formula.neg (Formula.atom (Atomic.eq _ _)) => []
   | Formula.neg (Formula.atom (Atomic.mem _ _)) => []
+  | Formula.neg (Formula.atom (Atomic.qpair _ _ _)) => []
+  | Formula.neg (Formula.atom (Atomic.qproj1 _ _)) => []
+  | Formula.neg (Formula.atom (Atomic.qproj2 _ _)) => []
   | Formula.conj p q => extractLiteralsAux scope p ++ extractLiteralsAux scope q
   | Formula.univ n _ p => extractLiteralsAux n p
   | Formula.comp n _ p => extractLiteralsAux n p
