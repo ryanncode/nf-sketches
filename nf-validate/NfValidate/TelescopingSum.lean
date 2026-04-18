@@ -22,14 +22,55 @@ inductive EdgeChain : List (GenericEdge V) → V → V → Prop where
 
 -- 2. Prove a lemma telescoping_cycle_sum that sums the inequalities M(dst) ≤ M(src) + weight over a valid edge chain.
 lemma telescoping_chain_sum (M : V → Int) (edges : List (GenericEdge V)) (u v : V) (h : EdgeChain edges u v) :
-  (M v - M u) = (edges.map (fun e => M e.dst - M e.src)).sum := sorry
+  (M v - M u) = (edges.map (fun e => M e.dst - M e.src)).sum := by
+  induction h with
+  | nil u => simp
+  | cons e heq h' ih =>
+    simp [heq]
+    omega
 lemma telescoping_cycle_sum (M : V → Int) (edges : List (GenericEdge V)) (u : V) (h : EdgeChain edges u u) :
-  0 = (edges.map (fun e => M e.dst - M e.src)).sum := sorry
+  0 = (edges.map (fun e => M e.dst - M e.src)).sum := by
+  have h_chain := telescoping_chain_sum M edges u u h
+  omega
 lemma cycleWeightSum_append (l1 l2 : List (GenericEdge V)) :
-  cycleWeightSum (l1 ++ l2) = cycleWeightSum l1 + cycleWeightSum l2 := sorry
+  cycleWeightSum (l1 ++ l2) = cycleWeightSum l1 + cycleWeightSum l2 := by
+  induction l1 with
+  | nil =>
+    have h : cycleWeightSum ([] : List (GenericEdge V)) = 0 := by rfl
+    rw [h]
+    have h2 : ([] : List (GenericEdge V)) ++ l2 = l2 := by rfl
+    rw [h2]
+    omega
+  | cons head tail ih =>
+    have h1 : (head :: tail) ++ l2 = head :: (tail ++ l2) := by rfl
+    rw [h1]
+    have h2 : cycleWeightSum (head :: (tail ++ l2)) = head.weight + cycleWeightSum (tail ++ l2) := by rfl
+    rw [h2, ih]
+    have h3 : cycleWeightSum (head :: tail) = head.weight + cycleWeightSum tail := by rfl
+    rw [h3]
+    omega
 lemma sum_diff_ge_weight_sum (M : V → Int) (edges : List (GenericEdge V))
   (h_parent : ∀ e ∈ edges, M e.dst ≥ M e.src + e.weight) :
-  (edges.map (fun e => M e.dst - M e.src)).sum ≥ cycleWeightSum edges := sorry
+  (edges.map (fun e => M e.dst - M e.src)).sum ≥ cycleWeightSum edges := by
+  induction edges with
+  | nil =>
+    have h1 : ([] : List (GenericEdge V)).map (fun e => M e.dst - M e.src) = [] := by rfl
+    rw [h1]
+    have h2 : cycleWeightSum ([] : List (GenericEdge V)) = 0 := by rfl
+    rw [h2]
+    have h3 : ([] : List Int).sum = 0 := by rfl
+    rw [h3]
+  | cons head tail ih =>
+    have h1 : (head :: tail).map (fun e => M e.dst - M e.src) = (M head.dst - M head.src) :: tail.map (fun e => M e.dst - M e.src) := by rfl
+    rw [h1]
+    have h2 : ((M head.dst - M head.src) :: tail.map (fun e => M e.dst - M e.src)).sum = (M head.dst - M head.src) + (tail.map (fun e => M e.dst - M e.src)).sum := by rfl
+    rw [h2]
+    have h3 : cycleWeightSum (head :: tail) = head.weight + cycleWeightSum tail := by rfl
+    rw [h3]
+    have h_parent_head : M head.dst ≥ M head.src + head.weight := h_parent head (List.Mem.head tail)
+    have h_parent_tail : ∀ e ∈ tail, M e.dst ≥ M e.src + e.weight := fun e he => h_parent e (List.Mem.tail head he)
+    have ih' := ih h_parent_tail
+    omega
 -- 3. Strict Inequality Contradiction
 -- If the edges form a cycle in the parent graph, we have M(dst) ≥ M(src) + weight for all parent edges.
 -- The strict edge triggering the update has M(dst) > M(src) + weight.
