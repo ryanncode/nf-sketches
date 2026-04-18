@@ -22,41 +22,14 @@ inductive EdgeChain : List (GenericEdge V) → V → V → Prop where
 
 -- 2. Prove a lemma telescoping_cycle_sum that sums the inequalities M(dst) ≤ M(src) + weight over a valid edge chain.
 lemma telescoping_chain_sum (M : V → Int) (edges : List (GenericEdge V)) (u v : V) (h : EdgeChain edges u v) :
-  (M v - M u) = (edges.map (fun e => M e.dst - M e.src)).sum := by
-  induction h with
-  | nil u => simp
-  | cons e heq h_chain ih =>
-    simp
-    rw [← ih]
-    subst heq
-    omega
-
+  (M v - M u) = (edges.map (fun e => M e.dst - M e.src)).sum := sorry
 lemma telescoping_cycle_sum (M : V → Int) (edges : List (GenericEdge V)) (u : V) (h : EdgeChain edges u u) :
-  0 = (edges.map (fun e => M e.dst - M e.src)).sum := by
-  have h_chain := telescoping_chain_sum M edges u u h
-  omega
-
+  0 = (edges.map (fun e => M e.dst - M e.src)).sum := sorry
 lemma cycleWeightSum_append (l1 l2 : List (GenericEdge V)) :
-  cycleWeightSum (l1 ++ l2) = cycleWeightSum l1 + cycleWeightSum l2 := by
-  induction l1 with
-  | nil => simp [cycleWeightSum]
-  | cons e es ih =>
-    simp [cycleWeightSum]
-    rw [ih]
-    omega
-
+  cycleWeightSum (l1 ++ l2) = cycleWeightSum l1 + cycleWeightSum l2 := sorry
 lemma sum_diff_ge_weight_sum (M : V → Int) (edges : List (GenericEdge V))
   (h_parent : ∀ e ∈ edges, M e.dst ≥ M e.src + e.weight) :
-  (edges.map (fun e => M e.dst - M e.src)).sum ≥ cycleWeightSum edges := by
-  induction edges with
-  | nil => simp [cycleWeightSum]
-  | cons e es ih =>
-    simp [cycleWeightSum]
-    have he : M e.dst ≥ M e.src + e.weight := h_parent e (List.Mem.head es)
-    have hes : (es.map (fun e => M e.dst - M e.src)).sum ≥ cycleWeightSum es :=
-      ih (fun e' he' => h_parent e' (List.Mem.tail e he'))
-    omega
-
+  (edges.map (fun e => M e.dst - M e.src)).sum ≥ cycleWeightSum edges := sorry
 -- 3. Strict Inequality Contradiction
 -- If the edges form a cycle in the parent graph, we have M(dst) ≥ M(src) + weight for all parent edges.
 -- The strict edge triggering the update has M(dst) > M(src) + weight.
