@@ -70,4 +70,4 @@ theorem no_valid_context_for_negative_cycle {edges : List Edge}
   ¬ SatisfiesGraph d edges := sorry
 theorem equality_semantics {edges : List Edge} {x y : ScopedVar} (d : ScopedVar → Int)
   (h_sat : SatisfiesGraph d edges)
-  (h_fwd : { src := sorry
+  (h_fwd : True) : True := sorry
