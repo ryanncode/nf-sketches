@@ -35,6 +35,8 @@ inductive Atomic where
   | qpair : Var → Var → Var → Atomic -- p = <x, y>_Q
   | qproj1 : Var → Var → Atomic      -- z = π_1(p)
   | qproj2 : Var → Var → Atomic      -- z = π_2(p)
+  | app : Var → Var → Var → Atomic   -- z = u(v)
+  | lam : Var → Var → Var → Atomic   -- z = \lambda x. t
   deriving Repr, DecidableEq
 
 /--
@@ -90,6 +92,18 @@ def extractConstraintsAux (scope : Nat) : Formula → List Constraint
   | Formula.atom (Atomic.qproj2 z p) =>
       -- z = π_2(p). Directed 0-weight edge from p to z.
       [{ v1 := (p, scope), v2 := (z, scope), diff := 0, directed := true }]
+  | Formula.atom (Atomic.app z u v) =>
+      -- z = u(v)
+      -- For U(V) at type n, generate a 0-weight edge between vertex U(V) and vertex V.
+      -- For the application rule (U at n+1, V at n), insert a directed edge from V to U with a weight of 1.
+      [{ v1 := (v, scope), v2 := (z, scope), diff := 0 },
+       { v1 := (v, scope), v2 := (u, scope), diff := 1, directed := true }]
+  | Formula.atom (Atomic.lam z x t) =>
+      -- z = \lambda x. t
+      -- For \lambda x.T at type n, generate a 0-weight edge between vertex x and vertex T.
+      -- For the abstraction rule (\lambda x.T at n, x at n-1), insert a directed edge from x to the composite vertex \lambda x.T with a weight of 1.
+      [{ v1 := (x, scope), v2 := (t, scope), diff := 0 },
+       { v1 := (x, scope), v2 := (z, scope), diff := 1, directed := true }]
   | Formula.neg p => extractConstraintsAux scope p
   | Formula.conj p q => extractConstraintsAux scope p ++ extractConstraintsAux scope q
   | Formula.disj p q => extractConstraintsAux scope p ++ extractConstraintsAux scope q
@@ -208,6 +222,8 @@ def getFormulaVarsAux (scope : Nat) : Formula → List ScopedVar
   | Formula.atom (Atomic.qpair p x y) => [(p, scope), (x, scope), (y, scope)]
   | Formula.atom (Atomic.qproj1 z p) => [(z, scope), (p, scope)]
   | Formula.atom (Atomic.qproj2 z p) => [(z, scope), (p, scope)]
+  | Formula.atom (Atomic.app z u v) => [(z, scope), (u, scope), (v, scope)]
+  | Formula.atom (Atomic.lam z x t) => [(z, scope), (x, scope), (t, scope)]
   | Formula.neg p => getFormulaVarsAux scope p
   | Formula.conj p q => getFormulaVarsAux scope p ++ getFormulaVarsAux scope q
   | Formula.disj p q => getFormulaVarsAux scope p ++ getFormulaVarsAux scope q
