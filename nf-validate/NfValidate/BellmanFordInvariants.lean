@@ -1,6 +1,10 @@
 import NfValidate
 import NfValidate.GraphSemantics
 
+/--
+  Proves that looking up a key `k` in an association list after updating it with value `v`
+  returns the updated value `v`.
+-/
 theorem lookup_update_eq (l : List (ScopedVar × Int)) (k : ScopedVar) (v : Int) :
   lookup (update l k v) k = v := by
   induction l with
@@ -16,6 +20,10 @@ theorem lookup_update_eq (l : List (ScopedVar × Int)) (k : ScopedVar) (v : Int)
     · unfold lookup
       simp [*]
 
+/--
+  Proves that looking up a key `k'` in an association list after updating a distinct key `k`
+  returns the original value of `k'` from the list.
+-/
 theorem lookup_update_neq (l : List (ScopedVar × Int)) (k k' : ScopedVar) (v : Int) (h_neq : k ≠ k') :
   lookup (update l k v) k' = lookup l k' := by
   induction l with
@@ -49,6 +57,10 @@ theorem lookup_update_neq (l : List (ScopedVar × Int)) (k k' : ScopedVar) (v : 
       · next heq3 => rfl
       · next hneq3 => exact ih
 
+/--
+  Proves that updating a distance map with a value `v` that is less than or equal to
+  the current value at key `k` preserves or decreases the distance for any key `x`.
+-/
 theorem lookup_update_le (l : List (ScopedVar × Int)) (k : ScopedVar) (v : Int) (x : ScopedVar) (h : v ≤ lookup l k) :
   lookup (update l k v) x ≤ lookup l x := by
   induction l with
@@ -87,6 +99,11 @@ theorem lookup_update_le (l : List (ScopedVar × Int)) (k : ScopedVar) (v : Int)
         simp [*] at h
         exact ih h
 
+/--
+  Proves that relaxing edges via `foldl` monotonically decreases distances.
+  For any vertex `v`, its distance after edge relaxations is less than or equal
+  to its distance before the relaxations.
+-/
 theorem relaxEdges_foldl_monotone (edges : List Edge) (dist : List (ScopedVar × Int)) (pred : List (ScopedVar × ScopedVar)) (changed : Bool) (v : ScopedVar) :
   lookup (edges.foldl (fun (accD, accP, changed) e =>
     let du := lookup accD e.src
@@ -111,12 +128,21 @@ theorem relaxEdges_foldl_monotone (edges : List Edge) (dist : List (ScopedVar ×
       have h1 := ih dist pred changed
       exact h1
 
+/--
+  Corollary of `relaxEdges_foldl_monotone`: executing a single full relaxation pass
+  over all edges monotonically decreases the distances.
+-/
 theorem relaxEdges_monotone (edges : List Edge) (dist : List (ScopedVar × Int)) (pred : List (ScopedVar × ScopedVar))
   (v : ScopedVar) :
   lookup (relaxEdges edges dist pred).1 v ≤ lookup dist v := by
   unfold relaxEdges
   exact relaxEdges_foldl_monotone edges dist pred false v
 
+/--
+  Proves that if the `changed` flag is `true` before folding over edges,
+  it will remain `true` after folding, regardless of whether any further
+  relaxations occur.
+-/
 theorem foldl_changed_true (edges : List Edge) (dist : List (ScopedVar × Int)) (pred : List (ScopedVar × ScopedVar)) :
   (edges.foldl (fun (accD, accP, changed) e =>
     let du := lookup accD e.src
@@ -134,7 +160,12 @@ theorem foldl_changed_true (edges : List Edge) (dist : List (ScopedVar × Int)) 
     · next hlt => exact ih _ _
     · next hge => exact ih _ _
 
-theorem foldl_false_dist_eq (edges : List Edge) (dist : List (ScopedVar × Int)) (pred : List (ScopedVar × ScopedVar)) (changed : Bool) :
+/--
+  If a single pass of Bellman-Ford edge relaxations results in no changes
+  (indicated by the `changed` boolean remaining `false`), then the resulting
+  distance map is strictly equal to the input distance map.
+-/
+theorem foldl_false_dist_eq (edges : List Edge) (dist : List (ScopedVar × Int)) (pred : List (ScopedVar × ScopedVar)) :
   (edges.foldl (fun (accD, accP, changed) e =>
     let du := lookup accD e.src
     let dv := lookup accD e.dst
@@ -166,7 +197,12 @@ theorem foldl_false_dist_eq (edges : List Edge) (dist : List (ScopedVar × Int))
       simp [hge]
       exact ih dist pred h
 
-theorem relaxEdges_foldl_converged (edges : List Edge) (dist : List (ScopedVar × Int)) (pred : List (ScopedVar × ScopedVar)) (changed : Bool) :
+/--
+  If a single pass of Bellman-Ford edge relaxations results in no changes
+  (indicated by the `changed` boolean remaining `false`), then all edges
+  satisfy the triangle inequality constraint: `dist[v] <= dist[u] + weight(u, v)`.
+-/
+theorem relaxEdges_foldl_converged (edges : List Edge) (dist : List (ScopedVar × Int)) (pred : List (ScopedVar × ScopedVar)) :
   (edges.foldl (fun (accD, accP, changed) e =>
     let du := lookup accD e.src
     let dv := lookup accD e.dst
@@ -194,10 +230,15 @@ theorem relaxEdges_foldl_converged (edges : List Edge) (dist : List (ScopedVar �
       | inr hin =>
         exact ih dist pred h hin
 
+/--
+  Corollary of `relaxEdges_foldl_converged`: if a full call to `relaxEdges`
+  returns `changed = false`, then every edge in the graph satisfies the triangle
+  inequality, meaning the shortest paths have converged.
+-/
 theorem relaxEdges_converged (edges : List Edge) (dist : List (ScopedVar × Int)) (pred : List (ScopedVar × ScopedVar)) :
   (relaxEdges edges dist pred).2.2 = false → ∀ e ∈ edges, lookup (relaxEdges edges dist pred).1 e.dst ≤ lookup (relaxEdges edges dist pred).1 e.src + e.weight := by
   intro h e he
   unfold relaxEdges at h ⊢
-  have h_eq := foldl_false_dist_eq edges dist pred false h
+  have h_eq := foldl_false_dist_eq edges dist pred h
   rw [h_eq]
-  exact relaxEdges_foldl_converged edges dist pred false h e he
+  exact relaxEdges_foldl_converged edges dist pred h e he

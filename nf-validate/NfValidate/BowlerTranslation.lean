@@ -78,12 +78,24 @@ def acyclicUnion (scope : Nat) (x a b : Var) : Formula :=
 -- 6. Acyclic Graph Flattening
 -- Identifies Harmless Cycles via O(V+E) Kosaraju's SCC on 0-weight edges.
 
+/--
+  Retrieves the forward neighbors of a vertex `u` by filtering edges where `u` is the source
+  and the edge weight is exactly 0. This restricts traversal to "same-level" structural equivalences.
+-/
 def getNeighbors (edges : List Edge) (u : ScopedVar) : List ScopedVar :=
   edges.filter (fun e => e.src == u && e.weight == 0) |>.map (fun e => e.dst)
 
+/--
+  Retrieves the backward (reversed) neighbors of a vertex `u` by filtering edges where `u` is the destination
+  and the edge weight is exactly 0. Used for the second pass of Kosaraju's algorithm.
+-/
 def getReverseNeighbors (edges : List Edge) (u : ScopedVar) : List ScopedVar :=
   edges.filter (fun e => e.dst == u && e.weight == 0) |>.map (fun e => e.src)
 
+/--
+  Performs the first pass (forward DFS) of Kosaraju's algorithm to compute the finish times of vertices.
+  Returns a tuple containing the updated `visited` list and the `stack` of vertices ordered by finish time.
+-/
 partial def dfsForward (edges : List Edge) (u : ScopedVar) (visited : List ScopedVar) (stack : List ScopedVar) : List ScopedVar × List ScopedVar :=
   if visited.contains u then (visited, stack)
   else
@@ -93,6 +105,10 @@ partial def dfsForward (edges : List Edge) (u : ScopedVar) (visited : List Scope
     ) (u :: visited, stack)
     (v_after, u :: s_after)
 
+/--
+  Performs the second pass (backward DFS) of Kosaraju's algorithm on the transposed graph.
+  Extracts all vertices reachable from the start node, forming a Strongly Connected Component (SCC).
+-/
 partial def dfsBackward (edges : List Edge) (u : ScopedVar) (visited : List ScopedVar) (component : List ScopedVar) : List ScopedVar × List ScopedVar :=
   if visited.contains u then (visited, component)
   else
@@ -102,6 +118,11 @@ partial def dfsBackward (edges : List Edge) (u : ScopedVar) (visited : List Scop
     ) (u :: visited, u :: component)
     (v_after, c_after)
 
+/--
+  Finds all Strongly Connected Components (SCCs) connected by 0-weight edges using Kosaraju's two-pass algorithm.
+  Filters out trivial components (length 1) to return only the "Harmless Cycles" where variables
+  must be collapsed/fused to restore an acyclic DAG.
+-/
 def findSCCs (vars : List ScopedVar) (edges : List Edge) : List (List ScopedVar) :=
   let (_, stack) := vars.foldl (fun (v_acc, s_acc) v =>
     dfsForward edges v v_acc s_acc
@@ -115,6 +136,11 @@ def findSCCs (vars : List ScopedVar) (edges : List Edge) : List (List ScopedVar)
   ) ([], [])
   sccs.filter (fun c => c.length > 1)
 
+/--
+  Given a variable `v` in a specific `scope`, checks if it belongs to a harmless cycle (SCC).
+  If it does, it returns the canonical representative of that SCC (the first element).
+  If `v` is already the canonical element or isn't in an SCC, it returns `none`.
+-/
 def expandVar (sccs : List (List ScopedVar)) (v : Var) (scope : Nat) : Option Var :=
   let sv := (v, scope)
   let matchingSCC := sccs.find? (fun c => c.contains sv)
@@ -122,6 +148,11 @@ def expandVar (sccs : List (List ScopedVar)) (v : Var) (scope : Nat) : Option Va
   | some (canonical :: _) => if canonical.1 != v then some canonical.1 else none
   | _ => none
 
+/--
+  Syntactically injects an existential projection to fuse cyclical variables.
+  It generates a fresh variable, binds it via an existential (represented cleanly here as negated universal),
+  and constrains it using `isProj1` so the logic engine treats it as functionally collapsed.
+-/
 def injectProjection (scope : Nat) (p : Var) (seed : Nat) (inner : Var → Formula) : Formula :=
   let v_fresh := freshVar "fused" seed
   let proj := isProj1 scope v_fresh p
@@ -131,6 +162,11 @@ def injectProjection (scope : Nat) (p : Var) (seed : Nat) (inner : Var → Formu
   let or_expr := Formula.disj (Formula.neg proj) (Formula.neg inner_f)
   Formula.neg (Formula.univ (scope + 1) s!"fused_{seed}" or_expr)
 
+/--
+  A combinator that determines whether a variable needs to be wrapped in a fusion projection.
+  If the variable is in an SCC (`ev = some pv`), it generates the nested projection closure.
+  Returns the bound variable to use, the updated seed for name generation, and the closure wrapper.
+-/
 def wrapProj (scope : Nat) (seed : Nat) (v : Var) (ev : Option Var) : (Var × Nat × (Formula → Formula)) :=
   match ev with
   | none => (v, seed, id)
@@ -138,7 +174,14 @@ def wrapProj (scope : Nat) (seed : Nat) (v : Var) (ev : Option Var) : (Var × Na
       let fv := freshVar "fused" seed
       (fv, seed + 1, fun inner => injectProjection scope pv seed (fun _ => inner))
 
+/--
+  Recursively traverses the Abstract Syntax Tree (AST) of the formula.
+  At each atomic proposition, it checks if the associated variables belong to an SCC
+  (a zero-weight semantic cycle). If they do, it structurally rewrites the formula
+  by dynamically fusing those variables via `wrapProj` constraints.
+-/
 def flattenGraphAux (sccs : List (List ScopedVar)) : Nat → Nat → Formula → Formula × Nat
+
   | scope, seed, Formula.atom (Atomic.eq x y) =>
       let (rx, s1, wx) := wrapProj scope seed x (expandVar sccs x scope)
       let (ry, s2, wy) := wrapProj scope s1 y (expandVar sccs y scope)

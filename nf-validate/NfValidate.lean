@@ -64,9 +64,10 @@ def Formula.mem (x y : Var) : Formula := Formula.atom (Atomic.mem x y)
 -- 2. CONSTRAINT GENERATION
 --------------------------------------------------------------------------------
 -- Converts atomic formulas into numerical constraints for the Bellman-Ford graph.
--- Note: This currently extracts constraints globally across the entire formula,
--- establishing the baseline of strict global stratification. Future iterations
--- aiming for weak stratification will need to partition this by binding scope.
+-- Crucially, these constraints are tagged with their lexical scope (binding depth),
+-- allowing the evaluation engine to partition the constraint graph by scope.
+-- This partitioning formally implements Weak Stratification, isolating
+-- disjoint logical subformulas from interfering with one another's type assignments.
 
 abbrev ScopedVar := Var × Nat
 
@@ -623,59 +624,82 @@ def checkStrat (f : Formula) : Option StratificationWitness :=
   | StratificationResult.success w => some w
   | StratificationResult.failure _ _ => none
 
-def formatDetailedCycle (cycle : List ScopedVar) (edges : List Edge) : String :=
-  let rec formatEdges (cvars : List ScopedVar) : String :=
-    match cvars with
-    | [] => ""
-    | [v] => s!"{reprStr v}"
-    | u :: v :: rest =>
-        -- Bellman-Ford traverses the shortest path, so we must extract the minimum weight edge
-        let candidateEdges := edges.filter (fun e => e.src == u && e.dst == v)
-        let edge := candidateEdges.foldl (fun minOpt e =>
-          match minOpt with
-          | none => some e
-          | some min_e => if e.weight < min_e.weight then some e else some min_e
-        ) (none : Option Edge)
+def scopedVarToString (sv : ScopedVar) : String :=
+  let (v, scope) := sv
+  let vStr := match v with
+    | Var.free s => s
+    | Var.bound n => s!"_{n}"
+  s!"{vStr}@{scope}"
 
-        let weightStr := match edge with
-                         | some e => s!" --({e.weight})--> "
-                         | none => " --(?)--> "
-        s!"{reprStr u}{weightStr}" ++ formatEdges (v :: rest)
-  formatEdges cycle
+def cycleToPairs (c : List ScopedVar) : List (ScopedVar × ScopedVar) :=
+  let rec go (lst : List ScopedVar) : List (ScopedVar × ScopedVar) :=
+    match lst with
+    | [] => []
+    | [_] => []
+    | x :: y :: rest => (x, y) :: go (y :: rest)
+  match c with
+  | [] => []
+  | [x] => [(x, x)]
+  | lst => go lst
+
+def findWeight (src dst : ScopedVar) (edges : List Edge) : Int :=
+  let candidateEdges := edges.filter (fun e => e.src == src && e.dst == dst)
+  let edge := candidateEdges.foldl (fun minOpt e =>
+    match minOpt with
+    | none => some e
+    | some min_e => if e.weight < min_e.weight then some e else some min_e
+  ) (none : Option Edge)
+  match edge with
+  | some e => e.weight
+  | none => 0
+
+def formatDetailedCycle (c : List ScopedVar) (edges : List Edge) : String :=
+  let pairs := cycleToPairs c
+  let pathStrings := pairs.map (fun (src, dst) =>
+    let w := findWeight src dst edges
+    if w == 1 then s!"{scopedVarToString src} ∈ {scopedVarToString dst} (+1)"
+    else if w == 0 then s!"{scopedVarToString src} = {scopedVarToString dst} (0)"
+    else s!"{scopedVarToString dst} ∈ {scopedVarToString src} (-1)"
+  )
+  let pathStr := String.intercalate " → " pathStrings
+  if pairs.length > 0 then
+    let startVar := match c with | x :: _ => x | [] => (Var.bound 0, 0)
+    let totalWeight := pairs.foldl (fun acc (s, d) => acc + findWeight s d edges) 0
+    let req := s!"l({scopedVarToString startVar}) = l({scopedVarToString startVar}) + {totalWeight}"
+    s!"Contradiction Path: {pathStr}\n  Requires {req}"
+  else
+    pathStr
 
 /--
 The structural definition of the set of Natural Numbers (Frege-Russell cardinality).
-N = {n | ∀s. (0 ∈ s ∧ (∀x. x ∈ s → x + 1 ∈ s)) → n ∈ s}
-We simplify it to a formula testing NFI/NFP bounds:
+$N = \{n \mid \forall s. (0 \in s \land (\forall x. x \in s \to x + 1 \in s)) \to n \in s\}$
+
+We simplify this to a formula testing NFI/NFP bounds by approximating the impredicative collision:
 A set `n` is in `N` if it belongs to all inductive sets `s`.
-phi_N: ∀s (Inductive(s) → n ∈ s)
-Inductive(s): 0 ∈ s ∧ (∀x. x ∈ s → x+1 ∈ s)
+$\phi_N : \forall s. (\text{Inductive}(s) \to n \in s)$
+
 For our diagnostic, the type collision happens because `s` is quantified over
 and `n` (the element we are defining `N` for) belongs to `s`.
-In `n ∈ s`, `s` must be at type `type(n) + 1`.
+In `n ∈ s`, `s` must be at type $\text{type}(n) + 1$.
 But `s` is an inductive set of numbers, so it's a set of sets (like `N` itself).
-We can approximate this with:
-phi_N = ∀s (n ∈ s)
-where `n` is `Var.bound 0` (the base element), and `s` is `Var.bound 1`.
-Wait, we need the formula for the benchmark.
-Let's use a standard approximation of the impredicative collision:
-phi_N = Formula.univ 0 "s" (Formula.impl (Formula.mem (Var.free "0") (Var.bound 0)) (Formula.mem (Var.bound 1) (Var.bound 0)))
-Wait, inside univ "s", `s` is `Var.bound 0`, and the base element `n` is `Var.bound 1`.
-So:
-Inductive(s) = Formula.mem (Var.free "zero") (Var.bound 0)
-phi_N = Formula.univ 0 "s" (Formula.impl (Formula.mem (Var.free "zero") (Var.bound 0)) (Formula.mem (Var.bound 1) (Var.bound 0)))
-Let's see the type assignments:
-`Var.bound 0` (s) has type `t`.
-`Var.free "zero"` has type `t - 1`.
-`Var.bound 1` (n, the base element) has type `t - 1`.
-So `s` has type `t`, `n` has type `t - 1`.
+
+We approximate this structurally as:
+$\phi_N = \forall s. (n \in s)$
+
+Type Assignments:
+* `Var.bound 0` (s) has type `t`.
+* `Var.free "zero"` has type `t - 1`.
+* `Var.bound 1` (n, the base element) has type `t - 1`.
+
 This means `s` is one level higher than `n`.
 The base element is `Var.bound 1` (n), with weight `t - 1`.
 The internal variable `s` (Var.bound 0) has weight `t`.
 Since `t = (t - 1) + 1`, `s` has weight exactly `baseWeight + 1`.
-In NFI, `s` (weight `t`) <= `baseWeight + 1`, which is `t - 1 + 1 = t`. This passes!
-In NFP, `s` is a bound variable. NFP requires `bound_weight <= baseWeight`. So `t <= t - 1`, which fails!
-Let's run this diagnostic!
+
+* **In NFI**: `s` (weight `t`) $\leq$ `baseWeight + 1`, which is `t - 1 + 1 = t`. This **passes**!
+* **In NFP**: `s` is a bound variable. NFP requires `bound_weight <= baseWeight`. So `t <= t - 1`, which **fails**!
+
+This formula is used to computationally distinguish between predicative and impredicative typing rules.
 -/
 def phi_N : Formula :=
   Formula.univ 1 "s" (
@@ -683,7 +707,7 @@ def phi_N : Formula :=
   )
 
 def nfMain : IO Unit := do
-  IO.println "Running Phase 3.1 & 3.3 Diagnostics (NFI vs NFP)"
+  IO.println "Running NFI vs NFP Diagnostics"
   match checkStrat phi_N with
   | some w =>
       IO.println "Stratification Successful (General Weak Stratification)."

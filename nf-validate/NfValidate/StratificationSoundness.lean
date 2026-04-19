@@ -8,12 +8,36 @@ import NfValidate.BowlerTranslation
 
 /-!
 # Stratification Soundness: Bridging Geometry and Syntax
+
+This file provides the final capstone theorems linking the geometric
+Bellman-Ford algorithms back to the syntactic type-shifting rules of
+New Foundations (NF) Set Theory.
+
+It defines the formal specification of `IsStratified` and proves that
+a successful output from the diagnostic engine (`evaluateStratification`)
+guarantees the logical soundness of the input formula.
 -/
 
+/--
+Retrieves the integer weight of a scoped variable from a constructed
+`StratificationWitness` environment.
+-/
 def lookupWitness (w : StratificationWitness) (v : ScopedVar) : Int :=
   lookupVarWeight (lookupScope w v.2) v.1
 
+/--
+`IsStratifiedAux s f ctx` formally defines the exact type-shifting requirements
+of NF Set Theory over an abstract syntax tree `f` at scope level `s`,
+given a type assignment context `ctx`.
+
+Key requirements:
+* `x = y`   -> `type(x) = type(y)`
+* `x ∈ y`   -> `type(x) + 1 = type(y)`
+* Functions / Pairs require structural boundary bounds linking
+  the internal elements back to the abstracted interface types.
+-/
 inductive IsStratifiedAux : Nat → Formula → (ScopedVar → Int) → Prop where
+
   | eq (s : Nat) (x y : Var) (ctx : ScopedVar → Int)
       (h : ctx (x, s) = ctx (y, s)) : IsStratifiedAux s (Formula.atom (Atomic.eq x y)) ctx
   | mem (s : Nat) (x y : Var) (ctx : ScopedVar → Int)
@@ -41,9 +65,16 @@ inductive IsStratifiedAux : Nat → Formula → (ScopedVar → Int) → Prop whe
   | comp (s n : Nat) (name : String) (f : Formula) (ctx : ScopedVar → Int)
       (h : IsStratifiedAux n f ctx) : IsStratifiedAux s (Formula.comp n name f) ctx
 
+/--
+The top-level evaluation of a formula's stratification, executed at
+the base quantifier scope (`0`).
+-/
 def IsStratified (f : Formula) (ctx : ScopedVar → Int) : Prop :=
   IsStratifiedAux 0 f ctx
 
+/--
+Extracts explicit directed edge definitions for equivalence bounds (`x = y`).
+-/
 theorem extractConstraints_eq (x y : Var) (s : Nat) :
   { v1 := (x, s), v2 := (y, s), diff := 0, directed := false } ∈ extractConstraintsAux s (Formula.atom (Atomic.eq x y)) := by
   simp [extractConstraintsAux]
@@ -110,6 +141,9 @@ theorem stratified_eq_of_bounds (x y : Var) (s : Nat) (ctx : ScopedVar → Int)
   apply IsStratifiedAux.eq
   omega
 
+/--
+Structural mapping proving `x ∈ y` bounds deduce to the geometric weight constraint `1`.
+-/
 theorem stratified_mem_of_bounds (x y : Var) (s : Nat) (ctx : ScopedVar → Int)
   (edges : List Edge)
   (h_sat : SatisfiesGraph ctx edges)
@@ -123,6 +157,15 @@ theorem stratified_mem_of_bounds (x y : Var) (s : Nat) (ctx : ScopedVar → Int)
   apply IsStratifiedAux.mem
   omega
 
+/--
+**The Foundational Bridge Theorem**:
+Proves that if a geometric distance map `d` successfully satisfies the directed edge
+graph generated from compiling the abstract syntax tree `f`, then the type map `d`
+is guaranteed to perfectly satisfy the logical typing rules of Quine's NF stratification.
+
+This relies on induction across the AST structure, mapping each geometric subgraph
+evaluator back to the semantic boundary definitions of `IsStratifiedAux`.
+-/
 theorem stratified_of_satisfies (s : Nat) (f : Formula) (d : ScopedVar → Int)
   (h_sat : SatisfiesGraph d (buildEdges (extractConstraintsAux s f))) :
   IsStratifiedAux s f d := by
@@ -220,6 +263,10 @@ theorem stratified_of_satisfies (s : Nat) (f : Formula) (d : ScopedVar → Int)
     apply ih
     exact h_sat
 
+/--
+If an AST node generates absolutely no scoped variables, then compiling it
+will generate an identically empty set of geometric constraints.
+-/
 theorem vars_empty_implies_constraints_empty (s : Nat) (f : Formula) :
   getFormulaVarsAux s f = [] → extractConstraintsAux s f = [] := by
   induction f generalizing s with
@@ -241,6 +288,10 @@ theorem vars_empty_implies_constraints_empty (s : Nat) (f : Formula) :
   | univ n name p ih => simp [getFormulaVarsAux, extractConstraintsAux]; exact ih n
   | comp n name p ih => simp [getFormulaVarsAux, extractConstraintsAux]; exact ih n
 
+/--
+Evaluating a localized disjoint clause accurately translates the result to geometric graph satisfiability,
+guaranteeing no false positives on negative cycle detection.
+-/
 theorem evaluateClause_general_sound (vars : List ScopedVar) (constraints : List Constraint) (M : List (ScopedVar × Int))
   (h_vars_cons : vars = [] → constraints = [])
   (h_eval : evaluateClause vars constraints = Except.ok M) :
@@ -281,7 +332,7 @@ theorem evaluateClause_general_sound (vars : List ScopedVar) (constraints : List
           have h_foldl : (relaxEdges (buildEdges constraints) finalDist finalPred).2.2 = false := by
             rw [h2]
             exact h_not_hasCycle_bool
-          have h_eq2 := foldl_false_dist_eq (buildEdges constraints) finalDist finalPred false h_foldl
+          have h_eq2 := foldl_false_dist_eq (buildEdges constraints) finalDist finalPred h_foldl
           have h_relax : (relaxEdges (buildEdges constraints) finalDist finalPred).1 = fst := by rw [h2]
           unfold relaxEdges at h_relax
           rw [h_relax] at h_eq2
@@ -297,17 +348,18 @@ theorem evaluateClause_general_sound (vars : List ScopedVar) (constraints : List
           · next => contradiction
           · next => contradiction
 
+set_option linter.unnecessarySeqFocus false in
 theorem extractConstraintsAux_scope_parity (s : Nat) (f : Formula) (c : Constraint)
   (h_in : c ∈ extractConstraintsAux s f) :
   c.v1.2 = c.v2.2 := by
   induction f generalizing s with
   | atom a =>
     cases a <;> simp [extractConstraintsAux] at h_in
+    · (rcases h_in with rfl | rfl; rfl)
+    · (rcases h_in with rfl | rfl; rfl)
     · rcases h_in with rfl | rfl <;> rfl
-    · rcases h_in with rfl | rfl <;> rfl
-    · rcases h_in with rfl | rfl <;> rfl
-    · rcases h_in with rfl <;> rfl
-    · rcases h_in with rfl <;> rfl
+    · (rcases h_in with rfl; rfl)
+    · (rcases h_in with rfl; rfl)
     · rcases h_in with rfl | rfl <;> rfl
     · rcases h_in with rfl | rfl <;> rfl
   | neg p ih =>
@@ -708,15 +760,13 @@ theorem nodup_nub {α : Type} [DecidableEq α] (l : List α) : List.Nodup (nub l
         intro h_in
         have := List.contains_iff_mem.mpr h_in
         rw [this] at h; contradiction
-      change List.Nodup (if false then tl.foldr (fun x acc => if acc.contains x then acc else x :: acc) [] else hd :: tl.foldr (fun x acc => if acc.contains x then acc else x :: acc) [])
       dsimp
       constructor
       · intro a' ha' heq
         subst heq
         exact h_not_in ha'
       · exact ih
-    · change List.Nodup (if true then tl.foldr (fun x acc => if acc.contains x then acc else x :: acc) [] else hd :: tl.foldr (fun x acc => if acc.contains x then acc else x :: acc) [])
-      dsimp
+    · dsimp
       exact ih
 
 
@@ -850,7 +900,7 @@ theorem satisfies_all_scopes (cs : List Constraint) (d : ScopedVar → Int)
   have ⟨c, hc, he_c⟩ := mem_buildEdges_filter cs e he
   exact h_sat c hc e he_c
 
-theorem relaxEdges_preserves_scope (edges : List Edge) (dist : List (ScopedVar × Int)) (pred : List (ScopedVar × ScopedVar)) (changed : Bool) (s : Nat)
+theorem relaxEdges_preserves_scope (edges : List Edge) (dist : List (ScopedVar × Int)) (pred : List (ScopedVar × ScopedVar)) (s : Nat)
   (h_dist : ∀ x ∈ dist, x.1.2 = s)
   (h_edges : ∀ e ∈ edges, e.dst.2 = s) :
   ∀ x ∈ (relaxEdges edges dist pred).1, x.1.2 = s := by
@@ -887,7 +937,7 @@ theorem loop_preserves_scope (n : Nat) (edges : List Edge) (dist : List (ScopedV
         apply ih
         have h_relax_dist : dist' = (relaxEdges edges dist pred).1 := by rw [h_relax]
         subst h_relax_dist
-        exact relaxEdges_preserves_scope edges dist pred false s h_dist h_edges
+        exact relaxEdges_preserves_scope edges dist pred s h_dist h_edges
       · have h_not_changed : (!changed) = true := by
           cases changed
           · rfl
@@ -896,7 +946,7 @@ theorem loop_preserves_scope (n : Nat) (edges : List Edge) (dist : List (ScopedV
         dsimp
         have h_relax_dist : dist' = (relaxEdges edges dist pred).1 := by rw [h_relax]
         subst h_relax_dist
-        exact relaxEdges_preserves_scope edges dist pred false s h_dist h_edges
+        exact relaxEdges_preserves_scope edges dist pred s h_dist h_edges
 
 theorem evaluateClause_preserves_scope (vars : List ScopedVar) (constraints : List Constraint) (dist : List (ScopedVar × Int)) (s : Nat)
   (h_vars : ∀ v ∈ vars, v.2 = s)
@@ -944,11 +994,11 @@ theorem extractConstraintsAux_v1_mem (s : Nat) (f : Formula) (c : Constraint)
   induction f generalizing s with
   | atom a =>
     cases a <;> simp [extractConstraintsAux, getFormulaVarsAux] at h_in ⊢
+    · (rcases h_in with rfl | rfl; simp)
+    · (rcases h_in with rfl | rfl; simp)
     · rcases h_in with rfl | rfl <;> simp
-    · rcases h_in with rfl | rfl <;> simp
-    · rcases h_in with rfl | rfl <;> simp
-    · rcases h_in with rfl <;> simp
-    · rcases h_in with rfl <;> simp
+    · (rcases h_in with rfl; simp)
+    · (rcases h_in with rfl; simp)
     · rcases h_in with rfl | rfl <;> simp
     · rcases h_in with rfl | rfl <;> simp
   | neg p ih =>
@@ -973,6 +1023,12 @@ theorem extractConstraintsAux_v1_mem (s : Nat) (f : Formula) (c : Constraint)
   | comp n name p ih =>
     exact ih n h_in
 
+/--
+The capstone proof bridging disjoint subgraph verification.
+By executing the Bellman-Ford detector across isolated, localized quantifier scopes
+independently (`evaluateClausePartitioned`), we synthesize a unified logical witness
+that completely satisfies the overarching geometric bounds without leaking scope bindings.
+-/
 theorem evaluateClausePartitioned_sound (f : Formula) (w : StratificationWitness)
   (h_eval : evaluateClausePartitioned (getFormulaVars f) (extractConstraintsAux 0 f) = StratificationResult.success w) :
   SatisfiesGraph (lookupWitness w) (buildEdges (extractConstraintsAux 0 f)) := by
@@ -1030,6 +1086,15 @@ theorem evaluateClausePartitioned_sound (f : Formula) (w : StratificationWitness
       exact extractConstraintsAux_scope_parity 0 f c' hc')
   exact satisfies_of_mem_filter (extractConstraintsAux 0 f) _ c h_sat_s_full hc
 
+/--
+**THE MASTER SOUNDNESS THEOREM**
+
+This is the ultimate capstone of the logical engine. It mechanically proves that
+if the programmatic `evaluateStratification` engine returns `success w`
+for an abstract syntax tree `f`, then the returned witness `w` serves as a rigorous
+constructive mathematical proof that `f` is logically sound and completely adheres
+to the strict typing stratifications of Quine's New Foundations.
+-/
 theorem stratification_sound (f : Formula) (w : StratificationWitness)
   (h_eval : evaluateStratification f = StratificationResult.success w) :
   IsStratified f (lookupWitness w) := by

@@ -41,15 +41,17 @@ This project formalizes the structural proof theory required to navigate the com
 * **Sabotaging Normalization:** The diagnostic engine (`reduceCut`) executes canonical failure pathways (such as the Impredicative Singleton). Rather than building a traditional normalizer to smooth out intermediate lemmas, this engine intentionally bypasses standard structural permutations to force logical detours directly into the `compL` rule.
 * **Theoretical Objective:** Marcel Crabbé proved that if a system restricts itself exclusively to strictly stratifiable terms, the set of terms loses closure under substitution, causing the Hauptsatz (cut-elimination) to fail trivially (Crabbé 1994). By simulating cuts that require substitution across a strictly stratified global graph, the program mechanically surfaces the exact topological contradictions that cause this grammatical breakdown.
 
-### Future Work
+### Extensionality Collisions vs. Strict Global Stratification
 
-#### Weak Stratification and Extensionality
+Early versions of this repository operated under **strict global stratification**, mechanically verifying Marcel Crabbé's observation that enforcing rigid global typing destroys structural closure under substitution, causing the Hauptsatz (cut-elimination) to fail trivially. 
 
-Advancing the engine to evaluate the true systemic paradoxes of New Foundations requires shifting the AST from strict global stratification to *weak stratification*. This entails partitioning the Bellman-Ford graph by binding scope, allowing local variables to be typed independently. Once substitution closure is restored, the `reduceCut` engine must be upgraded to push resolved cuts upward into an active *extensionality axiom*. It is the friction between dynamic local re-leveling and extensionality's rigid structural equivalence that produces the profound normalization breakdown of NF.
+However, evaluating the true, systemic paradoxes of New Foundations requires bypassing these trivial syntactic failures. The engine was consequently upgraded to evaluate **weak stratification**. By partitioning the Bellman-Ford graph by binding scope, local variables can be typed independently. Once dynamic local re-leveling restores substitution closure, the `reduceCut` diagnostic automatically pushes the resolved cuts upward into the active *Extensionality Axiom*. 
 
-#### `untyped-comb`: Untyped Combinators
+The engine currently demonstrates that it is precisely the violent friction between **dynamic local re-leveling** (weak stratification) and **Extensionality's rigid structural equivalence** ($x = y$) that generates the profound normalization breakdown of NF.
 
-Standard implementations of the λ-calculus or combinatory logic in Lean rely heavily on dependent type theory. A future module, `untyped-comb`, is planned to construct an untyped combinatory logic environment and introduce the specific syntactic operators required to make it functional under NF rules. This aims to provide a tangible step toward a Curry-Howard correspondence for stratified set theory.
+### Future Work: `untyped-comb` (Untyped Combinators)
+
+Standard implementations of the $\lambda$-calculus or combinatory logic in Lean rely heavily on dependent type theory. A future module, `untyped-comb`, is planned to construct an untyped combinatory logic environment and introduce the specific syntactic operators required to make it functional under NF rules. This aims to provide a tangible step toward a Curry-Howard correspondence for stratified set theory.
 
 ---
 

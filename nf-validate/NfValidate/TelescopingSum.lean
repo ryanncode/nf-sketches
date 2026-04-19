@@ -1,3 +1,5 @@
+import NfValidate.FintypeGraph
+
 /-
   TelescopingSum.lean
 
@@ -6,7 +8,6 @@
   telescope and mathematically isolate the negative weight guarantee. This approach completely
   side-steps model-theoretic approaches, relying purely on arithmetic contradiction.
 -/
-import NfValidate.FintypeGraph
 
 variable {V : Type}
 
@@ -71,6 +72,7 @@ lemma sum_diff_ge_weight_sum (M : V → Int) (edges : List (GenericEdge V))
     have h_parent_tail : ∀ e ∈ tail, M e.dst ≥ M e.src + e.weight := fun e he => h_parent e (List.Mem.tail head he)
     have ih' := ih h_parent_tail
     omega
+
 -- 3. Strict Inequality Contradiction
 -- If the edges form a cycle in the parent graph, we have M(dst) ≥ M(src) + weight for all parent edges.
 -- The strict edge triggering the update has M(dst) > M(src) + weight.
@@ -80,6 +82,7 @@ lemma sum_diff_ge_weight_sum (M : V → Int) (edges : List (GenericEdge V))
   where all other edges satisfy the parent bounds, the total cycle weight sum is strictly negative.
   This formalizes the core algebraic contradiction isolating the negative weight guarantee.
 -/
+
 lemma cycleWeightSum_negative_of_strict_ineq (M : V → Int) (pref suff : List (GenericEdge V)) (strict_e : GenericEdge V) (u : V)
   (h_chain : EdgeChain (pref ++ strict_e :: suff) u u)
   (h_parent_pref : ∀ e ∈ pref, M e.dst ≥ M e.src + e.weight)
