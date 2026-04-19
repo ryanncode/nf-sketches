@@ -620,9 +620,7 @@ def satisfiesNFP (w : StratificationWitness) : Bool :=
 
 def checkStrat (f : Formula) : Option StratificationWitness :=
   match evaluateFullFormula f with
-  | StratificationResult.success w =>
-      -- Natively enforce weak stratification limits (NFI)
-      if satisfiesNFI w then some w else none
+  | StratificationResult.success w => some w
   | StratificationResult.failure _ _ => none
 
 def formatDetailedCycle (cycle : List ScopedVar) (edges : List Edge) : String :=
