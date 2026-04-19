@@ -414,20 +414,21 @@ theorem filter_vars_eq_extractScope (f : Formula) (scope targetScope : Nat) :
     simp [getFormulaVarsAux, extractScopeVars]
     rw [ih]
 
+def evalScopes (vars : List ScopedVar) (constraints : List Constraint) (ss : List Nat) (accWitness : List (Nat × List (Var × Int))) : StratificationResult :=
+  match ss with
+  | [] => StratificationResult.success accWitness
+  | s :: rest =>
+    let sVars := vars.filter (fun v => v.2 == s)
+    let sConstraints := constraints.filter (fun c => c.v1.2 == s)
+    match evaluateClause sVars sConstraints with
+    | Except.ok dist =>
+        let scopeDist := dist.map (fun ⟨⟨v, _⟩, weight⟩ => (v, weight))
+        evalScopes vars constraints rest ((s, scopeDist) :: accWitness)
+    | Except.error (cycle, edges) => StratificationResult.failure cycle edges
+
 def evaluateClausePartitioned (vars : List ScopedVar) (constraints : List Constraint) : StratificationResult :=
   let scopes := nub (vars.map (fun v => v.2))
-  let rec evalScopes (ss : List Nat) (accWitness : List (Nat × List (Var × Int))) :=
-    match ss with
-    | [] => StratificationResult.success accWitness
-    | s :: rest =>
-      let sVars := vars.filter (fun v => v.2 == s)
-      let sConstraints := constraints.filter (fun c => c.v1.2 == s)
-      match evaluateClause sVars sConstraints with
-      | Except.ok dist =>
-          let scopeDist := dist.map (fun ⟨⟨v, _⟩, weight⟩ => (v, weight))
-          evalScopes rest ((s, scopeDist) :: accWitness)
-      | Except.error (cycle, edges) => StratificationResult.failure cycle edges
-  evalScopes scopes []
+  evalScopes vars constraints scopes []
 
 def evaluateStratification (f : Formula) : StratificationResult :=
   let constraints := extractConstraints f
