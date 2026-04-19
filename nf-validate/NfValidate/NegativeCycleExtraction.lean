@@ -14,7 +14,7 @@ import NfValidate.TelescopingSum
   This aligns with the mechanical validation philosophy of avoiding redundant iterative hierarchies.
 -/
 
-variable {V : Type} [Fintype V] [DecidableEq V]
+variable {V : Type}
 variable {edges : List (GenericEdge V)}
 
 def pathVertices {n : Nat} {u v : V} : BoundedPath edges n u v → Fin (n + 1) → V
@@ -30,7 +30,7 @@ def pathVertices {n : Nat} {u v : V} : BoundedPath edges n u v → Fin (n + 1) �
   By relying on the Pigeonhole Principle over finite types, this theorem bypasses
   dependent type deadlocks and establishes a clean mathematical constraint for cycle extraction.
 -/
-theorem path_has_duplicate (p : BoundedPath edges (Fintype.card V) u v) :
+theorem path_has_duplicate [Fintype V] (p : BoundedPath edges (Fintype.card V) u v) :
   ∃ (i j : Fin (Fintype.card V + 1)), i ≠ j ∧ pathVertices p i = pathVertices p j := by
   apply Fintype.exists_ne_map_eq_of_card_lt
   simp
@@ -45,12 +45,12 @@ theorem pathEdges_valid {n : Nat} {u v : V} (p : BoundedPath edges n u v) :
   | nil u => exact EdgeChain.nil u
   | cons e h_in p' ih => exact EdgeChain.cons e rfl ih
 
-def Cycle (edges : List (GenericEdge V)) (u : V) := List (GenericEdge V)
+def Cycle (_edges : List (GenericEdge V)) (_u : V) := List (GenericEdge V)
 
-def extractCycle {n : Nat} {u v : V} (p : BoundedPath edges n u v) (i j : Fin (n + 1)) (hij : i.val < j.val) (heq : pathVertices p i = pathVertices p j) : Cycle edges (pathVertices p i) :=
+def extractCycle {n : Nat} {u v : V} (p : BoundedPath edges n u v) (i j : Fin (n + 1)) (_hij : i.val < j.val) (_heq : pathVertices p i = pathVertices p j) : Cycle edges (pathVertices p i) :=
   (pathEdges p).drop i.val |>.take (j.val - i.val)
 
-theorem negative_cycle_of_update {u v : V} (M : V → Int) (p : BoundedPath edges (Fintype.card V) u v)
+theorem negative_cycle_of_update {_u _v : V} [Fintype V] (M : V → Int) (p : BoundedPath edges (Fintype.card V) _u _v)
   (i j : Fin (Fintype.card V + 1)) (hij : i.val < j.val) (heq : pathVertices p i = pathVertices p j)
   (pref suff : List (GenericEdge V)) (strict_e : GenericEdge V)
   (h_extract : extractCycle p i j hij heq = pref ++ strict_e :: suff)

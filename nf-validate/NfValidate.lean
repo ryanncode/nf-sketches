@@ -516,7 +516,7 @@ For simplicity in this validator, we track if any variable exceeds the base elem
 Assuming the base element is Var.bound 0 at scope 0.
 -/
 def satisfiesNFI (w : StratificationWitness) : Bool :=
-  w.all (fun ⟨s, l⟩ =>
+  w.all (fun ⟨_s, l⟩ =>
     let baseWeight := lookupVarWeight l (Var.bound 0)
     l.all (fun ⟨_, weight⟩ => weight <= baseWeight + 1)
   )
@@ -528,7 +528,7 @@ internal bound variable vertex exceeds the integer weight of the base element ve
 Assuming the base element is Var.bound 0 at scope 0.
 -/
 def satisfiesNFP (w : StratificationWitness) : Bool :=
-  w.all (fun ⟨s, l⟩ =>
+  w.all (fun ⟨_s, l⟩ =>
     let baseWeight := lookupVarWeight l (Var.bound 0)
     l.all (fun ⟨v, weight⟩ =>
       match v with
@@ -612,11 +612,11 @@ def nfMain : IO Unit := do
       let baseWeight := lookupVarWeight (lookupScope w 1) (Var.bound 1) -- 'n' is bound 1 at scope 1
       IO.println s!"Base Element (n) Weight: {baseWeight}"
 
-      let nfiPass := w.all (fun ⟨s, l⟩ =>
+      let nfiPass := w.all (fun ⟨_s, l⟩ =>
         let base_w := lookupVarWeight l (Var.bound 1)
         l.all (fun ⟨_, weight⟩ => weight <= base_w + 1)
       )
-      let nfpPass := w.all (fun ⟨s, l⟩ =>
+      let nfpPass := w.all (fun ⟨_s, l⟩ =>
         let base_w := lookupVarWeight l (Var.bound 1)
         l.all (fun ⟨v, weight⟩ =>
           match v with
