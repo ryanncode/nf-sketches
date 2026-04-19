@@ -1,14 +1,13 @@
 import NfValidate
 
 /-!
-# Graph Semantics for Strict Global Stratification
+# Graph Semantics for Weak Stratification
 
-This module maps geometric paths and constraint satisfiability directly to the strict
-mathematical definitions of global stratification. The graph natively encodes Quine's typing
-rules (e.g., `x ∈ y ⇒ t(x) + 1 = t(y)` and `x = y ⇒ t(x) = t(y)`) as algebraic
-constraints on edge weights, entirely bypassing the need for hierarchical models or
-layered universes. Satisfiability of the graph is thus algebraically equivalent to the
-existence of a valid global type assignment.
+This module maps geometric paths and constraint satisfiability directly to the definitions
+of weak stratification. Under Bowler's acyclic translation, we evaluate structural rules (e.g.,
+`x ∈ y ⇒ t(x) < t(y)` under general formulations or strict difference bindings) as algebraic
+constraints on edge weights. Satisfiability of the acyclic graph is thus algebraically
+equivalent to the existence of a valid weak type assignment.
 -/
 
 /--
@@ -52,8 +51,8 @@ def SatisfiesEdge (d : ScopedVar → Int) (e : Edge) : Prop :=
 /--
 A context `d` satisfies a whole graph (list of edges) if it satisfies every edge in the graph.
 Under the algebraic constraint translation, this means the context `d` forms a valid
-stratification assignment (type assignment) that strictly adheres to all of Quine's typing rules
-encoded by the graph.
+stratification assignment (type assignment) that strictly adheres to the weak stratification
+rules encoded by the acyclic graph structure.
 -/
 def SatisfiesGraph (d : ScopedVar → Int) (edges : List Edge) : Prop :=
   ∀ e ∈ edges, SatisfiesEdge d e

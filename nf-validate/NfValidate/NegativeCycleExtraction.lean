@@ -45,9 +45,9 @@ theorem pathEdges_valid {n : Nat} {u v : V} (p : BoundedPath edges n u v) :
   | nil u => exact EdgeChain.nil u
   | cons e h_in p' ih => exact EdgeChain.cons e rfl ih
 
-def Cycle (_edges : List (GenericEdge V)) (_u : V) := List (GenericEdge V)
+def GenericCycle (_edges : List (GenericEdge V)) (_u : V) := List (GenericEdge V)
 
-def extractCycle {n : Nat} {u v : V} (p : BoundedPath edges n u v) (i j : Fin (n + 1)) (_hij : i.val < j.val) (_heq : pathVertices p i = pathVertices p j) : Cycle edges (pathVertices p i) :=
+def extractCycle {n : Nat} {u v : V} (p : BoundedPath edges n u v) (i j : Fin (n + 1)) (_hij : i.val < j.val) (_heq : pathVertices p i = pathVertices p j) : GenericCycle edges (pathVertices p i) :=
   (pathEdges p).drop i.val |>.take (j.val - i.val)
 
 theorem negative_cycle_of_update {_u _v : V} [Fintype V] (M : V → Int) (p : BoundedPath edges (Fintype.card V) _u _v)

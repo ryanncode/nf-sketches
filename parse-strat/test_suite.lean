@@ -40,7 +40,7 @@ def assertTest (name : String) (f : Formula) (expectSuccess : Bool) : String :=
 -- Override mem and eq to use Var.free
 def mem (x y : String) : Formula := Formula.atom (Atomic.mem (Var.free x) (Var.free y))
 def eq (x y : String) : Formula := Formula.atom (Atomic.eq (Var.free x) (Var.free y))
-def univ_str (x : String) (f : Formula) : Formula := Formula.univ x f
+def univ_str (x : String) (f : Formula) : Formula := Formula.univ 0 x f
 
 --------------------------------------------------------------------------------
 -- 1. Base Atomic Stratification
@@ -112,6 +112,18 @@ def paradox_eq_cycle : Formula :=
   conj (eq "x" "y") (mem "y" "x")
 
 --------------------------------------------------------------------------------
+-- 8. Soundness Test (Dynamic Re-leveling)
+--------------------------------------------------------------------------------
+-- Tests deep AST scope partitioning as verified in the soundness proof.
+-- Formula: (x ∈ y) ∧ ∀w(y ∈ w) ∧ ∀v(v ∈ x)
+-- Demonstrates successful isolation of distinct scopes (0, 1, 2) without
+-- unintended variable collision or canonical contradiction.
+def test_dynamic_soundness : Formula :=
+  conj (mem "x" "y")
+    (conj (Formula.univ 1 "w" (Formula.atom (Atomic.mem (Var.free "y") (Var.bound 0))))
+          (Formula.univ 2 "v" (Formula.atom (Atomic.mem (Var.bound 0) (Var.free "x")))))
+
+--------------------------------------------------------------------------------
 -- Execution and Verification Assertions
 --------------------------------------------------------------------------------
 
@@ -128,3 +140,5 @@ def paradox_eq_cycle : Formula :=
 #eval! IO.print (assertTest "2-Cycle" paradox_2cycle false)
 #eval! IO.print (assertTest "3-Cycle" paradox_3cycle false)
 #eval! IO.print (assertTest "Equality Cycle" paradox_eq_cycle false)
+
+#eval! IO.print (assertTest "Dynamic Soundness Partitioning" test_dynamic_soundness true)
