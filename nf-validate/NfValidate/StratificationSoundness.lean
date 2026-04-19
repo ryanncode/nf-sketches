@@ -274,7 +274,10 @@ theorem evaluateClause_general_sound (vars : List ScopedVar) (constraints : List
             · rfl
             · contradiction
           have h_conv2 := h_conv (by rw [h2]; exact h_not_hasCycle_bool)
-          have h_eq2 := foldl_false_dist_eq (buildEdges constraints) finalDist finalPred false h_not_hasCycle_bool
+          have h_foldl : (relaxEdges (buildEdges constraints) finalDist finalPred).2.2 = false := by
+            rw [h2]
+            exact h_not_hasCycle_bool
+          have h_eq2 := foldl_false_dist_eq (buildEdges constraints) finalDist finalPred false h_foldl
           have h_relax : (relaxEdges (buildEdges constraints) finalDist finalPred).1 = fst := by rw [h2]
           unfold relaxEdges at h_relax
           rw [h_relax] at h_eq2
