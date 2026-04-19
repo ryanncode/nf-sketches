@@ -334,6 +334,86 @@ def evaluateClause (vars : List ScopedVar) (constraints : List Constraint) : Exc
           | some node => Except.error (getCycleForward cyclePred node n, edges)
           | none => Except.error ([], edges)
 
+def extractScopeConstraints (targetScope : Nat) (currentScope : Nat) : Formula → List Constraint
+  | Formula.atom (Atomic.eq x y) => if currentScope == targetScope then [{ v1 := (x, currentScope), v2 := (y, currentScope), diff := 0 }] else []
+  | Formula.atom (Atomic.mem x y) => if currentScope == targetScope then [{ v1 := (x, currentScope), v2 := (y, currentScope), diff := 1, directed := false }] else []
+  | Formula.atom (Atomic.qpair p x y) => if currentScope == targetScope then [{ v1 := (x, currentScope), v2 := (p, currentScope), diff := 0, directed := true }, { v1 := (y, currentScope), v2 := (p, currentScope), diff := 0, directed := true }] else []
+  | Formula.atom (Atomic.qproj1 z p) => if currentScope == targetScope then [{ v1 := (p, currentScope), v2 := (z, currentScope), diff := 0, directed := true }] else []
+  | Formula.atom (Atomic.qproj2 z p) => if currentScope == targetScope then [{ v1 := (p, currentScope), v2 := (z, currentScope), diff := 0, directed := true }] else []
+  | Formula.atom (Atomic.app z u v) => if currentScope == targetScope then [{ v1 := (v, currentScope), v2 := (z, currentScope), diff := 0 }, { v1 := (v, currentScope), v2 := (u, currentScope), diff := 1, directed := true }] else []
+  | Formula.atom (Atomic.lam z x t) => if currentScope == targetScope then [{ v1 := (x, currentScope), v2 := (t, currentScope), diff := 0 }, { v1 := (x, currentScope), v2 := (z, currentScope), diff := 1, directed := true }] else []
+  | Formula.neg p => extractScopeConstraints targetScope currentScope p
+  | Formula.conj p q => extractScopeConstraints targetScope currentScope p ++ extractScopeConstraints targetScope currentScope q
+  | Formula.disj p q => extractScopeConstraints targetScope currentScope p ++ extractScopeConstraints targetScope currentScope q
+  | Formula.impl p q => extractScopeConstraints targetScope currentScope p ++ extractScopeConstraints targetScope currentScope q
+  | Formula.univ n _ p => extractScopeConstraints targetScope n p
+  | Formula.comp n _ p => extractScopeConstraints targetScope n p
+
+def extractScopeVars (targetScope : Nat) (currentScope : Nat) : Formula → List ScopedVar
+  | Formula.atom (Atomic.eq x y) => if currentScope == targetScope then [(x, currentScope), (y, currentScope)] else []
+  | Formula.atom (Atomic.mem x y) => if currentScope == targetScope then [(x, currentScope), (y, currentScope)] else []
+  | Formula.atom (Atomic.qpair p x y) => if currentScope == targetScope then [(p, currentScope), (x, currentScope), (y, currentScope)] else []
+  | Formula.atom (Atomic.qproj1 z p) => if currentScope == targetScope then [(z, currentScope), (p, currentScope)] else []
+  | Formula.atom (Atomic.qproj2 z p) => if currentScope == targetScope then [(z, currentScope), (p, currentScope)] else []
+  | Formula.atom (Atomic.app z u v) => if currentScope == targetScope then [(z, currentScope), (u, currentScope), (v, currentScope)] else []
+  | Formula.atom (Atomic.lam z x t) => if currentScope == targetScope then [(z, currentScope), (x, currentScope), (t, currentScope)] else []
+  | Formula.neg p => extractScopeVars targetScope currentScope p
+  | Formula.conj p q => extractScopeVars targetScope currentScope p ++ extractScopeVars targetScope currentScope q
+  | Formula.disj p q => extractScopeVars targetScope currentScope p ++ extractScopeVars targetScope currentScope q
+  | Formula.impl p q => extractScopeVars targetScope currentScope p ++ extractScopeVars targetScope currentScope q
+  | Formula.univ n _ p => extractScopeVars targetScope n p
+  | Formula.comp n _ p => extractScopeVars targetScope n p
+
+theorem filter_constraints_eq_extractScope (f : Formula) (scope targetScope : Nat) :
+  (extractConstraintsAux scope f).filter (fun c => c.v1.2 == targetScope) = extractScopeConstraints targetScope scope f := by
+  induction f generalizing scope
+  case atom a =>
+    cases a <;>
+    (by_cases h : scope = targetScope <;> simp [extractConstraintsAux, extractScopeConstraints, h])
+  case neg p ih =>
+    simp [extractConstraintsAux, extractScopeConstraints]
+    rw [ih]
+  case conj p q ih1 ih2 =>
+    simp [extractConstraintsAux, extractScopeConstraints, List.filter_append]
+    rw [ih1, ih2]
+  case disj p q ih1 ih2 =>
+    simp [extractConstraintsAux, extractScopeConstraints, List.filter_append]
+    rw [ih1, ih2]
+  case impl p q ih1 ih2 =>
+    simp [extractConstraintsAux, extractScopeConstraints, List.filter_append]
+    rw [ih1, ih2]
+  case univ n x p ih =>
+    simp [extractConstraintsAux, extractScopeConstraints]
+    rw [ih]
+  case comp n x p ih =>
+    simp [extractConstraintsAux, extractScopeConstraints]
+    rw [ih]
+
+theorem filter_vars_eq_extractScope (f : Formula) (scope targetScope : Nat) :
+  (getFormulaVarsAux scope f).filter (fun v => v.2 == targetScope) = extractScopeVars targetScope scope f := by
+  induction f generalizing scope
+  case atom a =>
+    cases a <;>
+    (by_cases h : scope = targetScope <;> simp [getFormulaVarsAux, extractScopeVars, h])
+  case neg p ih =>
+    simp [getFormulaVarsAux, extractScopeVars]
+    rw [ih]
+  case conj p q ih1 ih2 =>
+    simp [getFormulaVarsAux, extractScopeVars, List.filter_append]
+    rw [ih1, ih2]
+  case disj p q ih1 ih2 =>
+    simp [getFormulaVarsAux, extractScopeVars, List.filter_append]
+    rw [ih1, ih2]
+  case impl p q ih1 ih2 =>
+    simp [getFormulaVarsAux, extractScopeVars, List.filter_append]
+    rw [ih1, ih2]
+  case univ n x p ih =>
+    simp [getFormulaVarsAux, extractScopeVars]
+    rw [ih]
+  case comp n x p ih =>
+    simp [getFormulaVarsAux, extractScopeVars]
+    rw [ih]
+
 def evaluateClausePartitioned (vars : List ScopedVar) (constraints : List Constraint) : StratificationResult :=
   let scopes := nub (vars.map (fun v => v.2))
   let rec evalScopes (ss : List Nat) (accWitness : List (Nat × List (Var × Int))) :=
