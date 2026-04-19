@@ -50,12 +50,33 @@ The most critical feature of this codebase is its self-verification. The compile
 
 To maintain its purity as a strict logical library, `nf-validate` contains no runtime string parsing or interactive REPL features. All interactive parsing, execution loops, and test suites are located in the dedicated `parse-strat` module.
 
-## Compilation
+## Compilation and Execution
 
 The system requires the standard Lean 4 toolchain and Mathlib.
 
-To compile the proofs:
+### 1. Library Verification
+To strictly compile the mathematical library and mechanically verify all geometric soundness proofs:
 
 ```Bash
-lake build
+lake build NfValidate
+```
+
+### 2. The NFI vs. NFP Diagnostic
+The primary executable runs an automated diagnostic evaluating the structural bounds of the Natural Numbers against the disparate predicative (NFP) and impredicative (NFI) typings of NF.
+
+To execute the diagnostic:
+
+```Bash
+lake build nf-validate
+./.lake/build/bin/nf-validate
+```
+
+### 3. Algorithmic Profiling
+The `profile-acyclic` executable benchmarks the performance of AST compilation and the $O(N^2)$ geometric graph validators. It specifically targets the evaluation of weak stratification bounds utilizing Kosaraju's algorithm against massive matrices of disjoint and deeply connected components.
+
+To run the profiler:
+
+```Bash
+lake build profile-acyclic
+./.lake/build/bin/profile-acyclic
 ```
