@@ -8,7 +8,7 @@
 -/
 import NfValidate.FintypeGraph
 
-variable {V : Type} [DecidableEq V]
+variable {V : Type}
 
 -- 1. Define a recursive function cycleWeightSum on an unindexed List Edge that calculates the total weight.
 def cycleWeightSum (edges : List (GenericEdge V)) : Int :=

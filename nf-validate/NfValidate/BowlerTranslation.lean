@@ -42,13 +42,13 @@ def expandConnectives : Formula → Formula
 -- Under NF, a Quine ordered pair is typically defined using a specific set-theoretic construction.
 -- For the acyclic translation, we need to express "p is a Quine ordered pair of x and y".
 -- As a foundational logic engine, we need `isPair(p)` and `isProj(z, p)` to map to valid acyclic AST components.
-def isPair (scope : Nat) (p x y : Var) : Formula :=
+def isPair (_scope : Nat) (p x y : Var) : Formula :=
   Formula.atom (Atomic.qpair p x y)
 
-def isProj1 (scope : Nat) (z p : Var) : Formula :=
+def isProj1 (_scope : Nat) (z p : Var) : Formula :=
   Formula.atom (Atomic.qproj1 z p)
 
-def isProj2 (scope : Nat) (z p : Var) : Formula :=
+def isProj2 (_scope : Nat) (z p : Var) : Formula :=
   Formula.atom (Atomic.qproj2 z p)
 
 -- 3. The Equality Relation [=] Synthesis
@@ -185,10 +185,10 @@ def flattenGraphAux (sccs : List (List ScopedVar)) : Nat → Nat → Formula →
       let (p', s1) := flattenGraphAux sccs scope seed p
       let (q', s2) := flattenGraphAux sccs scope s1 q
       (Formula.impl p' q', s2)
-  | scope, seed, Formula.univ n x p =>
+  | _scope, seed, Formula.univ n x p =>
       let (p', s') := flattenGraphAux sccs n seed p
       (Formula.univ n x p', s')
-  | scope, seed, Formula.comp n x p =>
+  | _scope, seed, Formula.comp n x p =>
       let (p', s') := flattenGraphAux sccs n seed p
       (Formula.comp n x p', s')
 
