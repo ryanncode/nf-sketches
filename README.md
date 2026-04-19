@@ -8,11 +8,34 @@ Standard model-theoretic proofs in Lean frequently reproduce the iterative hiera
 
 These modules formalize the baseline stratification algorithms and explore the unique behavior of structural rules under Quine's systemic ambiguity. Specifically, the project mechanizes the trivial failure of the Hauptsatz under strict global stratification. By interacting directly with the methodological territory of recent consistency formalizations, this project establishes a rigorous computational baseline that validates structural foundations and operationalizes the core mechanics of syntactic monism.
 
+## Setup and Building
+
+This repository contains multiple Lean 4 projects. 
+
+* **Fast Build (Executable Only):** Running `lake build` in a project folder will quickly compile the core engine and executable.
+* **Full Verification (Proofs):** Running `lake build NfValidate` will compile the entire library, including all 1000+ line soundness proofs. This takes significantly longer as Lean must mathematically verify every theorem.
+
+### Updating Lean and Mathlib
+
+Because these projects rely on Mathlib, keeping your compiler and Mathlib cache perfectly synced is critical to avoid multi-hour source compilations. We provide a shell script at the root of the repository to automate this update process across all projects:
+
+```bash
+./update-lean.sh
+```
+
+This script will sequentially:
+1. Run `lake update` to fetch the latest Mathlib commit.
+2. Sync each project's `lean-toolchain` to perfectly match Mathlib's exact compiler version.
+3. Run `lake exe cache get` to download the pre-compiled Mathlib binaries.
+4. Run a full build to verify success.
+
 ## The Laboratory vs. The Factory
 
 This Lean 4 repository is not the final home for this logic; it is the theoretical laboratory used to prove the mathematics are sound. Because building a custom, bare-metal logic engine requires abandoning the safety nets of standard dependent type theory, we must first secure cryptographic certainty regarding how Quine's New Foundations operates. By using Lean’s universally trusted kernel to formally prove exactly how our algorithms evaluate stratification, we conduct the rigorous diagnostic work required before forging the actual operational code directly into a custom engine.
 
 *Note on Computational Limits:* The conversion of formulas into Disjunctive Normal Form (DNF) introduces an exponential combinatorial explosion. This acts as a severe practical bottleneck for Lean's evaluator, limiting the engine to small, targeted canonical paradoxes. However, because the DNF expansion is structurally recursive and bounded by the finite syntax tree of the input formula, it maintains strict constructivist rigor (the Intuitionistic Fan Theorem). It never generates a lawless sequence. Future iterations of the custom logic engine plan to resolve this bottleneck by integrating CDCL-based SAT evaluation or an SMT solver (utilizing Integer Difference Logic) to evaluate geometric weights dynamically without explicit memory expansion.
+
+---
 
 ## Core Modules
 
