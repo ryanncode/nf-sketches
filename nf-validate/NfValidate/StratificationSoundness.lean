@@ -237,33 +237,34 @@ theorem vars_empty_implies_constraints_empty (s : Nat) (f : Formula) :
   | univ n name p ih => simp [getFormulaVarsAux, extractConstraintsAux]; exact ih n
   | comp n name p ih => simp [getFormulaVarsAux, extractConstraintsAux]; exact ih n
 
-theorem evaluateClause_sound (s : Nat) (f : Formula) (M : List (ScopedVar × Int))
-  (h_eval : evaluateClause (getFormulaVarsAux s f) (extractConstraintsAux s f) = Except.ok M) :
-  SatisfiesGraph (lookup M) (buildEdges (extractConstraintsAux s f)) := by
+theorem evaluateClause_general_sound (vars : List ScopedVar) (constraints : List Constraint) (M : List (ScopedVar × Int))
+  (h_vars_cons : vars = [] → constraints = [])
+  (h_eval : evaluateClause vars constraints = Except.ok M) :
+  SatisfiesGraph (lookup M) (buildEdges constraints) := by
   dsimp [evaluateClause] at h_eval
   split at h_eval
   · next h_len =>
-    have h_vars_empty : getFormulaVarsAux s f = [] := by
-      cases h_empty : getFormulaVarsAux s f
+    have h_vars_empty : vars = [] := by
+      cases h_empty : vars
       · rfl
       · rw [h_empty] at h_len; contradiction
-    have h_cons_empty := vars_empty_implies_constraints_empty s f h_vars_empty
+    have h_cons_empty := h_vars_cons h_vars_empty
     rw [h_cons_empty]
     simp [buildEdges, SatisfiesGraph]
   · next h_len =>
     revert h_eval
-    generalize h1 : evaluateClause.loop (buildEdges (extractConstraintsAux s f)) ((getFormulaVarsAux s f).length - 1) (List.map (fun v => (v, 0)) (getFormulaVarsAux s f)) [] = loop_res
+    generalize h1 : evaluateClause.loop (buildEdges constraints) (vars.length - 1) (List.map (fun v => (v, 0)) vars) [] = loop_res
     match loop_res with
     | (finalDist, finalPred) =>
       intro h_eval
-      generalize h2 : relaxEdges (buildEdges (extractConstraintsAux s f)) finalDist finalPred = relax_res
+      generalize h2 : relaxEdges (buildEdges constraints) finalDist finalPred = relax_res
       match relax_res with
       | (fst, cyclePred, hasCycle) =>
         split at h_eval
         · next h_not_hasCycle =>
           injection h_eval with h_eq
           rw [← h_eq]
-          have h_conv := relaxEdges_converged (buildEdges (extractConstraintsAux s f)) finalDist finalPred
+          have h_conv := relaxEdges_converged (buildEdges constraints) finalDist finalPred
           have h_not_hasCycle_bool : hasCycle = false := by
             revert h_not_hasCycle
             rw [h2]
@@ -273,12 +274,12 @@ theorem evaluateClause_sound (s : Nat) (f : Formula) (M : List (ScopedVar × Int
             · rfl
             · contradiction
           have h_conv2 := h_conv (by rw [h2]; exact h_not_hasCycle_bool)
-          have h_eq2 := foldl_false_dist_eq (buildEdges (extractConstraintsAux s f)) finalDist finalPred false
-          have h_relax : (relaxEdges (buildEdges (extractConstraintsAux s f)) finalDist finalPred).1 = fst := by rw [h2]
+          have h_eq2 := foldl_false_dist_eq (buildEdges constraints) finalDist finalPred false
+          have h_relax : (relaxEdges (buildEdges constraints) finalDist finalPred).1 = fst := by rw [h2]
           unfold relaxEdges at h_relax
           rw [h_relax] at h_eq2
           have h_fst : fst = finalDist := h_eq2
-          have h_relax_fst : (relaxEdges (buildEdges (extractConstraintsAux s f)) finalDist finalPred).1 = finalDist := by rw [h2, h_fst]
+          have h_relax_fst : (relaxEdges (buildEdges constraints) finalDist finalPred).1 = finalDist := by rw [h2, h_fst]
           rw [h_relax_fst] at h_conv2
           intro e he
           have h_ineq := h_conv2 e he
@@ -289,17 +290,37 @@ theorem evaluateClause_sound (s : Nat) (f : Formula) (M : List (ScopedVar × Int
           · next => contradiction
           · next => contradiction
 
-axiom evaluateClausePartitioned_sound (vars : List ScopedVar) (constraints : List Constraint) (W : StratificationWitness)
-  (h_eval : evaluateClausePartitioned vars constraints = StratificationResult.success W) :
-  SatisfiesGraph (lookupWitness W) (buildEdges constraints)
-
-theorem stratification_sound (f : Formula) (W : StratificationWitness)
-  (h_eval : evaluateStratification f = StratificationResult.success W) :
-  IsStratified f (lookupWitness W) := by
-  unfold IsStratified
-  apply stratified_of_satisfies 0 f (lookupWitness W)
-  unfold evaluateStratification at h_eval
-  have h := evaluateClausePartitioned_sound (getFormulaVars f) (extractConstraints f) W h_eval
-  have h_eq : extractConstraints f = extractConstraintsAux 0 f := rfl
-  rw [h_eq] at h
-  exact h
+theorem extractConstraintsAux_scope_parity (s : Nat) (f : Formula) (c : Constraint)
+  (h_in : c ∈ extractConstraintsAux s f) :
+  c.v1.2 = c.v2.2 := by
+  induction f generalizing s with
+  | atom a =>
+    cases a <;> simp [extractConstraintsAux] at h_in
+    · rcases h_in with rfl | rfl <;> rfl
+    · rcases h_in with rfl | rfl <;> rfl
+    · rcases h_in with rfl | rfl <;> rfl
+    · rcases h_in with rfl <;> rfl
+    · rcases h_in with rfl <;> rfl
+    · rcases h_in with rfl | rfl <;> rfl
+    · rcases h_in with rfl | rfl <;> rfl
+  | neg p ih =>
+    exact ih s h_in
+  | conj p q ih_p ih_q =>
+    simp [extractConstraintsAux] at h_in
+    rcases h_in with h | h
+    · exact ih_p s h
+    · exact ih_q s h
+  | disj p q ih_p ih_q =>
+    simp [extractConstraintsAux] at h_in
+    rcases h_in with h | h
+    · exact ih_p s h
+    · exact ih_q s h
+  | impl p q ih_p ih_q =>
+    simp [extractConstraintsAux] at h_in
+    rcases h_in with h | h
+    · exact ih_p s h
+    · exact ih_q s h
+  | univ n name p ih =>
+    exact ih n h_in
+  | comp n name p ih =>
+    exact ih n h_in
