@@ -4,6 +4,8 @@
 
 Following the landmark formalization of NF's relative consistency by Holmes and Wilshaw, this project extends the Lean 4 ecosystem's coverage of Quine's New Foundations into structural proof theory. While `con-nf` establishes the model-theoretic consistency of the universe, `nf-sketches` provides the exact syntactic and deductive machinery required to operate within it. 
 
+> **Important:** For a comprehensive defense of the internal mathematical unity and the exact algorithmic mechanisms formalizing structural paradox, see our detailed [Function-by-Function Audit Report (AUDIT.md)](./AUDIT.md). 
+
 Standard model-theoretic proofs in Lean frequently reproduce the iterative hierarchy, introducing unnecessary friction when modeling a universal set. By bridging the operational mechanics of NF with the precise constraints of the Lean theorem prover, this repository avoids artificial scaffolding. It focuses instead on executing logic organically as a mechanical, grammatical process.
 
 These modules formalize the baseline stratification algorithms and explore the unique behavior of structural rules under Quine's systemic ambiguity. Specifically, the project mechanizes the trivial failure of the Hauptsatz under strict global stratification. By interacting directly with the methodological territory of recent consistency formalizations, this project establishes a rigorous computational baseline that validates structural foundations and operationalizes the core mechanics of syntactic monism.
