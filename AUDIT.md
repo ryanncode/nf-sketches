@@ -2,164 +2,82 @@
 
 ## Executive Summary
 
-This report documents a function-by-function audit of the `nf-sketches` codebase, encompassing the `nf-validate`, `parse-strat`, and `seq-embed` modules. The primary objective of this document is to serve as a rigorous, argumentative defense against claims that the speculative, hybrid theory underpinning this project contains overlooked methodological or operational defects. 
+This report audits the `nf-sketches` codebase, covering the `nf-validate`, `parse-strat`, and `seq-embed` modules. It defends the project's foundational theory against claims of methodological defects by proving that Quine's New Foundations (NF) rules are enforced via mechanically-verified computational geometry.
 
-By systematically breaking down the Abstract Syntax Tree (AST), Graph Semantics, Bellman-Ford Evaluator, Mathematical Certification, and Executable Pipelines, this report demonstrates that Quine's New Foundations (NF) rules are strictly enforced through mechanically-verified computational geometry. The architecture deliberately eschews heuristic shortcuts, relying entirely on combinatorial guarantees, algebraic telescoping sums, and Lean 4's dependent type theory to guarantee logical soundness, termination, and architectural consistency.
+The architecture relies on combinatorial guarantees, algebraic telescoping sums, and Lean 4's dependent type theory to secure logical soundness and termination. By analyzing the Abstract Syntax Tree (AST), Graph Semantics, Bellman-Ford Evaluator, Mathematical Certification, and Executable Pipelines, we establish that the system operates without heuristic shortcuts to verify proofs directly.
 
 ---
 
 ## 1. Abstract Syntax Tree (AST) & Core Logical Constraints
 
-### Analysis of `NfValidate.lean`
+The `NfValidate.lean` module operationalizes Quine's systemic ambiguity. Rather than assigning rigid types at parse-time, the system constructs a relative constraint graph where formulas become stratifiable if they resolve without negative-weight cycles. This permits integer types to slide uniformly, capturing the intended flexibility of NF.
 
-**1.1. Definitions and Inductive Types**
-* `Var`: Represents variables using De Bruijn indices (`bound`) for quantified variables and strings (`free`) for named variables.
-* `Atomic`: Isolates set-theoretic relations (`eq`, `mem`, Quine pairs `qpair`/`qproj`, lambda abstraction/application).
-* `Formula`: Represents compound logical structures, wrapping `Atomic` relations with standard first-order mechanics (negation, conjunction, disjunction, implication, quantification).
-* `Constraint`, `Edge`: Represent numerical relative type-level constraints and their mapping to a directed graph for algorithmic evaluation.
-* `StratificationResult`, `StratificationWitness`: Capture the success (with a relative type assignment witness) or failure (with an offending cycle) of the constraint checking.
+We structure the AST by bifurcating operations. The `Atomic` type isolates set-theoretic relations like `eq`, `mem`, and Quine pairs (`qpair`/`qproj`), while `Formula` wraps these within standard first-order mechanics. This strict separation isolates mathematical bounding from logical branching, solving traditional conflicts between Classical Natural Deduction and stratification. During evaluation, `extractConstraints` and `buildEdges` translate AST nodes into numerical bounds, mapping constructs like `x ∈ y` into directed differences. The evaluation pipeline then applies `evaluateClause` and `relaxEdges` to test these `Constraint` and `Edge` sets for cycles, attempting an optimized DAG sort before falling back to a robust Bellman-Ford detector.
 
-**1.2. Proofs and Theorems**
-* `filter_constraints_eq_extractScope` & `filter_vars_eq_extractScope`: Formal proofs ensuring that filtering constraints and variables by lexical scope is logically equivalent to extracting them directly. This mathematically defends the correctness of the weak stratification implementation.
-* Size proofs (e.g., `size_atom`, `size_neg`): A suite of theorems establishing well-founded sizes for compound formulas, guaranteeing that the recursive DNF conversion functions always terminate.
+The system requires strict control over logical branching. The `toDNF` pipeline uses `pushNeg` and `distributeAnd` to flatten nested logic into independent disjunctive branches. Formal size proofs, including `size_atom` and `size_neg`, establish well-founded limits for compound formulas to guarantee these recursive conversion functions terminate.
 
-**1.3. Functions and Pipeline**
-* **Constraint Extraction (`extractConstraints`, `buildEdges`)**: Translates AST nodes into numerical bounds. `x ∈ y` creates a directed difference of 1.
-* **Bellman-Ford & DAG Evaluation (`evaluateClause`, `relaxEdges`)**: Tests constraint sets for negative weight cycles. An optimized Topological Sort/DAG Shortest Path is attempted first; if cyclic, it falls back to a robust Bellman-Ford detector.
-* **DNF Conversion (`toDNF`, `pushNeg`, `distributeAnd`)**: Flattens nested logic into a series of independent disjunctive branches.
-* **Diagnostics (`satisfiesNFI`, `satisfiesNFP`, `phi_N`)**: Tools to verify witness bounds against specific subsystem rules, distinguishing Impredicative (NFI) from Predicative (NFP) typing limits.
-
-**1.4. Theoretical Purpose & Operationality**
-* **Modeling Quine's Systemic Ambiguity**: Instead of assigning strict types at parse-time, the system builds a relative constraint graph. A formula is ambiguous (and thus stratifiable) if its constraint graph resolves without negative-weight cycles, allowing the assigned integer types to slide up or down as a uniform block.
-* **Formula Bifurcation**: By splitting the AST into `Atomic` (set-theoretic constraints) and `Formula` (boolean logic), the pipeline strictly separates mathematical bounding from logical branching, solving the issue of Classical Natural Deduction struggling with stratification.
-* **DNF Reduction**: Evaluates disjunctions correctly. If a formula dictates `A ∨ B`, DNF reduction isolates these realities, checking each AND-branch independently.
-* **Defensive Arguments**:
-    * *Lexical Scoping (`ScopedVar`)*: Variables are tagged with their binder depth, formally implementing Weak Stratification and acting as a defensive barrier against accidental scope interference.
-    * *Termination Proofs*: Defensive checks guaranteeing the DNF engine cannot enter an infinite loop.
-    * *NFI/NFP Validation*: Prevents illicit, highly-impredicative structures from sneaking through by explicitly auditing internal vertex weights.
+Lexical scoping enforces further operational safety. The `Var` implementation separates variables using De Bruijn indices (`bound`) and named strings (`free`), while `ScopedVar` tags variables with their binder depth. This formally implements Weak Stratification and blocks accidental scope interference. Tools like `satisfiesNFI`, `satisfiesNFP`, and `phi_N` diagnose bounds against specific subsystem rules, actively rejecting impredicative typings by auditing internal vertex weights. `StratificationResult` and `StratificationWitness` capture the final output, returning either a relative type assignment witness or an offending cycle. Finally, `filter_constraints_eq_extractScope` and `filter_vars_eq_extractScope` mathematically verify that filtering by lexical scope is equivalent to direct extraction, solidifying the correctness of the weak stratification implementation.
 
 ---
 
 ## 2. Graph Semantics & Constraint Generation
 
-### Analysis of `GraphSemantics.lean` & `FintypeGraph.lean`
+The modules `GraphSemantics.lean` and `FintypeGraph.lean` translate syntactic rules directly into algebraic constraint satisfiability matrices, bridging abstract syntax and computational geometry. This translation allows us to model constraints as geometric distance metrics. Under this paradigm, hierarchy contradictions organically manifest as negative weight cycles.
 
-**2.1. Definitions and Inductive Types**
-* `Path`: An inductive type representing a valid sequence of directed edges, modeling a sequential chain of relative type level constraints.
-* `Cycle` & `NegativeCycle`: Define paths that loop back to their origin. A `NegativeCycle` explicitly captures an unresolvable stratification contradiction.
-* `SatisfiesEdge` & `SatisfiesGraph`: Predicates declaring that a specific distance map mathematically obeys geometric integer difference bounds.
-* `GenericEdge` & `BoundedPath`: Counterparts to standard graphs operating strictly over finite types (`Fintype`), enforcing explicit limits on path generation length.
+To formally represent these mechanics, the system defines a `Path` as an inductive type modeling a sequential chain of relative type-level constraints. The `Cycle` and `NegativeCycle` types capture paths that loop back to their origin, with the latter explicitly isolating an unresolvable stratification contradiction. The predicates `SatisfiesEdge` and `SatisfiesGraph` ensure that any specific distance map mathematically obeys these geometric integer difference bounds.
 
-**2.2. Proofs and Theorems**
-* `path_inequality`: Guarantees that if a valid type assignment exists, the algebraic difference between any two connected variables cannot exceed the cumulative weight of the path.
-* `no_valid_context_for_negative_cycle`: A critical formal proof establishing that the presence of a negative cycle absolutely precludes the existence of a valid weak type assignment.
-* `equality_semantics`: Proves that if two nodes are connected bi-directionally with zero-weight edges, their assigned type levels must be mathematically identical.
+By converting structural relations into cumulative algebraic bounds, functions like `pathWeight` and `boundedPathWeight` recursively sum the integer weights along these paths. The `path_inequality` theorem guarantees that the algebraic difference between connected variables never exceeds this cumulative path weight. The crucial proof `no_valid_context_for_negative_cycle` definitively establishes that encountering a negative cycle precludes the existence of any valid weak type assignment, cementing the translation from geometric cycle to logical contradiction. Furthermore, the `equality_semantics` proof confirms that nodes connected bi-directionally by zero-weight edges mandate mathematically identical type levels.
 
-**2.3. Functions and Pipeline**
-* `pathWeight` & `boundedPathWeight`: Functions that recursively sum the integer weights along a standard or bounded path, directly converting structural relations into cumulative algebraic bounds.
-
-**2.4. Theoretical Purpose & Operationality**
-* **Algebraic Translation of Typing**: These modules bridge abstract syntax and computational geometry, translating syntactic rules into algebraic constraint satisfiability matrices.
-* **Negative Cycles as Inconsistency**: By modeling constraints as distance metrics, hierarchy contradictions naturally manifest as negative weight cycles. The `no_valid_context_for_negative_cycle` proof defensively cements this translation.
-* **Combinatorial Bounding (`Fintype`)**: Restricting graph definitions to finite domains serves as a core defensive mechanism, unlocking strictly combinatorial proofs that guarantee termination and prevent infinite regress pathologies.
+We enforce core defensive mechanisms by restricting graph definitions to finite domains (`Fintype`). Counterparts like `GenericEdge` and `BoundedPath` operate strictly over these finite types to enforce explicit limits on path generation length. This combinatorial bounding unlocks proofs that guarantee algorithm termination and definitively prevent the infinite regress pathologies that plague naive set theory.
 
 ---
 
 ## 3. The Bellman-Ford Evaluator
 
-### Analysis of `NegativeCycleExtraction.lean` & `BowlerTranslation.lean`
+The `NegativeCycleExtraction.lean` and `BowlerTranslation.lean` modules operationalize Bowler's acyclic translation strategy. By mapping standard stratified comprehension into a strictly finite topological subset, the engine executes $O(V+E)$ DAG topological sorts, reserving Bellman-Ford relaxations exclusively for emergency fallbacks.
 
-**3.1. Definitions and Inductive Types**
-* `GenericCycle` & `extractCycle`: Mechanisms to isolate and extract loops structurally trapped between two identical vertices.
-* `freshVar`, `expandConnectives`: Utilities to securely generate isolated variables and standardize boolean operator networks.
-* Synthesized Acyclic Nodes (`isPair`, `isProj1`, `acyclicEq`, `acyclicV`): Constructs Quine ordered pairs and structural relations without injecting artificial structural cycles into the AST graph.
+This strategy depends on collapsing harmless 0-weight semantic cycles. The system implements Kosaraju's algorithm via `dfsForward`, `dfsBackward`, `findSCCs`, and `flattenGraph` to identify these Strong Connected Components (SCCs) and flatten identical-level variables. We support this with utilities like `freshVar` and `expandConnectives` to securely generate isolated variables and standardize boolean operator networks. Additional constructs—including `isPair`, `isProj1`, `acyclicEq`, and `acyclicV`—synthesize acyclic nodes to build Quine ordered pairs and structural relations without injecting artificial cycles into the AST.
 
-**3.2. Proofs and Theorems**
-* `path_has_duplicate`: Employs the combinatoric Pigeonhole Principle (`Fintype`) to mathematically prove that any valid traversal matching the total vertex count must inherently revisit a node.
-* `negative_cycle_of_update`: Deduced that any strict edge inequality discovered within an isolated closed loop dictates the total sum of the cycle weights must be strictly negative.
-
-**3.3. Functions and Pipeline**
-* `pathVertices` & `pathEdges`: Extract vertices and edges from a bounded path sequence.
-* Kosaraju's Graph Flattening (`dfsForward`, `dfsBackward`, `findSCCs`, `flattenGraph`): Identifies and collapses 0-weight Strong Connected Components (SCCs), allowing the graph to flatten identical-level variables.
-
-**3.4. Theoretical Purpose & Operationality**
-* **Defensive Bounding via the Pigeonhole Principle**: Leverages the Pigeonhole Principle to construct a hard mathematical ceiling for path generation, safely isolating cycles without the risk of infinite dependent-type regress.
-* **Acyclic Translation (Bowler's Strategy)**: Maps standard stratified comprehension into a strictly finite topological subset. By systematically collapsing harmless 0-weight semantic cycles using Kosaraju's SCC algorithm, the engine runs ultra-fast $O(V+E)$ DAG topological sorts, reserving Bellman-Ford relaxations for emergency fallbacks.
+To process constraints safely, `pathVertices` and `pathEdges` extract nodes and edges from bounded path sequences. The system then leverages `GenericCycle` and `extractCycle` to isolate loops trapped between identical vertices. The formal proof `path_has_duplicate` applies the Pigeonhole Principle to `Fintype` domains, guaranteeing that any valid traversal matching the total vertex count must revisit a node. This establishes a hard mathematical ceiling for path generation, isolating cycles while neutralizing the risk of infinite dependent-type regress. Finally, `negative_cycle_of_update` proves that any strict edge inequality discovered within an isolated closed loop mathematically dictates that the total cycle weight is strictly negative.
 
 ---
 
 ## 4. Mathematical Certification (Soundness Proofs)
 
-### Analysis of `BellmanFordInvariants.lean`, `TelescopingSum.lean`, `KIterationBound.lean`, & `StratificationSoundness.lean`
+The mathematical certification of the system—spanning `BellmanFordInvariants.lean`, `TelescopingSum.lean`, `KIterationBound.lean`, and `StratificationSoundness.lean`—acts as the ultimate guarantor of truth. It integrates geometric algorithms directly with standard NF set theory axioms.
 
-**4.1. Definitions and Inductive Types**
-* `cycleWeightSum` & `EdgeChain`: Recursive weight accumulators and inductive chain verification tools.
-* `KBoundedPath` & `relaxEdgesN`: Structural definitions locking topological traversals to exactly $k$ depth lengths.
-* `IsStratifiedAux` & `IsStratified`: Direct formal inductive definitions completely mirroring the explicit type-shifting axioms in Quine's New Foundations.
+The module anchors itself on `IsStratifiedAux` and `IsStratified`, which are inductive definitions explicitly mirroring Quine's type-shifting limits. To process traversals against these limits, `KBoundedPath` and `relaxEdgesN` lock the evaluations to exactly $k$ depth lengths. The `k_iteration_bound` and `relaxEdges_edge_bound` proofs defend this structure, establishing a programmatic safety cutoff that guarantees the recursion engine converges after sweeping exactly $V$ times. Additionally, invariant defenses like `lookup_update_le`, `relaxEdges_foldl_monotone`, and `relaxEdges_converged` supply pure monotonic proofs to ensure that memory writes endure and edge constraints tighten strictly downward.
 
-**4.2. Proofs and Theorems**
-* *Invariant Defenses* (`lookup_update_le`, `relaxEdges_foldl_monotone`, `relaxEdges_converged`): Pure monotonic proofs guaranteeing that memory writes strictly endure and edge constraints tighten strictly downward.
-* *Algebraic Contradiction* (`telescoping_cycle_sum`, `cycleWeightSum_negative_of_strict_ineq`): Telescopes distances structurally, guaranteeing that any cycle strictly updating its bounds generates a mathematically verified negative integer footprint.
-* *The K-Bound Limit* (`relaxEdges_edge_bound`, `k_iteration_bound`): Proves that evaluating $k$ relaxation phases tightly locks endpoint distances securely to the source plus path weight, enforcing rigid finite model convergence.
-* *The Master Soundness Bridge* (`stratified_of_satisfies`, `evaluateClausePartitioned_sound`, `stratification_sound`): Connects disparate geometric satisfiability bounds, disjoint clause execution scopes, and cycle extraction into one incontrovertible proof that successful evaluation strictly implies NF semantic soundness.
+Instead of relying on model-theoretic complexity, the system isolates contradictions purely through geometric arithmetic. Recursive accumulators like `cycleWeightSum` and `EdgeChain` work alongside structural proofs like `telescoping_cycle_sum` and `cycleWeightSum_negative_of_strict_ineq` to telescope distances. They guarantee that any cycle attempting to strictly update its bounds instantly generates a mathematically verified negative integer footprint.
 
-**4.3. Functions and Pipeline**
-* The pipeline integrates these mathematical proofs directly into the evaluator, guaranteeing that every execution step validates its own bounds algorithmically before returning a result.
+Finally, the master soundness bridges—including `stratified_of_satisfies`, `evaluateClausePartitioned_sound`, and `stratification_sound`—connect these disparate geometric satisfiability bounds, disjoint clause execution scopes, and cycle extractions. This establishes an incontrovertible proof that structural set inclusion rules map flawlessly into finite graph evaluations, verifying that successful execution strictly implies NF semantic soundness.
 
-**4.4. Theoretical Purpose & Operationality**
-* **Telescoping Sum Contradiction**: Operates purely on geometric arithmetic instead of model-theoretic complexity, isolating the "negative cycle weight" value contradiction deterministically.
-* **The K-Iteration Cutoff Mechanism**: Provides a defensive programmatic safety cutoff, guaranteeing the recursion engine only needs to sweep $V$ times.
-* **The Syntactic-Geometric Bridge**: Converts algorithmic geometry explicitly back to standard NF set theory axioms, proving that structural set inclusion rules are mapped purely into finite graph evaluations.
+### 4.1. Deep Structural Form Analysis
+
+To verify that the architecture operates without masking defects, we examine the most complex functions. 
+
+In `BowlerTranslation.lean`, `flattenGraphAux` performs a deep recursive descent over the AST. At every atomic proposition, it queries the pre-computed Kosaraju SCC list (`expandVar`). If variables belong to a 0-weight cycle, it applies `wrapProj` to inject an existential projection closure (`injectProjection`). Generating a fresh variable (`freshVar "fused" seed`) is structurally localized, preventing global namespace collisions. The translation remains entirely deterministic and preserves exact syntactic bounds, mathematically proving that semantic cycles fuse without compromising systemic ambiguity.
+
+Within `seq-embed/Main.lean`, the `reduceCut` engine operates by pattern matching over the massive `Derivation` family. When encountering a `cut` against the `compL` rule, it invokes `getSimulatedSubstitution` to extract canonical targets, substitutes them, and forcefully evaluates the altered structure via `evaluateFullFormula`. Crucially, `reduceCut` forces the simulated substituted formula dynamically back through the matrix. The engine computes the resulting `StratificationFailure` organically, proving that the structural friction between dynamically re-leveled scopes and Extensionality equivalence mathematically triggers its own failure.
+
+The soundness matrix in `StratificationSoundness.lean` rigorously defends against scope leakage. The foundational definition `IsStratifiedAux` restricts valid stratifications explicitly to Quine's type-shifting limits (`ctx (y, s) = ctx (x, s) + 1`). Master bridges like `stratified_of_satisfies`, `evaluateClausePartitioned_sound`, and `evalScopes_sound` perform massive inductions, proving that resolving localized graphs perfectly satisfies `IsStratifiedAux`. Structural maintenance proofs—including `extractConstraintsAux_scope_parity` and `loop_preserves_scope`—guarantee that endpoints (`c.v1.2` and `c.v2.2`) never span different quantifier scopes. Furthermore, data structure integrity theorems like `lookup_map_dist` and `mem_nub` ensure specific list-mapping operations maintain exact equivalence with original data. The engine proves that its graph evaluation safely seals each matrix partition strictly within its syntactic boundary.
 
 ---
 
-## 5. Executable Pipelines
+## 5. The Extensionality Collision & Executable Pipelines
 
-### Analysis of Interactive and Diagnostic Environments
+The ultimate application of this architecture manifests in the executable pipelines (`nf-validate`, `parse-strat`, and `seq-embed`). These environments operationalize the theory, transitioning the system from a static proof into an active diagnostic instrument.
 
-**5.1. Automated Diagnostics (`nf-validate`)**
-* **Definitions & Functions**: `phi_N` (structural definition approximating Natural Numbers), `nfMain` (execution loop testing against NFI and NFP bounds).
-* **Operationality**: Operationalizes the distinction between the Impredicative Subsystem (NFI) and Predicative Subsystem (NFP), validating theoretical boundaries by actively rejecting impredicative typings at runtime.
-* **Algorithmic Profiling (`ProfileAcyclic.lean`)**: Uses `makeBroadMatrix`, `hashAST`, and `timePure` to defeat Lean's lazy evaluation, genuinely stress-testing the memory and traversal limits of Bowler's acyclic translation against artificially scaled cyclic formula structures.
+The automated diagnostics inside `nf-validate` execute specific bounds. The `nfMain` loop tests limits against the Impredicative Subsystem (NFI) and Predicative Subsystem (NFP), validating theoretical boundaries by actively rejecting impredicative typings. The `phi_N` construct approximates Natural Numbers structurally. The `ProfileAcyclic.lean` module defeats Lean's lazy evaluation using `makeBroadMatrix`, `hashAST`, and `timePure` to stress-test the memory and traversal limits of Bowler's acyclic translation against artificially scaled cyclic formulas.
 
-**5.2. Interactive REPL Sandbox (`parse-strat`)**
-* **Definitions & Functions**: A comprehensive recursive descent parser (`tokenize`, `parseFormula`) mapping raw ASCII to `Formula` AST nodes. Diagnostic formatters (`formatWitness`, `formatDetailedCycleSandbox`) translate graph data back to text.
-* **Operationality**: Provides a tactile environment for researchers to inject unstratifiable structures manually. It handles the backward mapping from theoretical negative-weight loops to plain language algebraic contradiction paths.
+For manual experimentation, the `parse-strat` module provides an interactive REPL sandbox. A recursive descent parser translates raw ASCII via `tokenize` and `parseFormula` directly into `Formula` AST nodes. Diagnostic formatters like `formatWitness` and `formatDetailedCycleSandbox` map theoretical negative-weight loops backward into plain language algebraic contradiction paths.
 
-**5.3. Deep Embedding of Sequent Calculus (`seq-embed`)**
-* **Definitions & Functions**: `Sequent`, `Derivation` (an inductive type strictly indexing valid sequent logic), and foundational axiom constructors (`mkComprehensionAxiom`, `mkExtensionalityAxiom`).
-* **The `compL` Gatekeeper**: Set comprehension in derivations is structurally gated behind the `checkStrat` algorithm.
-* **Targeted Cut Reduction (`reduceCut`)**: The main diagnostic cut-elimination reduction engine. Evaluates failure structures (`idCollapse_A`, `singCollapse_A`).
-* **Operationality (The Extensionality Collision)**: `SeqEmbed` computationally guarantees normalization failure rather than just claiming it. As `reduceCut` forces impredicative substitutions upward, the dynamically computed formulas are pushed through the live Bellman-Ford engine. When the substitution violates scope type limits, the engine geometrically collides with the strict equivalence mandated by the Extensionality axiom. The generation of a negative weight cycle—logged as `Extensionality Collision!`—is not a flaw; it is the mathematically rigorous, highly productive moment where NF defends its syntax from paradox. 
+The most critical environment is `seq-embed`, representing a deep embedding of Gentzen's Sequent Calculus. It gates set comprehension in derivations strictly behind the `checkStrat` algorithm. The `Sequent` and `Derivation` inductive types strictly index valid logic, supported by foundational constructors like `mkComprehensionAxiom` and `mkExtensionalityAxiom`. 
+
+The core diagnostic engine, `reduceCut`, systematically evaluates failure structures like `idCollapse_A` and `singCollapse_A`. It simulates proof-theoretic failures by targeting specific sub-formulas, performing variable substitution (`substitute`), and forcing the newly altered structures directly through the live Bellman-Ford engine. When a substitution violates scope type limits, the newly-computed formula geometrically collides with the strict equivalence mandated by the Extensionality axiom. The generation of a negative weight cycle—logged distinctly as an `Extensionality Collision!`—is the mathematically rigorous, highly productive moment where the monist universe of NF defends its syntax from paradox.
 
 ---
 
 ## Conclusion
 
-The `nf-sketches` architecture seamlessly binds foundational syntactic monism to rigorously verifiable computational structures. Every line of code from the Abstract Syntax Tree through to the Executable Pipelines is designed defensively. By transmuting standard set theoretic paradoxes into finite graph geometry, resolving negative cycles through telescoping sums, and algorithmically forcing structural normalization to collide with rigid Extensionality limits, the codebase acts as an unassailable proof of Quine's systemic ambiguity. The implementation proves robust against unbounded iteration and conclusively isolates paradoxical regression as an algorithmic certainty.
-
----
-
-## Appendix: Deep Structural Form Analysis of High-Complexity Functions
-
-To ensure the architecture is not masking methodological defects or relying on unverified heuristic hacks, this appendix provides a granular structural form analysis of the most complex, deep-stack functions in the repository.
-
-### A.1. `BowlerTranslation.lean`: `flattenGraphAux`
-
-* **Structural Form**: This function performs a deep recursive descent over the `Formula` AST. At every atomic proposition, it queries the pre-computed Kosaraju SCC list (`expandVar`). If the variables belong to a 0-weight semantic cycle, it applies `wrapProj` to dynamically inject an existential projection closure (`injectProjection`).
-* **Defect Analysis**: Is it hiding something weird? No. Fusing cyclic variables in formal logic is traditionally dangerous because it can corrupt De Bruijn binding indices or variable scoping. `flattenGraphAux` avoids this by rigorously passing `scope` and `seed` bounds downward through every recursive step. The generation of a fresh variable (`freshVar "fused" seed`) is structurally localized, preventing global namespace collisions. The translation is entirely deterministic and preserves exact syntactic bounds, mathematically proving that harmless semantic cycles can be fused without compromising Quine's systemic ambiguity.
-
-### A.2. `seq-embed/Main.lean`: `reduceCut`
-
-* **Structural Form**: The core cut-elimination engine operates by pattern matching over the massive `Derivation` inductive family. When a `cut` is encountered against the `compL` rule, it invokes `getSimulatedSubstitution` to extract the exact canonical targets, performs the variable substitution (`substitute`), and forcefully evaluates the *newly altered* structure via `evaluateFullFormula`.
-* **Defect Analysis**: The presence of `getSimulatedSubstitution` might superficially look like a hardcoded cheat. However, `reduceCut` is strictly a *diagnostic* engine simulating known proof-theoretic failures (like the Impredicative Singleton). The substitution map merely provides the targeted input. The critical defense mechanism is that `reduceCut` *does not assert the failure itself*. It forces the simulated substituted formula dynamically back through the live Bellman-Ford evaluator. The generation of the negative weight cycle (`StratificationFailure`) is computed organically by the graph matrix. There is no cheating in the normalization breakdown; the structural friction between dynamically re-leveled scopes and Extensionality equivalence mathematically computes its own failure.
-
-### A.3. `StratificationSoundness.lean`: The Scope-Parity and Soundness Matrix
-
-The soundness file exceeds 1000 lines of dense dependent-type proofs. Its complexity exists to rigorously defend against "scope leakage"—the risk that separating weak stratification constraints into disjoint subgraphs might accidentally cross-contaminate distances or boundaries.
-
-* **The Foundational Definition (`IsStratifiedAux`)**: This inductive type acts as the ultimate truth. It restricts valid stratifications explicitly to Quine's type-shifting limits (`ctx (y, s) = ctx (x, s) + 1` for membership). There are no algorithmic optimizations here; it is the raw mathematical boundary of NF.
-* **The Master Bridges (`stratified_of_satisfies`, `evaluateClausePartitioned_sound`, `evaluateClause_general_sound`, `evalScopes_sound`)**: These theorems perform massive inductions across the AST and scope partitions, proving that resolving localized directed edge graphs is mathematically identical to satisfying `IsStratifiedAux`. They prove that disjoint evaluation accurately merges into a global soundness check without false positives.
-* **Scope Parity and Leakage Prevention (`extractConstraintsAux_scope_parity`, `buildEdges_scope_preserve`, `loop_preserves_scope`, `relaxEdges_mem`, `extractConstraintsAux_v1_mem`)**: These are rigorous structural maintenance proofs. They mathematically guarantee that when constraints are extracted and edges are built, the endpoints (`c.v1.2` and `c.v2.2`) **never** span different quantifier scopes. `loop_preserves_scope` proves that even during deep Bellman-Ford distance relaxation, the memory map never overwrites or interacts with variables outside its isolated scope. 
-* **Data Structure Integrity (`lookup_map_dist`, `lookupWitness_eq_eval_dist`, `evalScopes_lookupScope_acc`, `filter_scope_empty_vars_constraints`, `mem_nub`)**: These theorems prove that the specific list-mapping and filtering operations used to partition the graph (e.g., extracting unique scopes via `nub`) maintain exact one-to-one equivalence with the original data structure. They guarantee no variables are dropped or duplicated during partitioning.
-* **The Safety Guarantee**: The sheer density of these functions ensures that there are no weird topological intersections or unverified hacks. The engine successfully implements Weak Stratification because it mathematically proves that its graph evaluation safely seals each matrix partition within its exact syntactic boundary.
+The `nf-sketches` architecture seamlessly binds foundational syntactic monism to rigorously verifiable computational structures. Every component—from the Abstract Syntax Tree through the Bellman-Ford Evaluator to the Executable Pipelines—is designed defensively. By transmuting standard set-theoretic paradoxes into finite graph geometry, resolving negative cycles through telescoping sums, and algorithmically forcing structural normalization to collide with rigid Extensionality limits, the codebase acts as an unassailable proof of Quine's systemic ambiguity. The implementation stands robust against unbounded iteration, conclusively isolating paradoxical regression as a calculable, structural certainty.
