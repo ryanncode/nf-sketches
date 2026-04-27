@@ -66,15 +66,28 @@ The soundness matrix in `StratificationSoundness.lean` rigorously defends agains
 
 ## 5. The Extensionality Collision & Executable Pipelines
 
-The ultimate application of this architecture manifests in the executable pipelines (`nf-validate`, `parse-strat`, and `seq-embed`). These environments operationalize the theory, transitioning the system from a static proof into an active diagnostic instrument.
+The ultimate application of this architecture manifests in the executable pipelines (`nf-validate`, `parse-strat`, `seq-embed`, and `untyped-comb`). These environments operationalize the theory, transitioning the system from a static proof into an active diagnostic instrument and a Turing-complete functional environment.
 
 The automated diagnostics inside `nf-validate` execute specific bounds. The `nfMain` loop tests limits against the Impredicative Subsystem (NFI) and Predicative Subsystem (NFP), validating theoretical boundaries by actively rejecting impredicative typings. The `phi_N` construct approximates Natural Numbers structurally. The `ProfileAcyclic.lean` module defeats Lean's lazy evaluation using `makeBroadMatrix`, `hashAST`, and `timePure` to stress-test the memory and traversal limits of Bowler's acyclic translation against artificially scaled cyclic formulas.
 
 For manual experimentation, the `parse-strat` module provides an interactive REPL sandbox. A recursive descent parser translates raw ASCII via `tokenize` and `parseFormula` directly into `Formula` AST nodes. Diagnostic formatters like `formatWitness` and `formatDetailedCycleSandbox` map theoretical negative-weight loops backward into plain language algebraic contradiction paths.
 
-The most critical environment is `seq-embed`, representing a deep embedding of Gentzen's Sequent Calculus. It gates set comprehension in derivations strictly behind the `checkStrat` algorithm. The `Sequent` and `Derivation` inductive types strictly index valid logic, supported by foundational constructors like `mkComprehensionAxiom` and `mkExtensionalityAxiom`. 
+The `seq-embed` environment represents a deep embedding of Gentzen's Sequent Calculus. It gates set comprehension in derivations strictly behind the `checkStrat` algorithm. The `Sequent` and `Derivation` inductive types strictly index valid logic, supported by foundational constructors like `mkComprehensionAxiom` and `mkExtensionalityAxiom`. 
 
 The core diagnostic engine, `reduceCut`, systematically evaluates failure structures like `idCollapse_A` and `singCollapse_A`. It simulates proof-theoretic failures by targeting specific sub-formulas, performing variable substitution (`substitute`), and forcing the newly altered structures directly through the live Bellman-Ford engine. When a substitution violates scope type limits, the newly-computed formula geometrically collides with the strict equivalence mandated by the Extensionality axiom. The generation of a negative weight cycle—logged distinctly as an `Extensionality Collision!`—is the mathematically rigorous, highly productive moment where the monist universe of NF defends its syntax from paradox.
+
+### 5.1. Untyped Combinatory Logic and Algorithmic T-Weaking
+
+The `untyped-comb` pipeline fundamentally shifts the execution from the hierarchical dependent type theory of Lean into a flat, variable-free graph reduction. Moving away from the `Formula` AST, the system defines the primitive `Comb` inductive type, operationalizing the `S`, `K`, `I`, and `U` combinators natively.
+
+The key mathematical achievement here is the formalization of algorithmic T-weaking. Rather than requiring external type hierarchies, the engine calculates the integer topological friction inherent in combinatory logic via the `distanceMap` pre-computation in `UntypedComb/Diagnostic.lean`. When evaluating complex functions like standard functional abstraction, the `UntypedComb/Topological.lean` module algorithmically injects the $T$-operator ($x \mapsto \iota"x$) precisely at the topological stress points identified by the negative structural weights, acting mechanically as a level-shifting endofunctor to ensure normalization.
+
+### 5.2. Combinatory Church Encodings (`CombLib`)
+
+To prove the Turing-completeness of this bare-metal operational layer, the `UntypedComb/CombLib/` directory implements complex structures purely through Church Encodings:
+*   `Booleans.lean`: Maps True and False exclusively to the `K` and `K I` routing configurations, establishing `and`, `or`, and `not` via node collision geometries.
+*   `Numerals.lean`: Implements B and S K structural sequences to define B-combinator-based arithmetic logic such as `succ`, `add`, and `mult` natively without mathematical axioms.
+*   `Recursion.lean`: Demonstrates the engine's capacity for unbounded evaluation by implementing the $Y$ combinator, proving the unstratified graph can successfully execute arbitrary recursive loops up to strict physical `k_iteration_limit` caps.
 
 ---
 

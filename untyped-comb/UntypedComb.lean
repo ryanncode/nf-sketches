@@ -3,6 +3,8 @@ import UntypedComb.Reduction
 import UntypedComb.Topological
 import UntypedComb.Diagnostic
 import UntypedComb.Tests
+import UntypedComb.DAG
+import UntypedComb.DAGTests
 import UntypedComb.CombLib.Booleans
 import UntypedComb.CombLib.Numerals
 import UntypedComb.CombLib.Recursion
