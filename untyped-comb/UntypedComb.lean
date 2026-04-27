@@ -10,4 +10,8 @@ import UntypedComb.LazyTests
 import UntypedComb.CombLib.Booleans
 import UntypedComb.CombLib.Numerals
 import UntypedComb.CombLib.Recursion
+import UntypedComb.CombLib.Lists
+import UntypedComb.CombLib.SelfModels
+import UntypedComb.CombLib.FregeRussell
+import UntypedComb.CombLib.Cardinals
 import UntypedComb.CombLib.Tests
