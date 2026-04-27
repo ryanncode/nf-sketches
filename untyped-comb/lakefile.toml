@@ -12,3 +12,7 @@ name = "UntypedComb"
 [[lean_exe]]
 name = "untyped-comb"
 root = "Main"
+
+[[lean_exe]]
+name = "profile-comb"
+root = "ProfileComb"

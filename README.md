@@ -93,7 +93,7 @@ This project formalizes the structural proof theory required to navigate the com
 
 **Theoretical Objective:** Marcel Crabbé proved that if a system restricts itself exclusively to strictly stratifiable terms, the set of terms loses closure under substitution. This causes the Hauptsatz (cut-elimination) to fail trivially (Crabbé 1994). By simulating cuts that require substitution across a strictly stratified global graph, the program mechanically surfaces the exact topological contradictions responsible for this grammatical breakdown.
 
-### Extensionality Collisions vs. Strict Global Stratification
+#### Extensionality Collisions vs. Strict Global Stratification
 
 Early versions of this repository operated under **strict global stratification**, mechanically verifying Marcel Crabbé's observation that enforcing rigid global typing destroys structural closure under substitution. 
 

@@ -15,3 +15,4 @@ import UntypedComb.CombLib.SelfModels
 import UntypedComb.CombLib.FregeRussell
 import UntypedComb.CombLib.Cardinals
 import UntypedComb.CombLib.Tests
+import UntypedComb.Translation

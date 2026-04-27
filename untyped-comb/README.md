@@ -27,3 +27,12 @@ lake build
 ```
 
 All combinatory limits and logical evaluations are formally verified natively within Lean's runtime.
+
+### Profiling Performance Limits
+
+You can stress-test the raw boundary limits of the logic engine (testing combinatory logic complexity independent of Lean internals) using the custom `profile-comb` tool. This tests topological translation of deep graphs (up to 4,096 depth) and aggressive evaluation loops against paradoxical self-reference ($V \in V$).
+
+```bash
+lake build profile-comb
+./.lake/build/bin/profile-comb
+```
