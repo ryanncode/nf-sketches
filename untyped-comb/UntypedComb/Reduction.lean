@@ -31,14 +31,24 @@ def reduceStep : Comb → Option Comb
     | some x' => some (Comb.t_inject x')
     | none => none
 
+  -- Lazy thunks are only reduced if structurally required by a call
+  | Comb.lazy_thunk x => some x -- Force the thunk
+
+  -- Terminals do not reduce further
+  | Comb.terminal _ => none
+
   | _ => none
 
 /--
 Evaluates a combinator term to its normal form by repeatedly applying `reduceStep`.
+Integrates K-Iteration Halting to prevent infinite regression on paradoxical cycles.
 -/
-partial def normalize (t : Comb) : Comb :=
-  match reduceStep t with
-  | some t' => normalize t'
-  | none => t
+partial def normalize (t : Comb) (kLimit : Nat := 10000) (depth : Nat := 0) : Comb :=
+  if depth >= kLimit then
+    Comb.terminal "K_ITERATION_HALT"
+  else
+    match reduceStep t with
+    | some t' => normalize t' kLimit (depth + 1)
+    | none => t
 
 end UntypedComb

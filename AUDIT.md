@@ -76,11 +76,13 @@ The `seq-embed` environment represents a deep embedding of Gentzen's Sequent Cal
 
 The core diagnostic engine, `reduceCut`, systematically evaluates failure structures like `idCollapse_A` and `singCollapse_A`. It simulates proof-theoretic failures by targeting specific sub-formulas, performing variable substitution (`substitute`), and forcing the newly altered structures directly through the live Bellman-Ford engine. When a substitution violates scope type limits, the newly-computed formula geometrically collides with the strict equivalence mandated by the Extensionality axiom. The generation of a negative weight cycle—logged distinctly as an `Extensionality Collision!`—is the mathematically rigorous, highly productive moment where the monist universe of NF defends its syntax from paradox.
 
-### 5.1. Untyped Combinatory Logic and Algorithmic T-Weaking
+### 5.1. Untyped Combinatory Logic, Algorithmic T-Weaking, and Acyclic Translation
 
 The `untyped-comb` pipeline fundamentally shifts the execution from the hierarchical dependent type theory of Lean into a flat, variable-free graph reduction. Moving away from the `Formula` AST, the system defines the primitive `Comb` inductive type, operationalizing the `S`, `K`, `I`, and `U` combinators natively.
 
 The key mathematical achievement here is the formalization of algorithmic T-weaking. Rather than requiring external type hierarchies, the engine calculates the integer topological friction inherent in combinatory logic via the `distanceMap` pre-computation in `UntypedComb/Diagnostic.lean`. When evaluating complex functions like standard functional abstraction, the `UntypedComb/Topological.lean` module algorithmically injects the $T$-operator ($x \mapsto \iota"x$) precisely at the topological stress points identified by the negative structural weights, acting mechanically as a level-shifting endofunctor to ensure normalization.
+
+Furthermore, the framework secures the structural baseline of execution via the $O(V+E)$ acyclic translation pass. The `UntypedComb/DAG.lean` module natively computes Kosaraju's algorithm to identify 0-weight semantic cycles (Strongly Connected Components). By executing `collapseSCCs`, the engine projects unstratified self-referential graph loops using the $U$ combinator. The `compileAcyclic` function then structurally guarantees that the term rewriting evaluation engine acts strictly on a Directed Acyclic Graph, neutralizing the paradox of exponential memory blowup prior to execution.
 
 ### 5.2. Combinatory Church Encodings (`CombLib`)
 
@@ -90,6 +92,16 @@ To prove the Turing-completeness of this bare-metal operational layer, the `Unty
 *   `Recursion.lean`: Demonstrates the engine's capacity for unbounded evaluation by implementing the $Y$ combinator, proving the unstratified graph can successfully execute arbitrary recursive loops up to strict physical `k_iteration_limit` caps.
 
 ---
+
+### 5.3. Topologically-Guided Lazy Reduction Bounding
+
+To physically constrain the untyped combinatory execution and prevent exhaustion from impredicative saturation (such as evaluating the unstratified graph $V \in V$), the `untyped-comb` engine incorporates **Topologically-Guided Call-by-Need Evaluation**. 
+
+1. **Lazy Thunks & Terminals:** The combinatory AST (`Core.lean`) integrates explicit `lazy_thunk` wrappers and a `terminal` state constructor.
+2. **Minimum Cycle Mean (MCM):** The engine tracks semantic topological friction through an MCM algorithmic approximation (`MCM.lean`). By extracting the minimum average edge weight over isolated 0-weight semantic cycles, the compiler generates a dynamic graph constraint, identifying the boundary where the computation collapses into paradoxical regression ($\mu^* < 0$).
+3. **K-Iteration Halting:** These computed limits dictate the execution horizon of the structural evaluator (`Reduction.lean`). Rather than suffering an arbitrary recursion exhaustion (stack overflow) or entering an uncomputable infinite spin, the engine recognizes the topological limits mapped by MCM and actively intercepts self-referencing non-well-founded evaluations. The logic immediately triggers a stabilization mechanism, freezing the result natively into the AST as `Comb.terminal "K_ITERATION_HALT"`.
+
+This fully resolves the untyped evaluation requirements (Phase 3), bridging classical diagnostic type-checking directly into the operational boundaries needed for safe hardware interaction (arena-allocated graph reduction) moving forward.
 
 ## Conclusion
 

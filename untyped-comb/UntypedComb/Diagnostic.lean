@@ -25,6 +25,8 @@ partial def distanceMap (t : Comb) : Option Int :=
     match distanceMap x with
     | some w => some (w + 1)
     | none => none
+  | Comb.lazy_thunk x => distanceMap x -- Thunks defer evaluation but retain the same topological boundary
+  | Comb.terminal _ => some 0 -- A stabilized terminal state has neutral weight
   | Comb.app f x =>
     match distanceMap f, distanceMap x with
     | some wf, some wx =>

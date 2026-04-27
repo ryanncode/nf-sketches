@@ -5,6 +5,8 @@ import UntypedComb.Diagnostic
 import UntypedComb.Tests
 import UntypedComb.DAG
 import UntypedComb.DAGTests
+import UntypedComb.MCM
+import UntypedComb.LazyTests
 import UntypedComb.CombLib.Booleans
 import UntypedComb.CombLib.Numerals
 import UntypedComb.CombLib.Recursion

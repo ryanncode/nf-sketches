@@ -13,6 +13,8 @@ inductive Comb
   | var : String -> Comb
   | app : Comb -> Comb -> Comb
   | t_inject : Comb -> Comb -- The geometric type-shifting endofunctor
-  deriving Repr, DecidableEq, Inhabited
+  | lazy_thunk : Comb -> Comb -- Explicit Call-by-Need thunk for impredicative boundaries
+  | terminal : String -> Comb -- A stabilized terminal state for intercepted paradoxes
+  deriving Repr, Inhabited, DecidableEq
 
 end UntypedComb
