@@ -76,41 +76,33 @@ The `seq-embed` environment represents a deep embedding of Gentzen's Sequent Cal
 
 The core diagnostic engine, `reduceCut`, systematically evaluates failure structures like `idCollapse_A` and `singCollapse_A`. It simulates proof-theoretic failures by targeting specific sub-formulas, performing variable substitution (`substitute`), and forcing the newly altered structures directly through the live Bellman-Ford engine. When a substitution violates scope type limits, the newly-computed formula geometrically collides with the strict equivalence mandated by the Extensionality axiom. The generation of a negative weight cycle—logged distinctly as an `Extensionality Collision!`—is the mathematically rigorous, highly productive moment where the monist universe of NF defends its syntax from paradox.
 
-### 5.1. Untyped Combinatory Logic, Algorithmic T-Weaking, and Acyclic Translation
+---
+
+## 6. Untyped Combinatory Logic
 
 The `untyped-comb` pipeline fundamentally shifts the execution from the hierarchical dependent type theory of Lean into a flat, variable-free graph reduction. Moving away from the `Formula` AST, the system defines the primitive `Comb` inductive type, operationalizing the `S`, `K`, `I`, and `U` combinators natively.
 
-The key mathematical achievement here is the formalization of algorithmic T-weaking. Rather than requiring external type hierarchies, the engine calculates the integer topological friction inherent in combinatory logic via the `distanceMap` pre-computation in `UntypedComb/Diagnostic.lean`. When evaluating complex functions like standard functional abstraction, the `UntypedComb/Topological.lean` module algorithmically injects the $T$-operator ($x \mapsto \iota"x$) precisely at the topological stress points identified by the negative structural weights, acting mechanically as a level-shifting endofunctor to ensure normalization.
+### 6.1. Algorithmic T-Weaking and Dynamic Weight Integration
 
-Furthermore, the framework secures the structural baseline of execution via the $O(V+E)$ acyclic translation pass. The `UntypedComb/DAG.lean` module natively computes Kosaraju's algorithm to identify 0-weight semantic cycles (Strongly Connected Components). By executing `collapseSCCs`, the engine projects unstratified self-referential graph loops using the $U$ combinator. The `compileAcyclic` function then structurally guarantees that the term rewriting evaluation engine acts strictly on a Directed Acyclic Graph, neutralizing the paradox of exponential memory blowup prior to execution.
+Bridging the architectural gap between static validation and runtime evaluation, the pipeline natively parses logical formulas into the `untyped-comb` AST via `UntypedComb/Translation.lean`. Instead of relying on external hierarchies or mock limits, the engine calculates the integer topological friction mechanically. It utilizes `getWeightFromWitness` to extract genuine Bellman-Ford distance bounds directly from `NfValidate.StratificationWitness`. This dynamic pipeline feeds live integer variables into the `algorithmicTWeaking` function, mechanically synthesizing $T$-operator injections ($x \mapsto \iota"x$) on-the-fly exactly where structural logic crosses weak stratification boundaries, acting as a level-shifting endofunctor to ensure normalization.
 
-### 5.2. Combinatory Church Encodings (`CombLib`)
+### 6.2. Acyclic Translation and Topologically-Guided Lazy Reduction
 
-To prove the Turing-completeness of this bare-metal operational layer, the `UntypedComb/CombLib/` directory implements complex structures purely through Church Encodings:
-*   `Booleans.lean`: Maps True and False exclusively to the `K` and `K I` routing configurations, establishing `and`, `or`, and `not` via node collision geometries.
-*   `Numerals.lean`: Implements B and S K structural sequences to define B-combinator-based arithmetic logic such as `succ`, `add`, and `mult` natively without mathematical axioms.
-*   `Recursion.lean`: Demonstrates the engine's capacity for unbounded evaluation by implementing the $Y$ combinator, proving the unstratified graph can successfully execute arbitrary recursive loops up to strict physical `k_iteration_limit` caps.
+Furthermore, the framework secures the structural baseline of execution via the $O(V+E)$ acyclic translation pass. The `UntypedComb/DAG.lean` module natively computes Kosaraju's algorithm to identify 0-weight semantic cycles (Strongly Connected Components). By executing `collapseSCCs`, the engine projects unstratified self-referential graph loops using the $U$ combinator. The `compileAcyclic` function guarantees that the term rewriting evaluation engine acts strictly on a Directed Acyclic Graph, neutralizing the paradox of exponential memory blowup prior to execution.
 
----
+To physically constrain this execution and prevent exhaustion from impredicative saturation (such as evaluating the unstratified graph $V \in V$), the engine incorporates **Topologically-Guided Call-by-Need Evaluation**:
+1. **Lazy Thunks & Terminals:** The combinatory AST integrates explicit `lazy_thunk` wrappers and a `terminal` state constructor.
+2. **Minimum Cycle Mean (MCM):** The engine tracks semantic topological friction through an MCM algorithmic approximation. By extracting the minimum average edge weight over isolated 0-weight semantic cycles, the compiler generates a dynamic graph constraint, identifying the boundary where the computation collapses into paradoxical regression ($\mu^* < 0$).
+3. **K-Iteration Halting:** These limits dictate the execution horizon of the structural evaluator. The engine recognizes the topological limits mapped by MCM and actively intercepts self-referencing evaluations. The logic immediately triggers a stabilization mechanism, freezing the result natively into the AST as `Comb.terminal "K_ITERATION_HALT"`.
 
-### 5.3. Topologically-Guided Lazy Reduction Bounding
+### 6.3. Transfinite Macro-Primitives (`CombLib`)
 
-To physically constrain the untyped combinatory execution and prevent exhaustion from impredicative saturation (such as evaluating the unstratified graph $V \in V$), the `untyped-comb` engine incorporates **Topologically-Guided Call-by-Need Evaluation**. 
-
-1. **Lazy Thunks & Terminals:** The combinatory AST (`Core.lean`) integrates explicit `lazy_thunk` wrappers and a `terminal` state constructor.
-2. **Minimum Cycle Mean (MCM):** The engine tracks semantic topological friction through an MCM algorithmic approximation (`MCM.lean`). By extracting the minimum average edge weight over isolated 0-weight semantic cycles, the compiler generates a dynamic graph constraint, identifying the boundary where the computation collapses into paradoxical regression ($\mu^* < 0$).
-3. **K-Iteration Halting:** These computed limits dictate the execution horizon of the structural evaluator (`Reduction.lean`). Rather than suffering an arbitrary recursion exhaustion (stack overflow) or entering an uncomputable infinite spin, the engine recognizes the topological limits mapped by MCM and actively intercepts self-referencing non-well-founded evaluations. The logic immediately triggers a stabilization mechanism, freezing the result natively into the AST as `Comb.terminal "K_ITERATION_HALT"`.
-
-This fully resolves the untyped evaluation requirements (Phase 3), bridging classical diagnostic type-checking directly into the operational boundaries needed for safe hardware interaction (arena-allocated graph reduction) moving forward.
-
-### 5.4. Advanced CombLib Expansions (Phase 4)
-
-Building upon the Topologically-Guided boundaries, the `CombLib` framework implements highly saturated and structurally divergent configurations natively:
+To prove the Turing-completeness of this bare-metal operational layer, the `UntypedComb/CombLib/` directory implements complex structures purely through Church Encodings. Building upon the Topologically-Guided boundaries, the framework implements highly saturated and structurally divergent configurations natively:
 
 *   **Recursive Self-Models ($V \in V$):** `SelfModels.lean` constructs a mathematically robust Quine atom ($\Omega = \{\Omega\}$) natively inside the engine. Utilizing the Y-combinator and inductive list topologies, the architecture evaluates a structure containing an unreduced copy of itself, relying directly on the MCM/K-Iteration bounds to safely halt the resulting paradox.
-*   **Inductive List Geometries:** `Lists.lean` implements node-collision topologies for `cons`, `head`, and `tail` via raw bracket abstraction semantics.
 *   **Frege-Russell Numerals:** `FregeRussell.lean` defines cardinal sizes via the native evaluation of properties, mathematically modeling structures representing "the set of all sets of a certain size" (such as `Num0`).
-*   **Choice-Free Cardinal Arithmetic:** `Cardinals.lean` maps out Transfinite Calculus by modeling cardinal summation (`Card_Add`) and bounds (`Aleph_0`) strictly within topological configurations, permanently bypassing the need for the Axiom of Choice and well-ordering.
+*   **Choice-Free Cardinal Arithmetic:** `Cardinals.lean` maps out Transfinite Calculus natively. Cardinal summation (`Card_Add`) is implemented via pure bracket abstraction over disjoint union topologies ($\lambda \to S, K$), and bounds like `Aleph_0` are anchored using the infinite $Y$-combinator stream generator. The operations are bounded structurally across stratification hierarchies using `t_inject` topological friction markers, permanently bypassing the Axiom of Choice and resolving transfinite scaling geometrically.
+*   **Standard Encodings:** Implements core primitives including node-collision `Booleans` (`and`, `or`, `not`), B-combinator-based `Numerals` (`succ`, `add`, `mult`), and inductive `Lists` geometries (`cons`, `head`, `tail`) via raw bracket abstraction.
 
 ---
 

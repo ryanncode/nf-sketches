@@ -84,10 +84,23 @@ def testQuineAtomHalt : Bool :=
 -- Num0 (isNil) applied to (cons a b) should return false
 #eval testReduction (app Num0 (cons (var "a") (var "b"))) fls
 
--- Cardinal Arithmetic Test (Placeholder parsing check)
+-- Cardinal Arithmetic Test
 def testCardinalAdd : Bool :=
-  cardAdd == var "Card_Add"
+  let A := var "A"
+  let B := var "B"
+  -- cardAdd A B should be t_inject (disjointUnion A B)
+  match cardAdd A B with
+  | Comb.t_inject _ => true
+  | _ => false
 
 #eval testCardinalAdd
+
+-- Aleph-0 Test
+def testAleph0 : Bool :=
+  match aleph0 with
+  | Comb.t_inject _ => true
+  | _ => false
+
+#eval testAleph0
 
 end UntypedComb.CombLib.Tests

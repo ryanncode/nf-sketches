@@ -2,6 +2,8 @@
 
 *A proof-theoretic engine utilizing Lean 4 for* $O(V+E)$ *topological bounds checking to enable acyclic combinatory graph reduction.*
 
+---
+
 ## The Problem
 
 Standard type-checkers and formal provers bottleneck on highly entangled or self-referential graph evaluations due to global substitution environments and hierarchical constraints. 
@@ -13,24 +15,23 @@ Standard type-checkers and formal provers bottleneck on highly entangled or self
 ## Industry Applications
 
 ### AI Alignment & Agent Logic
-For organizations grounding AI outputs in deterministic logic, standard interpreters scale poorly. 
-* **Zero-Cost Loop Detection:** Geometric bounds checking prevents exponential memory blowup and infinite loops before the code ever reaches execution hardware.
-* **Guaranteed Termination:** The engine mathematically restricts the depth of evaluations, guaranteeing that complex proof searches terminate without relying on brute-force timeouts.
-* **Massive GPU Parallelism:** Compiling logic to raw combinators eradicates the need for traditional memory overhead, translating logic into routing instructions primed for parallel GPU execution.
+For organizations grounding AI outputs in deterministic logic, standard interpreters scale poorly. This engine addresses that by mathematically restricting the depth of evaluations, guaranteeing that complex proof searches terminate without relying on brute-force timeouts. Geometric bounds checking provides zero-cost loop detection to prevent exponential memory blowup before the code ever reaches execution hardware. Ultimately, compiling this logic to raw combinators eradicates traditional memory overhead, translating logic into spatial routing instructions primed for massive GPU parallelism.
 
 ### High-Energy Physics & Quantum Simulation
-In high-energy physics, calculating interactions assumes continuous spacetime, causing infinite equations that require artificial mathematical hacks (renormalization).
-* **Native Quantum Saturation:** The engine models the quantum vacuum as a saturated boundary condition. By actively rejecting infinite integral sums, it naturally prevents the mathematical divergences that plague standard quantum field theory.
-* **Computing Friction, Not Infinities:** The measurable energy shift of a particle interacting with the vacuum is calculated as the exact algorithmic cost (syntactic friction) required to resolve the logical graph, avoiding uncomputable infinities.
-* **Bare-Metal Entanglement:** By targeting interaction net primitives, the environment evaluates logic locally across shared edges, providing a direct hardware simulation of quantum entanglement.
-
-## Architecture
-
-1. **Lean 4 Oracle (Static Verification):** The engine replaces dependent type-checking with Bellman-Ford geometric shortest-path routing, trapping non-terminating logical loops as negative-weight cycles.
-2. **Combinatory Compiler (AST to S/K/I/U):** Translates the Lean-verified DAG into a flat operational domain. The system algorithmically injects type-shifting T-operators precisely where topological level shifts are required, ensuring acyclic stability.
-3. **High-Performance Backend Transition:** The strictly bounded combinator strings are optimized for translation into bare-metal CUDA execution via Interaction Nets.
+In high-energy physics, calculating interactions often assumes continuous spacetime, causing infinite equations that require artificial mathematical hacks (renormalization). Our engine natively models the quantum vacuum as a saturated boundary condition. By actively rejecting infinite integral sums, it naturally prevents the mathematical divergences that plague standard quantum field theory. The measurable energy shift of a particle interacting with the vacuum is calculated as the exact algorithmic cost (syntactic friction) required to resolve the logical graph, successfully avoiding uncomputable infinities. By targeting interaction net primitives, the environment evaluates logic locally across shared edges, yielding a direct hardware simulation of quantum entanglement.
 
 ---
+
+## Architecture Pipeline
+
+> **Static Verification (Lean 4 Oracle)**  
+> The engine replaces dependent type-checking with Bellman-Ford geometric shortest-path routing, mathematically trapping non-terminating logical loops as negative-weight cycles.
+
+> **Combinatory Compiler (AST to S/K/I/U)**  
+> Translates the Lean-verified DAG into a flat operational domain. The system algorithmically injects type-shifting T-operators precisely where topological level shifts are required, ensuring strict acyclic stability.
+
+> **High-Performance Backend Transition**  
+> The safely bounded combinator strings are optimized for immediate translation into bare-metal CUDA execution via Interaction Nets.
 
 ## The Laboratory vs. The Factory
 
@@ -38,12 +39,11 @@ This Lean 4 repository functions as a theoretical laboratory rather than the fin
 
 *Note on Computational Limits:* The conversion of formulas into Disjunctive Normal Form (DNF) triggers an exponential combinatorial explosion. This acts as a severe practical bottleneck for Lean's evaluator, restricting the engine to small, targeted canonical paradoxes. However, because the DNF expansion remains structurally recursive and bounded by the finite syntax tree of the input formula, it maintains strict constructivist rigor in alignment with the Intuitionistic Fan Theorem. It guarantees termination and never generates a lawless sequence. Future iterations of the custom logic engine will resolve this bottleneck by integrating CDCL-based SAT evaluation or an SMT solver. Utilizing Integer Difference Logic will evaluate geometric weights dynamically without explicitly expanding memory.
 
+---
+
 ## Setup and Building
 
-This repository contains multiple Lean 4 projects. 
-
-* **Fast Build (Executable Only):** Running `lake build` in a project folder will quickly compile the core engine and executable.
-* **Full Verification (Proofs):** Running `lake build NfValidate` will compile the entire library, including all 1000+ line soundness proofs. This takes significantly longer as Lean must mathematically verify every theorem.
+This repository contains multiple Lean 4 projects. You can execute a fast build by running `lake build` in a project folder, which quickly compiles the core engine and executable. Alternatively, running `lake build NfValidate` performs full verification, compiling the entire library along with all 1000+ line soundness proofs. This takes significantly longer as Lean must mathematically verify every theorem.
 
 ### Updating Lean and Mathlib
 
@@ -69,29 +69,27 @@ The repository divides into three primary modules, structurally separating the c
 
 This library operates as an algorithmic syntax checker. Rather than proving theorems within NF, the Lean script ingests an abstract syntax tree and algorithmically determines its stratifiability. By completely abandoning traditional model theory, this module reduces set theory validation into a strictly geometric shortest-path routing problem.
 
-**Implementation Mechanics:** The program defines a custom inductive type representing first-order logic formulas with a membership relation. A function assigns integer levels to all variables utilizing Bellman-Ford graph evaluation. Equality constraints (`x = y`) encode as bidirectional edges with a weight of 0, while membership constraints (`x ∈ y`) translate into directed edges with a weight of 1.
+The program defines a custom inductive type representing first-order logic formulas with a membership relation. A function assigns integer levels to all variables utilizing Bellman-Ford graph evaluation. Equality constraints (`x = y`) encode as bidirectional edges with a weight of 0, while membership constraints (`x ∈ y`) translate into directed edges with a weight of 1.
 
-**Theoretical Objective:** Stratification functions purely as a grammatical constraint. Coding this validator operationalizes the systematic ambiguity of the language. Classical paradoxes like Russell's paradox do not require semantic interpretation to be resolved; they mathematically manifest as geometric negative weight cycles during the Bellman-Ford traversal.
+Stratification functions purely as a grammatical constraint. Coding this validator operationalizes the systematic ambiguity of the language. Classical paradoxes like Russell's paradox do not require semantic interpretation to be resolved; they mathematically manifest as geometric negative weight cycles during the Bellman-Ford traversal.
 
-**Formal Verification of Geometric Soundness:** The repository proves the algorithm's internal monotonicity and convergence, guaranteeing the search map never regresses into cyclic instability. A formalized K-Iteration bound mathematically restricts the depth of type derivations strictly to the number of variables present. This mechanism guarantees termination without unchecked iterative expansion. Ultimately, the `stratification_sound` theorem proves that computational satisfiability in the geometric domain inherently guarantees valid syntax, securing a soundness proof entirely independent of traditional model-theoretic structures.
+The repository proves the algorithm's internal monotonicity and convergence, guaranteeing the search map never regresses into cyclic instability. A formalized K-Iteration bound mathematically restricts the depth of type derivations strictly to the number of variables present. This mechanism guarantees termination without unchecked iterative expansion. Ultimately, the `stratification_sound` theorem proves that computational satisfiability in the geometric domain inherently guarantees valid syntax, securing a soundness proof entirely independent of traditional model-theoretic structures.
 
 ### `parse-strat`: The Interactive Sandbox
 
 This program provides a tactile, responsive REPL environment for testing edge cases in the constraint solver without compromising the formal proofs of the main diagnostic suite.
 
-**Implementation Mechanics:** A lexical scanner and recursive descent parser allow users to manually inject arbitrary set-theoretic strings (e.g., `~(x = y) & (y e z)`). The algorithm immediately generates the topological graph, detects cycles, and prints the distance maps or exact algebraic telescoping sum contradictions.
-
-**Theoretical Objective:** This sandbox invites researchers to manually test the boundaries of Quine's systemic ambiguity and observe the mechanical reality of the algorithm in real-time.
+A lexical scanner and recursive descent parser allow users to manually inject arbitrary set-theoretic strings (e.g., `~(x = y) & (y e z)`). The algorithm immediately generates the topological graph, detects cycles, and prints the distance maps or exact algebraic telescoping sum contradictions. This sandbox invites researchers to manually test the boundaries of Quine's systemic ambiguity and observe the mechanical reality of the algorithm in real-time.
 
 ### `seq-embed`: The Formal Diagnostic Tool
 
 This project formalizes the structural proof theory required to navigate the complexities of the axiom of extensionality. It builds a deep embedding of Gentzen's Sequent Calculus in Lean, restricting comprehension rules strictly to formulas that pass the `nf-validate` stratification checker.
 
-**Algorithmic Gatekeeping:** The system mechanically restricts classical deductive freedom. While standard theorem provers invoke comprehension rules whenever a formula is well-formed, this environment mathematically locks the `compL` (Comprehension Left) rule. The logic engine refuses to process a set comprehension unless supplied with a `StratificationWitness` generated by the external Bellman-Ford algorithm.
+The system mechanically restricts classical deductive freedom. While standard theorem provers invoke comprehension rules whenever a formula is well-formed, this environment mathematically locks the `compL` (Comprehension Left) rule. The logic engine refuses to process a set comprehension unless supplied with a `StratificationWitness` generated by the external Bellman-Ford algorithm.
 
-**Sabotaging Normalization:** The diagnostic engine (`reduceCut`) executes canonical failure pathways like the Impredicative Singleton. Rather than building a traditional normalizer to smooth out intermediate lemmas, this engine intentionally bypasses standard structural permutations to force logical detours directly into the `compL` rule.
+The diagnostic engine (`reduceCut`) executes canonical failure pathways like the Impredicative Singleton. Rather than building a traditional normalizer to smooth out intermediate lemmas, this engine intentionally bypasses standard structural permutations to force logical detours directly into the `compL` rule.
 
-**Theoretical Objective:** Marcel Crabbé proved that if a system restricts itself exclusively to strictly stratifiable terms, the set of terms loses closure under substitution. This causes the Hauptsatz (cut-elimination) to fail trivially (Crabbé 1994). By simulating cuts that require substitution across a strictly stratified global graph, the program mechanically surfaces the exact topological contradictions responsible for this grammatical breakdown.
+Marcel Crabbé proved that if a system restricts itself exclusively to strictly stratifiable terms, the set of terms loses closure under substitution. This causes the Hauptsatz (cut-elimination) to fail trivially (Crabbé 1994). By simulating cuts that require substitution across a strictly stratified global graph, the program mechanically surfaces the exact topological contradictions responsible for this grammatical breakdown.
 
 #### Extensionality Collisions vs. Strict Global Stratification
 
@@ -105,7 +103,16 @@ The engine actively demonstrates that it is precisely the violent friction betwe
 
 Standard implementations of the $\lambda$-calculus or combinatory logic in Lean rely heavily on dependent type theory. The `untyped-comb` module constructs an entirely untyped combinatory logic environment and introduces the specific syntactic operators required to make it functional under NF rules. 
 
-By utilizing **Topologically-Guided Lazy Reduction Bounding**, the engine natively compiles operations into a Directed Acyclic Graph (DAG) and algorithmically injects Thomas Forster's T-operator. It leverages Kosaraju's algorithm to flatten semantic cycles and employs Minimum Cycle Mean (MCM) bounds to enforce strict K-Iteration halting limits. This allows the system to execute complex Church Encodings (`CombLib`), including Frege-Russell numerals, transfinite cardinal arithmetic, and paradoxical self-models ($V \in V$) natively without triggering memory exhaustion or relying on an external well-ordering.
+By utilizing **Topologically-Guided Lazy Reduction Bounding**, the engine natively compiles operations into a Directed Acyclic Graph (DAG). It leverages Kosaraju's algorithm to flatten semantic cycles and employs Minimum Cycle Mean (MCM) bounds to enforce strict K-Iteration halting limits.
+
+**Dynamic Weight Integration & The $T$-Functor**
+Bridging the static validation layer to the execution backend, the engine extracts genuine topological friction bounds (integer distances) generated by the `NfValidate.StratificationWitness`. It uses these constraints to algorithmically inject Thomas Forster's $T$-operator exactly where topological alignment is required during AST parsing, mechanically enforcing the boundaries of weak stratification prior to execution.
+
+**Transfinite Macro-Primitives (`CombLib`)**
+This stable untyped execution environment allows the system to process advanced, paradox-heavy operations natively without memory exhaustion or dependency on external well-ordering axioms:
+* **Recursive Self-Models ($V \in V$):** Uses the Y-combinator to evaluate Quine Atoms ($\Omega = \{\Omega\}$), relying safely on the MCM limits to cleanly intercept the self-referential graph.
+* **Frege-Russell Numerals:** Defines numbers organically as "the set of all sets of size N," employing node-collision geometries instead of dependent axioms.
+* **Choice-Free Cardinal Arithmetic:** Implements Transfinite Calculus (e.g., Cardinal Addition $|A| + |B|$ and $\aleph_0$) entirely via pure $\lambda \to S, K$ bracket abstraction. The system mathematically tracks disjoint union topologies across stratification boundaries, triggering mechanical $T$-functor injections dynamically.
 
 ---
 
@@ -146,14 +153,15 @@ With the successful implementation of the `untyped-comb` phase, the project has 
 
 ### Upcoming Milestones
 
-1. **Categorical Semantics (The SPE Architecture)**
-   - Transitioning the evaluated logic into applied category theory.
-   - Constructing the **Stratified Pseudo Elephant (SPE)** to process a self-referential topology where the universe evaluates its own internal subcategories natively.
-   - Implementing **Strongly Cantorian Retractions** as dynamic "islands of classicality," where choice functions and arithmetic can execute safely without triggering negative cycle limits.
-2. **Native Systems Execution (The Monist Engine)**
-   - Abandoning the dependent type constraints of Lean 4 entirely in favor of a bare-metal implementation written in **Rust**.
-   - Compiling the verified Topologically-Guided Lazy Reduction Bounds into **Arena-Allocated Interaction Nets**, optimizing memory traversal for high-performance hardware execution (HVM2/Bend).
-   - Establishing real-time execution bounds via dynamic programming and color-coding heuristics to bypass exhaustive path traversal.
+### Categorical Semantics (The SPE Architecture)
+
+The evaluated logic will transition into applied category theory by constructing the Stratified Pseudo Elephant (SPE). This architecture processes a self-referential topology where the universe evaluates its own internal subcategories natively. Additionally, we will implement Strongly Cantorian Retractions as dynamic "islands of classicality," where choice functions and arithmetic can execute safely without triggering negative cycle limits.
+
+### Native Systems Execution (The Monist Engine)
+
+We plan to abandon the dependent type constraints of Lean 4 entirely in favor of a bare-metal implementation written in Rust. The verified Topologically-Guided Lazy Reduction Bounds will compile into Arena-Allocated Interaction Nets, optimizing memory traversal for high-performance hardware execution (HVM2/Bend). This transition includes establishing real-time execution bounds via dynamic programming and color-coding heuristics to bypass exhaustive path traversal.
+
+---
 
 ## License
 
