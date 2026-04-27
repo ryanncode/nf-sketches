@@ -1,0 +1,14 @@
+name = "untyped-comb"
+version = "0.1.0"
+defaultTargets = ["untyped-comb"]
+
+[[require]]
+name = "nf-validate"
+path = "../nf-validate"
+
+[[lean_lib]]
+name = "UntypedComb"
+
+[[lean_exe]]
+name = "untyped-comb"
+root = "Main"
