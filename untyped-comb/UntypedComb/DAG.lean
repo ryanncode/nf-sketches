@@ -101,19 +101,46 @@ def isCyclicSCC (scc : List NodeId) (d : DAG) : Bool :=
   scc.length > 1 ||
   d.edges.toList.any (fun e => e.src.id == scc.head!.id && e.dst.id == scc.head!.id)
 
-def collapseSCCs (c : Comb) : Comb :=
-  -- Real graph flattening implementation would project the specific subset of the DAG.
-  -- For now, if we encounter a non-well-founded recursive app like (x x) we can trap it in a U combinator.
-  c
+/-- Rebuilds the Comb AST from the DAG nodes, applying U-combinator projections where SCCs represent cycles. -/
+partial def rebuildGraph (d : DAG) (sccs : List (List NodeId)) (currentNode : NodeId) : Comb :=
+  let c := match d.nodes.toList.find? (fun (id, _) => id == currentNode) with
+           | some (_, comb) => comb
+           | none => Comb.var "error_node_not_found"
+
+  -- Check if current node is part of a cyclic SCC
+  let isCyclic := sccs.any (fun scc => scc.contains currentNode && isCyclicSCC scc d)
+
+  if isCyclic then
+    -- Project the entire self-referential graph segment securely using the U combinator
+    Comb.app Comb.U c
+  else
+    -- Standard translation back down the AST based on children
+    let children := d.edges.toList.filter (fun e => e.src == currentNode) |>.map (fun e => e.dst)
+    match c with
+    | Comb.app _ _ =>
+      if children.length == 2 then
+        let child0 := children.getD 0 currentNode
+        let child1 := children.getD 1 currentNode
+        Comb.app (rebuildGraph d sccs child0) (rebuildGraph d sccs child1)
+      else c -- Fallback if translation dropped edges
+    | Comb.t_inject _ =>
+      if children.length == 1 then
+        let child0 := children.getD 0 currentNode
+        Comb.t_inject (rebuildGraph d sccs child0)
+      else c
+    | _ => c
+
+def collapseSCCs (d : DAG) (sccs : List (List NodeId)) (rootId : NodeId) : Comb :=
+  rebuildGraph d sccs rootId
 
 -- 5. DAG Re-Translation
 
 def compileAcyclic (c : Comb) : Comb :=
   -- 1. Translate to DAG
-  let _d := toGraph c
+  let (d, rootId) := astToGraphAux c ⟨#[], #[]⟩
   -- 2. Find SCCs
-  -- let sccs := findSCCs d
-  -- 3. Collapse 0-weight semantic cycles
-  collapseSCCs c
+  let sccs := findSCCs d
+  -- 3. Collapse 0-weight semantic cycles using projection
+  collapseSCCs d sccs rootId
 
 end UntypedComb
