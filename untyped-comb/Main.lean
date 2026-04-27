@@ -1,4 +1,5 @@
 import UntypedComb
+import UntypedComb.Diagnostic
 
 def main : IO Unit :=
-  IO.println s!"Hello, {hello}!"
+  IO.println s!"Topologically-Guided Combinatory Logic Initialized."

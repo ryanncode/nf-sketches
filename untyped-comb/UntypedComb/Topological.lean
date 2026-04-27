@@ -16,7 +16,28 @@ partial def injectTWeaking (term : Comb) (expectedDepth actualDepth : Int) : Com
     -- Depth inversion - this usually indicates a fundamental stratification failure
     -- where a variable is forced into a tighter bound than structurally possible.
     -- We represent this natively rather than panicking, mapping it to a collision state if needed.
-    term -- Or we could introduce an error type here.
+    term
+
+/--
+Traverses the AST and algorithmically injects the T-operator where weight misalignments occur.
+This acts as the level-shifting endofunctor mapping across the topological bounds.
+-/
+partial def algorithmicTWeaking (term : Comb) (distanceMap : Comb → Option Int) : Comb :=
+  match term with
+  | Comb.app f x =>
+    let f' := algorithmicTWeaking f distanceMap
+    let x' := algorithmicTWeaking x distanceMap
+    match distanceMap f', distanceMap x' with
+    | some wf, some wx =>
+      if wf > wx then
+        Comb.app f' (injectTWeaking x' wf wx)
+      else if wx > wf then
+        Comb.app (injectTWeaking f' wx wf) x'
+      else
+        Comb.app f' x'
+    | _, _ => Comb.app f' x'
+  | Comb.t_inject x => Comb.t_inject (algorithmicTWeaking x distanceMap)
+  | _ => term
 
 /--
 A structure representing the diagnostic state of an evaluation, tracking
