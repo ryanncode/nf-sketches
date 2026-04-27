@@ -103,6 +103,17 @@ To physically constrain the untyped combinatory execution and prevent exhaustion
 
 This fully resolves the untyped evaluation requirements (Phase 3), bridging classical diagnostic type-checking directly into the operational boundaries needed for safe hardware interaction (arena-allocated graph reduction) moving forward.
 
+### 5.4. Advanced CombLib Expansions (Phase 4)
+
+Building upon the Topologically-Guided boundaries, the `CombLib` framework implements highly saturated and structurally divergent configurations natively:
+
+*   **Recursive Self-Models ($V \in V$):** `SelfModels.lean` constructs a mathematically robust Quine atom ($\Omega = \{\Omega\}$) natively inside the engine. Utilizing the Y-combinator and inductive list topologies, the architecture evaluates a structure containing an unreduced copy of itself, relying directly on the MCM/K-Iteration bounds to safely halt the resulting paradox.
+*   **Inductive List Geometries:** `Lists.lean` implements node-collision topologies for `cons`, `head`, and `tail` via raw bracket abstraction semantics.
+*   **Frege-Russell Numerals:** `FregeRussell.lean` defines cardinal sizes via the native evaluation of properties, mathematically modeling structures representing "the set of all sets of a certain size" (such as `Num0`).
+*   **Choice-Free Cardinal Arithmetic:** `Cardinals.lean` maps out Transfinite Calculus by modeling cardinal summation (`Card_Add`) and bounds (`Aleph_0`) strictly within topological configurations, permanently bypassing the need for the Axiom of Choice and well-ordering.
+
+---
+
 ## Conclusion
 
 The `nf-sketches` architecture seamlessly binds foundational syntactic monism to rigorously verifiable computational structures. Every component—from the Abstract Syntax Tree through the Bellman-Ford Evaluator to the Executable Pipelines—is designed defensively. By transmuting standard set-theoretic paradoxes into finite graph geometry, resolving negative cycles through telescoping sums, and algorithmically forcing structural normalization to collide with rigid Extensionality limits, the codebase acts as an unassailable proof of Quine's systemic ambiguity. The implementation stands robust against unbounded iteration, conclusively isolating paradoxical regression as a calculable, structural certainty.

@@ -4,6 +4,10 @@ import UntypedComb.DAG
 import UntypedComb.CombLib.Booleans
 import UntypedComb.CombLib.Numerals
 import UntypedComb.CombLib.Recursion
+import UntypedComb.CombLib.Lists
+import UntypedComb.CombLib.SelfModels
+import UntypedComb.CombLib.FregeRussell
+import UntypedComb.CombLib.Cardinals
 
 namespace UntypedComb.CombLib.Tests
 
@@ -11,6 +15,10 @@ open Comb
 open UntypedComb.Booleans
 open UntypedComb.Numerals
 open UntypedComb.Recursion
+open UntypedComb.CombLib.Lists
+open UntypedComb.CombLib.SelfModels
+open UntypedComb.CombLib.FregeRussell
+open UntypedComb.CombLib.Cardinals
 
 /-- Helper to test whether an expression reduces to an expected normal form, using the acyclic compiler pass first. -/
 def testReduction (term expected : Comb) : Bool :=
@@ -56,5 +64,30 @@ def testYCombSafeCompile : Bool :=
   true
 
 #eval testYCombSafeCompile
+
+-- List Tests
+-- head (cons a b) = a
+#eval testReduction (app head (cons (var "a") (var "b"))) (var "a")
+-- tail (cons a b) = b
+#eval testReduction (app tail (cons (var "a") (var "b"))) (var "b")
+
+-- Self-Models & V \in V Tests
+-- Evaluate a Quine atom. Because of the K-Iteration bound, it safely halts and returns the terminal paradox.
+def testQuineAtomHalt : Bool :=
+  normalize buildQuineAtom 20 0 == terminal "K_ITERATION_HALT"
+
+#eval testQuineAtomHalt
+
+-- Frege-Russell Numerals Tests
+-- Num0 (isNil) applied to nil should return true
+#eval testReduction (app Num0 nil) tru
+-- Num0 (isNil) applied to (cons a b) should return false
+#eval testReduction (app Num0 (cons (var "a") (var "b"))) fls
+
+-- Cardinal Arithmetic Test (Placeholder parsing check)
+def testCardinalAdd : Bool :=
+  cardAdd == var "Card_Add"
+
+#eval testCardinalAdd
 
 end UntypedComb.CombLib.Tests

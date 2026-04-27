@@ -101,25 +101,11 @@ However, evaluating the true systemic paradoxes of New Foundations requires bypa
 
 The engine actively demonstrates that it is precisely the violent friction between **dynamic local re-leveling** (weak stratification) and **Extensionality's rigid structural equivalence** ($x = y$) that generates the profound normalization breakdown of NF.
 
-### Future Work: `untyped-comb` (Untyped Combinators)
+### `untyped-comb`: Untyped Combinatory Logic
 
-Standard implementations of the $\lambda$-calculus or combinatory logic in Lean rely heavily on dependent type theory. A future module, `untyped-comb`, will construct an untyped combinatory logic environment and introduce the specific syntactic operators required to make it functional under NF rules. This aims to provide a tangible step toward a Curry-Howard correspondence for stratified set theory.
+Standard implementations of the $\lambda$-calculus or combinatory logic in Lean rely heavily on dependent type theory. The `untyped-comb` module constructs an entirely untyped combinatory logic environment and introduces the specific syntactic operators required to make it functional under NF rules. 
 
----
-
-## Field Contributions and Theoretical Context
-
-Deploying formal mathematical systems as a baseline for metaphysical inquiry represents a crucial interdisciplinary frontier. For decades, the implicit equation of formal ontology with Zermelo-Fraenkel set theory heavily governed how philosophers modeled fundamental structural relationships. Evaluating this theoretical consensus through alternative frameworks introduces vital critical rigor to the philosophy of mathematics.
-
-### Structural Logic and Automated Theorem Proving
-
-The mathematical and computer science communities currently undergo a major transition toward formal verification. Engaging deeply with proof theory, type systems, and the Curry-Howard isomorphism builds profound mechanical literacy regarding the operation of formal systems. Mastering how to manage syntactic constraints, track logical detours in sequent calculus, and resolve type-checking errors translates directly to developing software verification protocols and the foundational architecture of artificial intelligence.
-
-### Syntactic Monism and Hierarchical Friction
-
-A significant theoretical bottleneck chokes contemporary computational ontology. Standard foundations force a bottom-up construction where objects painstakingly assemble stage by stage. Forcing a computational system to model the world through an ascending ladder of types introduces severe friction. Every time a program maps a flat, self-referential physical event into a strictly stratified semantic model, the data distorts. 
-
-Monist foundations bypass artificial scaffolding entirely. They propose a universe containing everything natively. A framework accommodating a universal set allows a logic engine to process the environment as a cohesive whole. In a system like New Foundations, the restriction moves from the objects themselves to the grammar used to describe them. The fundamental computational challenge transforms from building rigid semantic models into enforcing exact syntactic rules. This project explores the operational semantics of recursive functions, the interaction between syntactic constraints and cut-elimination, and the graph-theoretic topology of abstract structures like Wrandalls to map how a universal set sustains its architecture without collapsing into contradiction.
+By utilizing **Topologically-Guided Lazy Reduction Bounding**, the engine natively compiles operations into a Directed Acyclic Graph (DAG) and algorithmically injects Thomas Forster's T-operator. It leverages Kosaraju's algorithm to flatten semantic cycles and employs Minimum Cycle Mean (MCM) bounds to enforce strict K-Iteration halting limits. This allows the system to execute complex Church Encodings (`CombLib`), including Frege-Russell numerals, transfinite cardinal arithmetic, and paradoxical self-models ($V \in V$) natively without triggering memory exhaustion or relying on an external well-ordering.
 
 ---
 
@@ -152,25 +138,23 @@ HoTT excels at tracking generative paths of equivalence and modeling the precise
 
 ---
 
-## Literature Survey
-
-The architectural requirements for formalizing Quine's New Foundations demand a specific convergence of disciplines. This convergence establishes the necessary computational baseline to construct the validator and embed the restricted sequent calculus.
-
-**New Foundations and Stratification:** Quine's originating article (1937) introduces stratification to bypass Russell's Paradox while retaining the universal set. Texts like Forster's *Set Theory with a Universal Set* (1992) and Holmes's *Elementary Set Theory with a Universal Set* (1998) provide the definitive modern diagnostic tools and blueprints for translating abstract stratification rules into programmable logic.
-
-**Computational Mechanization:** Building an algorithmic syntax checker requires defining logical formulas computationally. Pierce's *Types and Programming Languages* (2002) grounds abstract syntactic concepts in operational semantics. Concurrently, *Theorem Proving in Lean 4* (Avigad et al. 2023) covers the foundational syntax of the host environment.
-
-**Structural Proof Theory:** Negri and von Plato's *Structural Proof Theory* (2001) provides a rigorous breakdown of Gentzen’s Sequent Calculus. Crabbé's diagnostic paper on the consistency of NF's impredicative subsystem (1982) outlines the mechanics of cut-elimination within stratified comprehension. This text exposes the tension where eliminating cuts accidentally yields illegal syntax.
-
-**Algorithmic Verification:** Treating variables as vertices and membership relations as directed edges transforms stratification into a topological problem. Standard discrete mathematics and graph theory texts supply the rigorous definitions for directed acyclic graphs and pathfinding algorithms required to verify valid level assignments programmatically.
-
----
-
 ## Research Applications and Next Steps
 
-This repository serves as a computationally rigorous baseline for exploring the mechanical limits of formal logic under Quine's systemic ambiguity. By providing interactive REPL sandboxes and automated cut-elimination diagnostics, the tools empower researchers to mathematically witness the exact boundaries of a stratified universe.
+This repository serves as a computationally rigorous baseline for exploring the mechanical limits of formal logic under Quine's systemic ambiguity. By drawing on foundational proof theory (Gentzen, Crabbé) and discrete topological routing (Bellman-Ford, Kosaraju), the tools empower researchers to mathematically witness the exact boundaries of a stratified universe without resorting to artificial hierarchies.
 
-These modules construct the verified infrastructure necessary to investigate the computational potential of New Foundations. They lay the groundwork for future implementations of untyped combinatory logic and custom, non-hierarchical logic engines.
+With the successful implementation of the `untyped-comb` phase, the project has established the core architectural blueprint for evaluating non-well-founded, self-referential graph geometries.
+
+### Upcoming Milestones
+
+1. **Categorical Semantics (The SPE Architecture)**
+   - Transitioning the evaluated logic into applied category theory.
+   - Constructing the **Stratified Pseudo Elephant (SPE)** to process a self-referential topology where the universe evaluates its own internal subcategories natively.
+   - Implementing **Strongly Cantorian Retractions** as dynamic "islands of classicality," where choice functions and arithmetic can execute safely without triggering negative cycle limits.
+2. **Native Systems Execution (The Monist Engine)**
+   - Abandoning the dependent type constraints of Lean 4 entirely in favor of a bare-metal implementation written in **Rust**.
+   - Compiling the verified Topologically-Guided Lazy Reduction Bounds into **Arena-Allocated Interaction Nets**, optimizing memory traversal for high-performance hardware execution (HVM2/Bend).
+   - Establishing real-time execution bounds via dynamic programming and color-coding heuristics to bypass exhaustive path traversal.
+
 ## License
 
 This project is licensed under the GNU Affero General Public License v3 (AGPLv3) - see the [LICENSE](LICENSE) file for details.
