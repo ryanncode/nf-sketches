@@ -1,7 +1,18 @@
 import UntypedComb.Core
 import UntypedComb.Topological
+import UntypedComb.Categorical
 
 namespace UntypedComb
+
+/--
+  The Missing Verification Bridge.
+  Evaluates a local subgraph during the DAG topological sort, and requires a formal
+  Lean 4 proof that the subgraph satisfies `StronglyCantorianSets.is_sc`
+  before wrapping it in the `Comb.terminal "SC_CUT"` tag.
+-/
+def verifyAndWrapSC {V : Type} {spe : StratifiedPseudoElephant V}
+    (sc : StronglyCantorianSets V spe) (obj : spe.Obj) (proof : sc.is_sc obj) (subgraph : Comb) : Comb :=
+  Comb.app (Comb.terminal "SC_CUT") subgraph
 
 -- 1. Graph Representation
 

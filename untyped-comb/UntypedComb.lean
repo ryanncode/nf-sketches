@@ -17,3 +17,4 @@ import UntypedComb.CombLib.Cardinals
 import UntypedComb.CombLib.Tests
 import UntypedComb.Translation
 import UntypedComb.Categorical
+import UntypedComb.Fixpoint

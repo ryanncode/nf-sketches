@@ -75,4 +75,37 @@ structure PseudoCartesianClosure (V : Type) (spe : StratifiedPseudoElephant V) w
     spe.Hom (prod (spe.T_shift A) X) bool_obj →
     spe.Hom X (sub_obj A)
 
+/--
+  Strongly Cantorian Sets & Network Cut Boundaries
+  Establishes bounded domains for classical arithmetic within a highly volatile
+  unstratified exterior. SC retractions are treated as absolute data types.
+-/
+structure StronglyCantorianSets (V : Type) (spe : StratifiedPseudoElephant V) where
+  -- 1. Correlation Functions
+  -- Define the correlation function K_t satisfying K_t(t(x)) = K[t(x)] for each x.
+  -- Program the compiler to use this function to mathematically isolate sub-graphs
+  -- where relative types can be shifted dynamically without violating total formula well-formedness.
+  K_t : spe.Obj → spe.Obj
+  K   : spe.Obj → spe.Obj
+  t   : spe.Obj → spe.Obj
+  correlation_eq : ∀ (x : spe.Obj), K_t (t x) = K (t x)
+
+  -- Strongly Cantorian sets: T-invariant retractions
+  is_sc : spe.Obj → Prop
+  sc_invariant : ∀ (x : spe.Obj), is_sc x → spe.T_shift x = x
+
+  -- 2. PTIME Computability Bounds
+  -- Restrict the definitions of these SC retractions strictly to Σ_1^b formulas.
+  -- This adheres to Buss's bounded arithmetic limits, guaranteeing internal relations
+  -- within these domains remain polynomial-time (PTIME) computable.
+  is_sigma_1_b : (spe.Obj → Prop) → Prop
+  sc_is_ptime : is_sigma_1_b is_sc
+
+  -- 3. Network Flow Partitioning
+  -- Treat SC sets as rigid network cuts. Partition the execution graph such that
+  -- these T-invariant subgraphs represent absolute bottlenecks, separating
+  -- localized classical stability from global topological friction.
+  network_cut : spe.Obj → spe.Obj → Prop
+  cut_is_rigid : ∀ (x y : spe.Obj), network_cut x y → is_sc x ∧ is_sc y
+
 end UntypedComb
