@@ -137,6 +137,18 @@ The ultimate capstone of this architecture is the native combinatorial execution
 
 The operational litmus test confirms the structural robustness of the entire compiler stack: rather than shattering the unstratified graph into a fatal loop across $V$, the engine correctly isolates the evaluation inside an SC boundary, forces the $T$-relative adjunctions, and successfully resolves the query in polynomial time. The engine structurally evaluates the universe containing itself and correctly returns the isomorphic bounds $T(F(V))$.
 
+### 7.4. Didactic ExPrograms
+
+To definitively prove the physical functionality of these bounds in an active execution space, the `untyped-comb/UntypedComb/ExPrograms/` module provides seven didactic scripts that stress-test the operational mechanics natively:
+
+1. **`Russell.lean`**: Validates the K-Iteration topological boundary by structurally intercepting the evaluation of $R \in R$, immediately forcing an algorithmic halt without call stack exhaustion.
+2. **`HolographicSieve.lean`**: Demonstrates the $O(1)$ search capability of absolute complement queries ($V \setminus A$), filtering swarms by isolating unresolvable contradictions natively.
+3. **`Transfinite.lean`**: Replicates the non-well-founded evaluation of Transfinite Arithmetic ($\aleph_0 + \aleph_0$) entirely via bracket abstraction, observing dynamic Algorithmic T-Weaking structurally.
+4. **`QuineAtom.lean`**: Stabilizes the self-referential graph loop of $\Omega = \{\Omega\}$ utilizing the $Y$ combinator, correctly resolving self-models geometrically.
+5. **`RelativeAdjunction.lean`**: Physically proves Pseudo-Cartesian closure by mapping evaluation $ev'_{A,B}$ to dynamically absorb topological friction and execute safely.
+6. **`SCStability.lean`**: Computes local mathematical stability loops inside suspended cycle domains utilizing Knaster-Tarski least fixpoint derivations.
+7. **`YonedaTest.lean`**: Directly forces the execution engine to trace the covariant presheaf and natural transformations against the Universal Set, cleanly tracking its self-representation without loop degradation.
+
 ---
 
 ## Conclusion

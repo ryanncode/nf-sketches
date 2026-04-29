@@ -23,3 +23,6 @@ import UntypedComb.ExPrograms.Russell
 import UntypedComb.ExPrograms.HolographicSieve
 import UntypedComb.ExPrograms.Transfinite
 import UntypedComb.ExPrograms.QuineAtom
+import UntypedComb.ExPrograms.RelativeAdjunction
+import UntypedComb.ExPrograms.SCStability
+import UntypedComb.ExPrograms.YonedaTest

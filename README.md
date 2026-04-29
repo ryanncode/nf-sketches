@@ -118,6 +118,17 @@ This stable untyped execution environment allows the system to process advanced,
 * **Choice-Free Cardinal Arithmetic:** Implements Transfinite Calculus (e.g., Cardinal Addition $|A| + |B|$ and $\aleph_0$) entirely via pure $\lambda \to S, K$ bracket abstraction. The system mathematically tracks disjoint union topologies across stratification boundaries, triggering mechanical $T$-functor injections dynamically.
 * **Holographic Data Indexing & Search:** Utilizes the absolute complement ($V \setminus A$) natively permitted by NF to build exclusion-first search algorithms. Target non-matching data is isolated and discarded via an $O(1)$ topological sweep rather than an $O(N)$ iteration. Furthermore, the DAG structure isolates unresolvable contradictions across distributed data swarms in strictly linear time $O(V+E)$.
 
+### ExPrograms: Native Didactic Verifications
+
+To definitively demonstrate the active architectural integrity of the Stratified Pseudo Elephant, the `ExPrograms` directory hosts seven executable Lean scripts that organically evaluate these bounds in real-time logic loops:
+1. **The Russell Paradox Evaluator:** Proves the MCM halting bounds geometrically limit $R \in R$.
+2. **Holographic Data Sieve:** Actively complies and evaluates the absolute complement search.
+3. **Native Transfinite Arithmetic:** Synthesizes the $T$-functor mappings natively on unbound operations ($\aleph_0 + \aleph_0$).
+4. **The Quine Atom Stabilizer:** Successfully computes pure structural self-models.
+5. **Pseudo-Cartesian Closure Test:** Validates stable $T$-shifted evaluation sequences ($ev'_{A,B}$).
+6. **Strongly Cantorian Fixpoint Verifier:** Operates and verifies dynamic $\text{lfp}(F)$ limits inside classical islands.
+7. **Stratified Yoneda Embedding Test:** Confirms the categorical self-representation natively bounds to $T(F(V))$ without graph collapse.
+
 ---
 
 ## Contrast Against HoTT
