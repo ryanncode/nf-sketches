@@ -19,3 +19,7 @@ import UntypedComb.CombLib.Holographic
 import UntypedComb.Translation
 import UntypedComb.Categorical
 import UntypedComb.Fixpoint
+import UntypedComb.ExPrograms.Russell
+import UntypedComb.ExPrograms.HolographicSieve
+import UntypedComb.ExPrograms.Transfinite
+import UntypedComb.ExPrograms.QuineAtom
