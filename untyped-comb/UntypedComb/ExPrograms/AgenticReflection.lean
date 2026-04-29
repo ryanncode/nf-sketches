@@ -24,7 +24,7 @@ def execute_agent_loop : IO Unit := do
   let hypothetical_graph := simulate_hypothetical agent_core environmental_action
 
   -- The engine calculates the precise thermodynamic cost of the decision
-  let evaluation_result := UntypedComb.DAG.reduce hypothetical_graph
+  let _evaluation_result := UntypedComb.DAG.reduce hypothetical_graph
 
   -- In a bare-metal engine, this returns a terminal with the MCM weight.
   -- For this logic sketch, we print the measured result directly.
@@ -33,7 +33,7 @@ def execute_agent_loop : IO Unit := do
 
   -- The agent accepts the state and cools it into a Strongly Cantorian memory block
   let memory_block := commit_to_memory hypothetical_graph
-  let final_memory := UntypedComb.DAG.reduce memory_block
+  let _final_memory := UntypedComb.DAG.reduce memory_block
 
   -- The sketch engine successfully stabilizes the memory block into an SC fixpoint.
   IO.println s!"State committed to SC Memory. Zero-friction block secured: SC_ISLAND_STABLE"

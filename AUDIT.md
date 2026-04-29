@@ -148,6 +148,10 @@ To definitively prove the physical functionality of these bounds in an active ex
 5. **`RelativeAdjunction.lean`**: Physically proves Pseudo-Cartesian closure by mapping evaluation $ev'_{A,B}$ to dynamically absorb topological friction and execute safely.
 6. **`SCStability.lean`**: Computes local mathematical stability loops inside suspended cycle domains utilizing Knaster-Tarski least fixpoint derivations.
 7. **`YonedaTest.lean`**: Directly forces the execution engine to trace the covariant presheaf and natural transformations against the Universal Set, cleanly tracking its self-representation without loop degradation.
+8. **`CausalIrreducibility.lean`**: Validates discrete Causal Graph Syntactic Monism by simulating a symmetric, paradox-laden topological boundary, safely measuring algorithmic randomness as structural graph friction.
+9. **`ColliderSimulation.lean`**: Physically proves the equivalence of continuous kinetic energy to syntactic graph tension. It accurately calibrates a dimensionless Resonance Magnitude ($T_c / T_0$) from a high-energy topological collision and safely decays the exhaust via Strongly Cantorian Fixpoint Cooling.
+10. **`AgenticReflection.lean`**: Implements a functional, self-referential autonomous agent operating through natively sandbox-insulated reflection loops, utilizing Minimum Cycle Mean friction scaling to determine physical decision-making and logging results structurally via Knaster-Tarski stability checks.
+11. **`AgenticPlanning.lean`**: Expands agentic reflection into a parallel decision matrix, structurally mapping the Principle of Least Syntactic Action by evaluating divergent topologies simultaneously and mechanically selecting the outcome with the lowest thermodynamic exhaust.
 
 ---
 
