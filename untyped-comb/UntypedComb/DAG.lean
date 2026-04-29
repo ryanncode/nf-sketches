@@ -11,7 +11,7 @@ namespace UntypedComb
   before wrapping it in the `Comb.terminal "SC_CUT"` tag.
 -/
 def verifyAndWrapSC {V : Type} {spe : StratifiedPseudoElephant V}
-    (sc : StronglyCantorianSets V spe) (obj : spe.Obj) (proof : sc.is_sc obj) (subgraph : Comb) : Comb :=
+    (sc : StronglyCantorianSets V spe) (_obj : spe.Obj) (_proof : sc.is_sc _obj) (subgraph : Comb) : Comb :=
   Comb.app (Comb.terminal "SC_CUT") subgraph
 
 -- 1. Graph Representation

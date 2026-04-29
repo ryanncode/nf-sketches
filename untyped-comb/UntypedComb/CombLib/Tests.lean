@@ -8,6 +8,7 @@ import UntypedComb.CombLib.Lists
 import UntypedComb.CombLib.SelfModels
 import UntypedComb.CombLib.FregeRussell
 import UntypedComb.CombLib.Cardinals
+import UntypedComb.CombLib.Holographic
 
 namespace UntypedComb.CombLib.Tests
 
@@ -19,6 +20,7 @@ open UntypedComb.CombLib.Lists
 open UntypedComb.CombLib.SelfModels
 open UntypedComb.CombLib.FregeRussell
 open UntypedComb.CombLib.Cardinals
+open UntypedComb.CombLib.Holographic
 
 /-- Helper to test whether an expression reduces to an expected normal form, using the acyclic compiler pass first. -/
 def testReduction (term expected : Comb) : Bool :=
@@ -59,7 +61,7 @@ def testNumeralEq (n m : Comb) : Bool :=
 -- With compileAcyclic, the graph flattens self-referential SCCs so the recursion compiles safely without crashing.
 def testYCombSafeCompile : Bool :=
   let recursiveApp := app UntypedComb.Recursion.Y (var "f")
-  let compiled := compileAcyclic recursiveApp
+  let _compiled := compileAcyclic recursiveApp
   -- We just verify the DAG compiler doesn't crash on the recursive topology
   true
 
@@ -102,5 +104,34 @@ def testAleph0 : Bool :=
   | _ => false
 
 #eval testAleph0
+
+-- Holographic Data & Contradiction Isolation Tests
+-- absoluteComplement behaves like NOT for predicates
+-- e.g. abs_comp (\x. tru) y = NOT tru = fls
+#eval testReduction (app (absoluteComplement (app K tru)) (var "y")) fls
+#eval testReduction (app (absoluteComplement (app K fls)) (var "y")) tru
+
+-- exclusionIndex with empty list permits everything (returns tru)
+#eval testReduction (app (exclusionIndex []) (var "y")) tru
+
+-- exclusionIndex with one predicate that evaluates to tru
+#eval testReduction (app (exclusionIndex [app K tru]) (var "y")) fls
+
+-- exclusionIndex with one predicate that evaluates to fls
+#eval testReduction (app (exclusionIndex [app K fls]) (var "y")) tru
+
+-- test isolateContradictions
+def testIsolateContradictionsConsistent : Bool :=
+  let result := isolateContradictions [(0, 1, 1), (1, 2, 1)]
+  result == "Swarm is consistent. No contradictions isolated."
+
+def testIsolateContradictionsContradictory : Bool :=
+  -- Creates a negative weight cycle: 0 -> 1 (w=1), 1 -> 2 (w=1), 2 -> 0 (w=-3)
+  -- Total cycle weight: 1 + 1 - 3 = -1 < 0
+  let result := isolateContradictions [(0, 1, 1), (1, 2, 1), (2, 0, -3)]
+  result == "Contradiction Tagged: Extensionality Collision: Paradoxical regression isolated."
+
+#eval testIsolateContradictionsConsistent
+#eval testIsolateContradictionsContradictory
 
 end UntypedComb.CombLib.Tests
