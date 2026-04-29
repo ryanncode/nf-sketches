@@ -27,3 +27,4 @@ import UntypedComb.ExPrograms.RelativeAdjunction
 import UntypedComb.ExPrograms.SCStability
 import UntypedComb.ExPrograms.YonedaTest
 import UntypedComb.ExPrograms.CausalIrreducibility
+import UntypedComb.ExPrograms.ColliderSimulation

@@ -56,7 +56,7 @@ partial def normalize (t : Comb) (kLimit : Nat := 10000) (depth : Nat := 0) (inS
     | _ => false)
 
   if !isCurrentlySC && depth >= kLimit then
-    Comb.terminal "K_ITERATION_HALT"
+    Comb.terminal s!"K_ITERATION_HALT (Energy Released: {depth})"
   else
     match reduceStep t with
     | some t' =>
