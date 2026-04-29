@@ -30,4 +30,18 @@ def safeEvaluation : Comb :=
 
 #eval safeEvaluation == Comb.terminal "K_ITERATION_HALT"
 
+-- 5. Test the Stabilized T-Operator Pipeline
+-- Verifies that the reduction engine natively processes T-operator injections
+-- and self-regulates, stripping the T-wrappers dynamically during reduction.
+def tInjectTestTerm : Comb :=
+  -- (T K) I (T I) => K I I => I
+  let tK := Comb.t_inject Comb.K
+  let tI := Comb.t_inject Comb.I
+  Comb.app (Comb.app tK Comb.I) tI
+
+def testTInjectReduction : Bool :=
+  normalize tInjectTestTerm 10 0 == Comb.I
+
+#eval testTInjectReduction
+
 end UntypedComb

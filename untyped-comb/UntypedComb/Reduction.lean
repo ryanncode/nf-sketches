@@ -17,6 +17,16 @@ def reduceStep : Comb → Option Comb
   -- U f g x => f x |^x g x (NAND placeholder reduction)
   -- For now, we leave U unreduced unless we implement the specific boolean logic mappings.
 
+  -- T-shift reduction (T operator becomes transparent during untyped execution)
+  | Comb.t_inject x =>
+    match reduceStep x with
+    | some x' => some (Comb.t_inject x')
+    | none => some x -- Unwrap fully evaluated T-injections
+
+  -- Allow applications to bypass T-injections natively
+  | Comb.app (Comb.t_inject f) x => some (Comb.app f x)
+  | Comb.app f (Comb.t_inject x) => some (Comb.app f x)
+
   -- Structural reductions for applications
   | Comb.app f x =>
     match reduceStep f with
@@ -25,12 +35,6 @@ def reduceStep : Comb → Option Comb
       match reduceStep x with
       | some x' => some (Comb.app f x')
       | none => none
-
-  -- T-shift reduction (placeholder for now, T x evaluates the shifted term)
-  | Comb.t_inject x =>
-    match reduceStep x with
-    | some x' => some (Comb.t_inject x')
-    | none => none
 
   -- Lazy thunks are only reduced if structurally required by a call
   | Comb.lazy_thunk x => some x -- Force the thunk

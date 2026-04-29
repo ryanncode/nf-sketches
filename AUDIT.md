@@ -106,6 +106,30 @@ To prove the Turing-completeness of this bare-metal operational layer, the `Unty
 
 ---
 
+## 7. Categorical Semantics (The SPE Architecture)
+
+The final phase of the architecture elevates the evaluated logic into applied category theory through the formal construction of the **Stratified Pseudo Elephant (SPE)**. Because standard Cartesian closure fails in a universe governed by syntactic monism, the engine shifts its topological map into categorical boundaries that allow a non-well-founded universe to safely evaluate its own internal subcategories.
+
+### 7.1. T-Relative Adjunctions & Pseudo-Cartesian Closure
+
+Classical type theories assume the existence of an evaluation map $ev_{A,B}: A \times (A \Rightarrow B) \to B$. Under NF, compiling this function directly triggers an Extensionality Collision. The `untyped-comb/UntypedComb/Categorical.lean` module explicitly formalizes pseudo-Cartesian closure, substituting standard adjunctions with $T$-relative adjunctions. The engine algorithmically constructs a modified evaluation map $ev'_{A,B}: TA \times (A \Rightarrow B) \to TB$, leveraging the integer bounds calculated by Bellman-Ford to ensure the $T$-functor mapping correctly shifts types across the domain interface. The framework securely formalizes the representability of the functor $Sub(TA \times -)$, successfully modeling pseudo-powerobjects alongside a subobject classifier structurally anchored by $T2 \cong 2$.
+
+### 7.2. Strongly Cantorian Retractions & Classical Islands
+
+The architecture restricts classical mathematical reductions within explicit, computationally verified domains. Strongly Cantorian (SC) sets are defined through the correlation function $K_t(t(x)) = K[t(x)]$ and restricted by Buss's polynomial-time computable boundaries ($\Sigma_1^b$ formulas).
+
+By identifying when local graph execution operates completely inside a Strong Connected Component where $T(m) = m$, the `DAG.lean` evaluation structure dynamically wraps these retractions in an `SC_CUT` isolation boundary. Before execution is permitted to unwrap and return this data to the volatile exterior, it mechanically triggers Knaster-Tarski least fixpoint calculations ($\text{lfp}(F)$) via the `verifySCStability` function. These "islands of classicality" allow choice functions and constant-time inductive logic to bypass global cycle detectors without generating unverified topological paradoxes.
+
+### 7.3. The SCU Axiom & Stratified Yoneda Execution
+
+To permit the category of NF sets to encode itself without relying on infinite Grothendieck universes, the system formalized the SCU axiom, computationally validating that fibrewise small map compositions maintain $T$-invariant stability.
+
+The ultimate capstone of this architecture is the native combinatorial execution of the Stratified Yoneda Lemma: $Nat(C(U,-), F) \cong T(F(U))$. Through `untyped-comb/UntypedComb/CombLib/YonedaTest.lean`, the system directly queries the set of natural transformations from the hom-functor of the Universal Set ($V$) to a covariant presheaf $F$. 
+
+The operational litmus test confirms the structural robustness of the entire compiler stack: rather than shattering the unstratified graph into a fatal loop across $V$, the engine correctly isolates the evaluation inside an SC boundary, forces the $T$-relative adjunctions, and successfully resolves the query in polynomial time. The engine structurally evaluates the universe containing itself and correctly returns the isomorphic bounds $T(F(V))$.
+
+---
+
 ## Conclusion
 
 The `nf-sketches` architecture seamlessly binds foundational syntactic monism to rigorously verifiable computational structures. Every component—from the Abstract Syntax Tree through the Bellman-Ford Evaluator to the Executable Pipelines—is designed defensively. By transmuting standard set-theoretic paradoxes into finite graph geometry, resolving negative cycles through telescoping sums, and algorithmically forcing structural normalization to collide with rigid Extensionality limits, the codebase acts as an unassailable proof of Quine's systemic ambiguity. The implementation stands robust against unbounded iteration, conclusively isolating paradoxical regression as a calculable, structural certainty.
