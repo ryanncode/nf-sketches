@@ -1,6 +1,7 @@
 import UntypedComb.Core
 import UntypedComb.Topological
 import UntypedComb.Categorical
+import UntypedComb.Reduction
 
 namespace UntypedComb
 
@@ -163,5 +164,8 @@ def compileAcyclic (c : Comb) : Comb :=
   let sccs := findSCCs d
   -- 3. Collapse 0-weight semantic cycles using projection
   collapseSCCs d sccs rootId
+
+def DAG.reduce (c : Comb) : Comb :=
+  UntypedComb.normalize (compileAcyclic c)
 
 end UntypedComb
