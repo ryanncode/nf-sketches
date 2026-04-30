@@ -1,6 +1,6 @@
 project:
   type: book
-  output-dir: _book
+  output-dir: .
 execute:
   cache: true
   freeze: auto
@@ -10,8 +10,9 @@ format:
     code-link: true
 book:
   title: "NF Sketches: Documentation"
+  repo-url: https://github.com/ryanncode/nf-sketches
   chapters:
-    - 01-intro.qmd
+    - index.qmd
     - 02-parse-strat.qmd
     - 03-comblib.qmd
     - 04-exprograms.qmd

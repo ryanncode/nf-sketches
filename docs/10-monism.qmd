@@ -13,6 +13,7 @@ The concept of "Syntactic Monism" refers to the computational strategy of treati
 In standard execution models—ranging from Zermelo-Fraenkel set theory algorithms to garbage-collected functional languages—data is strictly partitioned. To prevent infinite looping or unresolvable cyclic memory references, the system explicitly regulates pointers through strict ownership checks or global containment structures. Memory operates structurally as an external framework imposed upon the data.
 
 The `nf-sketches` paradigm operationalizes a flat memory architecture where logic interacts natively through routing geometry.
+
 * **Universal Scope:** Self-referential structures and highly entangled arrays are evaluated in a shared operational space without hierarchical abstractions.
 * **Topological Limits:** Instead of blocking paradoxical recursions via predefined type boundaries, cyclic logic is natively identified as localized "topological friction"—a mathematically bounded negative-weight cycle. 
 * **Dynamic Resolution:** The system shifts the burden of maintaining stability directly into the algorithmic combinators ($S$ and $K$). Data remains entirely fluid, and structural bounds are generated dynamically relative to the execution path.

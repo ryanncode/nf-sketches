@@ -137,9 +137,9 @@ The ultimate capstone of this architecture is the native combinatorial execution
 
 The operational litmus test confirms the structural robustness of the entire compiler stack: rather than shattering the unstratified graph into a fatal loop across $V$, the engine correctly isolates the evaluation inside an SC boundary, forces the $T$-relative adjunctions, and successfully resolves the query in polynomial time. The engine structurally evaluates the universe containing itself and correctly returns the isomorphic bounds $T(F(V))$.
 
-### 7.4. Didactic ExPrograms
+### 7.4. ExPrograms
 
-To definitively prove the physical functionality of these bounds in an active execution space, the `untyped-comb/UntypedComb/ExPrograms/` module provides seven didactic scripts that stress-test the operational mechanics natively:
+To definitively prove the physical functionality of these bounds in an active execution space, the `untyped-comb/UntypedComb/ExPrograms/` module provides scripts that stress-test the operational mechanics natively:
 
 1. **`Russell.lean`**: Validates the K-Iteration topological boundary by structurally intercepting the evaluation of $R \in R$, immediately forcing an algorithmic halt without call stack exhaustion.
 2. **`HolographicSieve.lean`**: Demonstrates the $O(1)$ search capability of absolute complement queries ($V \setminus A$), filtering swarms by isolating unresolvable contradictions natively.

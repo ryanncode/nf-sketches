@@ -11,6 +11,7 @@ By eliminating named variables during execution, the memory architecture avoids 
 ## Base Primitives
 
 The library builds complex structures utilizing the $S$ and $K$ combinators:
+
 * **Booleans:** Structural routing nodes are defined to explicitly map control flow without allocating external memory.
 * **Numerals:** The engine utilizes B-combinator-based structures to execute additive and multiplicative transformations.
 * **Lists:** Inductive topologies (`cons`, `head`, `tail`) are managed as executable graph paths rather than static arrays.
