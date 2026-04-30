@@ -1,0 +1,20 @@
+# Causal Graph Syntactic Monism
+
+## Topological Memory Mapping
+
+The architectural philosophy underlying the `nf-sketches` logic engine represents a distinct paradigm in computational memory mapping. By treating logic strictly as a structural flow problem, the engine replaces hierarchical data separation with flat, topological geometry.
+
+The concept of "Syntactic Monism" refers to the computational strategy of treating the execution domain as a single, unstratified universe. Variables, sets, and relations are not separated by physical memory silos or hierarchical universe levels. Instead, computational boundaries are enforced purely through the syntax of the query algorithms traversing the network.
+
+---
+
+## State Architecture vs. Topological Routing
+
+In standard execution models—ranging from Zermelo-Fraenkel set theory algorithms to garbage-collected functional languages—data is strictly partitioned. To prevent infinite looping or unresolvable cyclic memory references, the system explicitly regulates pointers through strict ownership checks or global containment structures. Memory operates structurally as an external framework imposed upon the data.
+
+The `nf-sketches` paradigm operationalizes a flat memory architecture where logic interacts natively through routing geometry.
+* **Universal Scope:** Self-referential structures and highly entangled arrays are evaluated in a shared operational space without hierarchical abstractions.
+* **Topological Limits:** Instead of blocking paradoxical recursions via predefined type boundaries, cyclic logic is natively identified as localized "topological friction"—a mathematically bounded negative-weight cycle. 
+* **Dynamic Resolution:** The system shifts the burden of maintaining stability directly into the algorithmic combinators ($S$ and $K$). Data remains entirely fluid, and structural bounds are generated dynamically relative to the execution path.
+
+This operational philosophy aligns tightly with optimal configurations for massively parallel hardware (such as GPUs or Interaction Net backends). By minimizing reliance on global scope tracking and maximizing local topological routing, the engine processes unstratified logic with high algorithmic efficiency.

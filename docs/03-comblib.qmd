@@ -1,0 +1,35 @@
+# Using and Extending `CombLib`
+
+## The Combinatory Library
+
+The `CombLib` module provides the native mathematical primitives for the `nf-sketches` logic engine. Rather than relying on the Calculus of Inductive Constructions, this library implements all mathematical logic entirely via point-free bracket abstraction using the core `Comb` AST.
+
+By eliminating named variables during execution, the memory architecture avoids the overhead of managing substitution scopes.
+
+---
+
+## Base Primitives
+
+The library builds complex structures utilizing the $S$ and $K$ combinators:
+* **Booleans:** Structural routing nodes are defined to explicitly map control flow without allocating external memory.
+* **Numerals:** The engine utilizes B-combinator-based structures to execute additive and multiplicative transformations.
+* **Lists:** Inductive topologies (`cons`, `head`, `tail`) are managed as executable graph paths rather than static arrays.
+
+---
+
+## Extending the Library
+
+Developers can contribute to `CombLib` by defining new Church-encoded structures. When extending the library, algorithms must be written strictly as combinatorial compositions. 
+
+Because the engine processes an unstratified universe, developers must account for structural loops natively. If an algorithm requires unbounded iteration, the developer must utilize the $T$-operator injection (`Comb.t_inject`) to explicitly mark the topological friction, or rely on the engine's built-in Minimum Cycle Mean bounds to freeze runaway recursion.
+
+```lean
+#| label: extending-comblib
+#| eval: false
+
+-- Example structure for adding custom logic
+def customCombinator : Comb :=
+  app Comb.S (app Comb.K Comb.I)
+```
+
+By conforming to these geometric routing limits, newly added modules remain perfectly compliant with the $O(V+E)$ evaluation metrics expected by the runtime environment.

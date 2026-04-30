@@ -1,0 +1,37 @@
+# The `nf-validate` Constraint Graph
+
+## Algorithmic Syntax Verification
+
+The `nf-validate` module serves as the primary verification matrix for the logic engine. Rather than utilizing external axioms to prevent logical loops, this module parses syntax to ensure operations conform to strict algorithmic bounds.
+
+It utilizes the principles of Quine's systemic ambiguity. The logic is computationally converted into a relative constraint graph. An operation is deemed stratifiable, and thus structurally safe, if the graph flattens without generating any negative-weight cycles. 
+
+---
+
+## Extracting Constraints
+
+The compiler parses the Abstract Syntax Tree (AST) and generates a system of directed and bidirectional weights based on set-theoretic relations.
+
+```lean
+#| label: extract-constraints-ast
+#| eval: false
+
+def extractConstraintsAux (scope : Nat) : Formula → List Constraint
+  | Formula.atom (Atomic.eq x y) => 
+      [{ v1 := (x, scope), v2 := (y, scope), diff := 0 }]
+  | Formula.atom (Atomic.mem x y) => 
+      [{ v1 := (x, scope), v2 := (y, scope), diff := 1, directed := false }]
+```
+
+As demonstrated in the extraction pipeline, structural equivalence ($x = y$) maps to a stable 0-weight constraint, while logical membership ($x \in y$) maps to a precise topological depth shift of 1. Variables are also strictly tagged with their lexical binding depth (`scope`), preventing scope interference during the traversal.
+
+---
+
+## The Bellman-Ford Matrix
+
+Once the edges are defined, the graph is processed through a modified Bellman-Ford shortest-path evaluator.
+
+* **Topological Limits:** The module formally mathematically restricts the depth of evaluations strictly to the number of variables present in the execution path. This K-Iteration limit guarantees that the recursion engine halts.
+* **Negative Cycles:** Instead of relying on model-theoretic proofs to analyze contradictions, contradictions manifest purely geometrically. If a variable is topologically shifted in a manner that creates an unresolvable structural paradox, the Bellman-Ford algorithm surfaces it as a negative integer constraint path. 
+
+This strict geometric boundary allows the engine to analyze self-referential graph reductions securely before deploying them to the untyped combinatory backend.

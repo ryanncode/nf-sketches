@@ -1,0 +1,35 @@
+# Introduction and Setup
+
+## The Acyclic Lean Architecture
+
+The `nf-sketches` repository provides a computationally verifiable, topologically-bound combinatory logic engine. This documentation is organized to guide engineers and researchers through utilizing the ecosystem practically, before diving into the architectural mechanics.
+
+The primary objective of this architecture is to resolve cyclical logic constraints without relying on external garbage collection or global substitution environments. By formalizing Quine's systemic ambiguity into geometric routing rules, the logic engine natively processes highly entangled variables by extracting topological paths directly from the Abstract Syntax Tree (AST).
+
+---
+
+## Practical Setup
+
+The environment is built utilizing Lean 4, which acts as the static verification oracle. 
+
+To initialize the operational environment across all sub-modules (`nf-validate`, `parse-strat`, `seq-embed`, and `untyped-comb`), execute the provided build scripts:
+
+```bash
+#| label: build-script
+#| eval: false
+
+./update-lean.sh
+lake build
+```
+
+These commands synchronize the mathematical verification matrices with the exact `mathlib` cache required for the topological algorithms.
+
+---
+
+## The Workflow Paradigm
+
+The development lifecycle within `nf-sketches` follows a distinct progression from string parsing to bare-metal compilation:
+
+* **Interactive Sandbox (`parse-strat`):** Users first define logical constraints using standard ASCII syntax to test stratification boundaries.
+* **Primitive Assembly (`CombLib`):** Mathematical concepts are assembled via variable-free combinators, completely bypassing standard dependent types.
+* **Executable Deployment (`ExPrograms`):** Verified logic structures are deployed as functional scripts that map natively onto Interaction Nets for $O(V+E)$ performance limits.

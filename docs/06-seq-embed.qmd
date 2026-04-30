@@ -1,0 +1,34 @@
+# The `seq-embed` Sequent Calculus
+
+## Proof-Theoretic Embedding
+
+The `seq-embed` environment formalizes the structural proof theory required to manage logical derivations securely. By constructing a deep embedding of Gentzen's Sequent Calculus within Lean 4, the architecture gains strict programmatic control over the deductive pathways.
+
+This module fundamentally restricts classical deductive freedom. The logic engine will not evaluate a set comprehension rule within the sequent tree unless it has been explicitly authorized by a `StratificationWitness` output from the `nf-validate` module.
+
+---
+
+## Evaluating Substitutions 
+
+To systematically analyze the behavior of highly entangled graph structures, the diagnostic engine simulates substitutions and evaluates the intermediate lemmas via the `reduceCut` pipeline.
+
+```lean
+#| label: reduce-cut
+#| eval: false
+
+def reduceCut {Γ Δ : Context} (A : Formula) 
+  (d1 : Derivation ⟨Γ, A :: Δ⟩) 
+  (d2 : Derivation ⟨A :: Γ, Δ⟩) : ReduceResult Γ Δ :=
+```
+
+The system bypasses standard structural normalization, intentionally forcing logical substitutions dynamically back through the validation matrix. This mechanical stress test surfaces exactly where grammatical structures break down during cyclic execution.
+
+---
+
+## Navigating Extensionality
+
+The primary analytical utility of `seq-embed` is calculating the operational cost of the Axiom of Extensionality.
+
+The system utilizes weak stratification to parse constraints efficiently. Weak stratification partitions the graph by binding scope, allowing local variables to re-level their integer weights dynamically. This dynamic local re-leveling maintains the stability of the graph during operations like substitution.
+
+However, the Axiom of Extensionality dictates that $x = y$ mandates total structural equivalence. When dynamically re-leveled variables interact with this rigid structural mandate, the compiler is forced to equate items with conflicting topological weights. This collision triggers a mathematically verifiable negative-weight cycle. The `reduceCut` engine actively maps this specific "Extensionality Collision," allowing the execution backend to intercept and route around these paradoxical limitations.

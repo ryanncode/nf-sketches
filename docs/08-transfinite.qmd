@@ -1,0 +1,27 @@
+# Transfinite Calculus and Strongly Cantorian Sets
+
+## Choice-Free Mathematics
+
+Within the untyped execution pipeline, the logic engine natively evaluates complex mathematical boundaries, such as transfinite sums, by replacing traditional external axioms with computational topology. 
+
+In standard formal systems, calculating quantities across uncomputable domains often requires external theoretical assumptions, such as the Axiom of Choice, to maintain stability. The `nf-sketches` architecture bypasses this necessity by evaluating cardinal arithmetic through pure bracket abstraction ($\lambda \to S, K$) over disjoint union topologies.
+
+Transfinite summations (e.g., $\aleph_0 + \aleph_0$) are processed geometrically. The execution boundary is stabilized by explicitly tracking the required integer type shifts and injecting $T$-operator matrices dynamically, routing the infinite calculation directly into finite structural limits.
+
+---
+
+## Retractions and SC Stability
+
+To execute standard inductive and classical logic natively inside this graph environment without triggering the cycle detectors, the architecture defines "islands of classicality."
+
+These computational islands are established using Strongly Cantorian (SC) retractions. A set is evaluated as Strongly Cantorian if it strictly correlates across type shifts via $K_t(t(x)) = K[t(x)]$. When the engine identifies that local graph execution operates completely inside a Strong Connected Component where this boundary is maintained, it explicitly isolates the logic using an `SC_CUT` execution wrapper.
+
+```lean
+#| label: verify-sc-stability
+#| eval: false
+
+def verifySCStability (L : SCLattice) (F : Int → Int) : Option Int :=
+  if !isMonotone L F then
+```
+
+Before this suspended classical evaluation is returned to the broader topological graph, the `verifySCStability` function structurally confirms the limit using Knaster-Tarski least fixpoint calculations ($\text{lfp}(F)$). This secures the computational loop, guaranteeing stability.

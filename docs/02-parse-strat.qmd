@@ -1,0 +1,34 @@
+# Interactive Diagnostics with `parse-strat`
+
+## The Diagnostic Sandbox
+
+The `parse-strat` module provides a tactile, responsive REPL environment for analyzing how the constraint solver resolves logical loops. Before writing custom algorithmic programs, researchers utilize this sandbox to manually observe the topological bounds of specific formulas.
+
+Rather than running heavy formal proofs through the `seq-embed` verifier, the `parse-strat` environment acts as a direct interface to the Bellman-Ford traversal algorithms. It enables rapid iteration when designing non-well-founded logical sequences.
+
+---
+
+## Syntax Parsing
+
+The module utilizes a custom recursive descent parser to translate raw ASCII representations of set theory directly into the internal AST geometry.
+
+```lean
+#| label: parse-formula-signature
+#| eval: false
+
+partial def parseFormula (s : String) : Option Formula :=
+  match parseImpl (tokenize s) with
+```
+
+The parser correctly interprets standard logical connectives, translating operations like `~(x = y) & (y e z)` into structural weight boundaries. 
+
+---
+
+## Analyzing Cycle Extraction
+
+When a user submits a formula to the sandbox, the engine algorithmically translates it into a relative constraint graph. 
+
+* **Successful Stratification:** If the graph flattens successfully, the parser returns a valid distance map representing the exact topological shift between variables.
+* **Paradox Detection:** If a structural paradox (such as an unresolvable self-reference) is detected, the engine isolates it natively. The parser outputs the exact sequence of vertices comprising the negative-weight cycle.
+
+This rapid feedback loop allows developers to verify the topological integrity of their logic models before committing them to the `CombLib` execution primitives.
