@@ -101,10 +101,13 @@ To physically constrain this execution and prevent exhaustion from impredicative
 
 To prove the Turing-completeness of this bare-metal operational layer, the `UntypedComb/CombLib/` directory implements complex structures purely through Church Encodings. Building upon the Topologically-Guided boundaries, the framework implements highly saturated and structurally divergent configurations natively:
 
+* **Standard Encodings:** Implements core primitives including node-collision `Booleans` (`and`, `or`, `not`), B-combinator-based `Numerals` (`succ`, `add`, `mult`), and inductive `Lists` geometries (`cons`, `head`, `tail`) via raw bracket abstraction.
 * **Recursive Self-Models ($V \in V$):** `SelfModels.lean` constructs a mathematically robust Quine atom ($\Omega = \{\Omega\}$) natively inside the engine. Utilizing the Y-combinator and inductive list topologies, the architecture evaluates a structure containing an unreduced copy of itself, relying directly on the MCM/K-Iteration bounds to safely halt the resulting paradox.
 * **Frege-Russell Numerals:** `FregeRussell.lean` defines cardinal sizes via the native evaluation of properties, mathematically modeling structures representing "the set of all sets of a certain size" (such as `Num0`).
 * **Choice-Free Cardinal Arithmetic:** `Cardinals.lean` maps out Transfinite Calculus natively. Cardinal summation (`Card_Add`) is implemented via pure bracket abstraction over disjoint union topologies ($\lambda \to S, K$), and bounds like `Aleph_0` are anchored using the infinite $Y$-combinator stream generator. The operations are bounded structurally across stratification hierarchies using `t_inject` topological friction markers, permanently bypassing the Axiom of Choice and resolving transfinite scaling geometrically.
-* **Standard Encodings:** Implements core primitives including node-collision `Booleans` (`and`, `or`, `not`), B-combinator-based `Numerals` (`succ`, `add`, `mult`), and inductive `Lists` geometries (`cons`, `head`, `tail`) via raw bracket abstraction.
+* **Physical Observables:** `Observables.lean` explicitly extracts Standard Model empirical metrics (Rest Mass, Coupling Constant, Resonance Magnitude) directly from measuring the topological graph friction calculated by the evaluator.
+* **Structured Target Particles:** `Particles.lean` maps physical models like the `electron_knot` and `nucleon_braid` directly to strongly stable topological islands and nested causal braids natively inside the Combinatory AST.
+* **Graph Spectrometer:** `Spectrometer.lean` synthesizes geometric properties to compute $m/Q$ mass-to-charge ratios via resistance vectors, and outputs algorithmic decay timers mapping recursive engine ticks directly to halflife boundaries.
 
 ### 6.4. Holographic Data & Contradiction Isolation
 

@@ -124,6 +124,8 @@ This stable untyped execution environment allows the system to process advanced,
 * **Recursive Self-Models ($V \in V$):** Uses the Y-combinator to evaluate Quine Atoms ($\Omega = \{\Omega\}$), relying safely on the MCM limits to cleanly intercept the self-referential graph.
 * **Frege-Russell Numerals:** Defines numbers organically as "the set of all sets of size N," employing node-collision geometries instead of dependent axioms.
 * **Choice-Free Cardinal Arithmetic:** Implements Transfinite Calculus (e.g., Cardinal Addition $|A| + |B|$ and $\aleph_0$) entirely via pure $\lambda \to S, K$ bracket abstraction. The system mathematically tracks disjoint union topologies across stratification boundaries, triggering mechanical $T$-functor injections dynamically.
+* **Physical Observables & Target Particles:** Explicitly extracts Standard Model empirical metrics (Rest Mass, Coupling Constant, Resonance) directly from measuring the topological graph friction of structured particle knots (`electron_knot`, `nucleon_braid`).
+* **Graph Spectrometer:** Synthesizes geometric properties to compute $m/Q$ mass-to-charge ratios via resistance vectors, and outputs algorithmic decay timers mapping recursive engine ticks directly to halflife boundaries.
 * **Holographic Data Indexing & Search:** Utilizes the absolute complement ($V \setminus A$) natively permitted by NF to build exclusion-first search algorithms. Target non-matching data is isolated and discarded via an $O(1)$ topological sweep rather than an $O(N)$ iteration. Furthermore, the DAG structure isolates unresolvable contradictions across distributed data swarms in strictly linear time $O(V+E)$.
 
 ### ExPrograms: Native Verification
@@ -137,7 +139,7 @@ To definitively demonstrate the active architectural integrity of the Stratified
 6. **Strongly Cantorian Fixpoint Verifier:** Operates and verifies dynamic $\text{lfp}(F)$ limits inside classical islands.
 7. **Stratified Yoneda Embedding Test:** Confirms the categorical self-representation natively bounds to $T(F(V))$ without graph collapse.
 8. **Discrete Causal Geometry:** Validates Causal Graph Syntactic Monism by measuring algorithmic randomness as structural topological friction.
-9. **Collider Simulation:** Calibrates a dimensionless Resonance Magnitude from high-energy collisions and safely decays the topological exhaust via Strongly Cantorian Fixpoint Cooling.
+9. **Collider Simulation:** Models a particle accelerator by forcing recursive "potential energy" stacks (lazy thunks of structured `electron_knot` primitives), colliding them, and natively resolving the Extensionality contradiction through Resonance magnitude calculation and the Graph Spectrometer.
 10. **Agentic Reflection:** Implements a self-referential autonomous agent operating through sandbox-insulated logic loops, utilizing MCM scaling for decision-making and SC memory commit.
 11. **Agentic Planning:** Expands introspection into an active decision matrix, mechanically simulating divergent topological futures and optimizing choices via the Principle of Least Syntactic Action.
 

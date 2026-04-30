@@ -16,6 +16,9 @@ import UntypedComb.CombLib.FregeRussell
 import UntypedComb.CombLib.Cardinals
 import UntypedComb.CombLib.Tests
 import UntypedComb.CombLib.Holographic
+import UntypedComb.CombLib.Observables
+import UntypedComb.CombLib.Particles
+import UntypedComb.CombLib.Spectrometer
 import UntypedComb.Translation
 import UntypedComb.Categorical
 import UntypedComb.Fixpoint
