@@ -1,17 +1,14 @@
-# NF Sketches: High-Throughput Combinatory Execution Engine
-
-<table width="100%">
-  <tr>
-    <td width="50%" align="center">
-      <a href="https://ryanncode.github.io/nf-sketches/"><strong>📚 Read the Docs</strong></a>
-    </td>
-    <td width="50%" align="center">
-      <a href="https://thing.rodeo/"><strong>🌐 Visit the Blog</strong></a>
-    </td>
-  </tr>
-</table>
+# <div align="center">NF Sketches: High-Throughput Combinatory Execution Engine</div>
 
 *A proof-theoretic engine utilizing Lean 4 for* $O(V+E)$ *topological bounds checking to enable acyclic combinatory graph reduction.*
+
+<div align="center">
+  <br>
+  <a href="https://ryanncode.github.io/nf-sketches/"><strong>📚 Read the Docs</strong></a>
+  &nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://thing.rodeo/monism/"><strong>🌐 Visit the Blog</strong></a>
+  <br><br>
+</div>
 
 ---
 
