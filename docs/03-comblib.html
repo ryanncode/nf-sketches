@@ -259,7 +259,7 @@ window.Quarto = {
 <section id="extending-the-library" class="level2" data-number="3.3">
 <h2 data-number="3.3" class="anchored" data-anchor-id="extending-the-library"><span class="header-section-number">3.3</span> Extending the Library</h2>
 <p>Developers can contribute to <code>CombLib</code> by defining new Church-encoded structures. When extending the library, algorithms must be written strictly as combinatorial compositions.</p>
-<p>Because the engine processes an unstratified universe, developers must account for structural loops natively. If an algorithm requires unbounded iteration, the developer must utilize the <span class="math inline">\(T\)</span>-operator injection (<code>Comb.t_inject</code>) to explicitly mark the topological friction, or rely on the engine’s built-in Minimum Cycle Mean bounds to freeze runaway recursion.</p>
+<p>Because the engine processes an unstratified universe, developers must account for structural loops natively. If an algorithm requires unbounded iteration, the developer must utilize the <span class="math inline">\(T\)</span>-operator injection (<code>Comb.t_inject</code>) to explicitly mark the recursive topological cost, or rely on the engine’s built-in Minimum Cycle Mean bounds to freeze runaway recursion.</p>
 <pre class="lean"><code>#| label: extending-comblib
 #| eval: false
 

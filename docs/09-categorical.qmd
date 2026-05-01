@@ -12,7 +12,7 @@ In a fully unstratified computational universe governed by Quine's systemic ambi
 
 To model this environment algorithmically without breaking the execution layer, the architecture formally implements pseudo-Cartesian closure. The standard categorical adjunctions are replaced natively by $T$-relative adjunctions.
 
-The compiler utilizes the dynamic integer distance limits previously output by the Bellman-Ford validation step to structurally shift the parameters of the evaluation map. The algorithm constructs a modified operation, $ev'_{A,B}: TA \times (A \Rightarrow B) \to TB$, utilizing the $T$-functor injection to process the topological friction natively. This framework formally models a subobject classifier mathematically secured by the structural mapping $T2 \cong 2$.
+The compiler utilizes the dynamic integer distance limits previously output by the Bellman-Ford validation step to structurally shift the parameters of the evaluation map. The algorithm constructs a modified operation, $ev'_{A,B}: TA \times (A \Rightarrow B) \to TB$, utilizing the $T$-functor injection to process the recursive topological cost natively. This framework formally models a subobject classifier mathematically secured by the structural mapping $T2 \cong 2$.
 
 ---
 

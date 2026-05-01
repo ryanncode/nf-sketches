@@ -15,7 +15,7 @@ In standard execution models—ranging from Zermelo-Fraenkel set theory algorith
 The `nf-sketches` paradigm operationalizes a flat memory architecture where logic interacts natively through routing geometry.
 
 * **Universal Scope:** Self-referential structures and highly entangled arrays are evaluated in a shared operational space without hierarchical abstractions.
-* **Topological Limits:** Instead of blocking paradoxical recursions via predefined type boundaries, cyclic logic is natively identified as localized "topological friction"—a mathematically bounded negative-weight cycle. 
+* **Topological Limits:** Instead of blocking paradoxical recursions via predefined type boundaries, cyclic logic is natively identified as localized "recursive topological cost"—a mathematically bounded negative-weight cycle. 
 * **Dynamic Resolution:** The system shifts the burden of maintaining stability directly into the algorithmic combinators ($S$ and $K$). Data remains entirely fluid, and structural bounds are generated dynamically relative to the execution path.
 
 This operational philosophy aligns tightly with optimal configurations for massively parallel hardware (such as GPUs or Interaction Net backends). By minimizing reliance on global scope tracking and maximizing local topological routing, the engine processes unstratified logic with high algorithmic efficiency.

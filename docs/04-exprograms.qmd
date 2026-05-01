@@ -10,7 +10,7 @@ To write a functional program within `ExPrograms`, a developer combines the abst
 
 ## Simulating Execution
 
-Because Lean 4 is utilized as the static oracle prior to hardware deployment, these programs execute by simulating the topological friction that an Interaction Net backend will eventually process natively.
+Because Lean 4 is utilized as the static oracle prior to hardware deployment, these programs execute by simulating the recursive topological cost that an Interaction Net backend will eventually process natively.
 
 The framework provides specific wrapper functions to trace the execution path of complex logic. 
 

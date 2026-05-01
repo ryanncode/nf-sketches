@@ -22,7 +22,7 @@ The library builds complex structures utilizing the $S$ and $K$ combinators:
 
 Developers can contribute to `CombLib` by defining new Church-encoded structures. When extending the library, algorithms must be written strictly as combinatorial compositions. 
 
-Because the engine processes an unstratified universe, developers must account for structural loops natively. If an algorithm requires unbounded iteration, the developer must utilize the $T$-operator injection (`Comb.t_inject`) to explicitly mark the topological friction, or rely on the engine's built-in Minimum Cycle Mean bounds to freeze runaway recursion.
+Because the engine processes an unstratified universe, developers must account for structural loops natively. If an algorithm requires unbounded iteration, the developer must utilize the $T$-operator injection (`Comb.t_inject`) to explicitly mark the recursive topological cost, or rely on the engine's built-in Minimum Cycle Mean bounds to freeze runaway recursion.
 
 ```lean
 #| label: extending-comblib
