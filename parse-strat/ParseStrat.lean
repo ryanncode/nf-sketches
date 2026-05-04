@@ -1,4 +1,5 @@
 import NfValidate
+import ParseStrat.ITP
 
 /-!
 # ParseStrat: Shared Library and Formatting Tools

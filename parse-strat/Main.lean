@@ -1,30 +1,15 @@
+import Init.Data.List.Basic
+import Lean
 import NfValidate
 import ParseStrat
+import ParseStrat.ITP
+
+open Lean
+open ITP
 
 /-!
-# ParseStrat: Interactive REPL Sandbox
-
-This module provides an interactive Read-Eval-Print Loop (REPL) for the
-`nf-validate` strict stratification engine. It allows researchers to manually
-input set-theoretic formulas using standard ASCII syntax and immediately
-observe the constraint generation, cycle detection, and algebraic
-contradiction paths.
+# ParseStrat: Interactive REPL Sandbox for ITP
 -/
-
-def buildConjunction (atoms : List Formula) : Option Formula :=
-  match atoms with
-  | [] => none
-  | [x] => some x
-  | x :: xs =>
-      match buildConjunction xs with
-      | some rest => some (Formula.conj x rest)
-      | none => none
-
---------------------------------------------------------------------------------
--- 1. COMPREHENSIVE PARSER FOR FIRST-ORDER LOGIC
---------------------------------------------------------------------------------
--- Converts raw user input strings into the Formula AST. Supports parentheses
--- and operator precedence (~, &, v, ->).
 
 inductive Token where
   | var : String → Token
@@ -36,6 +21,9 @@ inductive Token where
   | impl : Token
   | lparen : Token
   | rparen : Token
+  | forall_tok : Token
+  | exists_tok : Token
+  | comma : Token
   deriving Repr, BEq
 
 partial def tokenize (s : String) : List Token :=
@@ -54,10 +42,14 @@ partial def tokenize (s : String) : List Token :=
     | '-' :: '>' :: rest => go rest (Token.impl :: acc)
     | '=' :: rest => go rest (Token.eq :: acc)
     | 'e' :: rest => go rest (Token.mem :: acc)
+    | ',' :: rest => go rest (Token.comma :: acc)
     | c :: rest =>
         if c.isAlphanum then
           let (varChars, rest') := cs.span Char.isAlphanum
-          go rest' (Token.var (String.ofList varChars) :: acc)
+          let v := String.ofList varChars
+          if v == "forall" then go rest' (Token.forall_tok :: acc)
+          else if v == "exists" then go rest' (Token.exists_tok :: acc)
+          else go rest' (Token.var v :: acc)
         else
           go rest acc
   go s.toList []
@@ -66,9 +58,7 @@ partial def parseAtomic (toks : List Token) : Option (Formula × List Token) :=
   match toks with
   | Token.var x :: Token.eq :: Token.var y :: rest => some (Formula.atom (Atomic.eq (Var.free x) (Var.free y)), rest)
   | Token.var x :: Token.mem :: Token.var y :: rest => some (Formula.atom (Atomic.mem (Var.free x) (Var.free y)), rest)
-  | Token.lparen :: _ =>
-      -- forward declaration workaround: call parseImpl
-      none -- replaced below
+  | Token.var x :: rest => some (Formula.atom (Atomic.eq (Var.free x) (Var.free x)), rest) -- fallback for propositions
   | _ => none
 
 mutual
@@ -77,6 +67,15 @@ partial def parsePrimary (toks : List Token) : Option (Formula × List Token) :=
   | Token.neg :: rest =>
       match parsePrimary rest with
       | some (f, rest') => some (Formula.neg f, rest')
+      | none => none
+  | Token.forall_tok :: Token.var x :: Token.comma :: rest =>
+      match parseImpl rest with
+      | some (f, rest') => some (Formula.univ 0 x f, rest')
+      | none => none
+  | Token.exists_tok :: Token.var x :: Token.comma :: rest =>
+      -- Emulated via ~forall x, ~P
+      match parseImpl rest with
+      | some (f, rest') => some (Formula.neg (Formula.univ 0 x (Formula.neg f)), rest')
       | none => none
   | Token.lparen :: rest =>
       match parseImpl rest with
@@ -114,44 +113,189 @@ partial def parseFormula (s : String) : Option Formula :=
   | some (f, []) => some f
   | _ => none
 
-partial def readFormulas (stdin : IO.FS.Stream) (stdout : IO.FS.Stream) (acc : List Formula) : IO (List Formula) := do
-  stdout.putStr "> "
+--------------------------------------------------------------------------------
+-- COMMAND LOOP
+--------------------------------------------------------------------------------
+
+structure GlobalEnv where
+  theorems : List (String × Formula)
+  deriving Repr, ToJson, FromJson
+
+structure Session where
+  env : GlobalEnv
+  activeGoals : Option ProofState
+  deriving Repr, ToJson, FromJson
+
+def printState (ps : ProofState) : String :=
+  match ps with
+  | [] => "No more goals. Proof complete!"
+  | g :: _ =>
+    let ctxStr := String.intercalate "\n" (g.ctx.map (fun (n, f) => s!"{n} : {reprStr f}"))
+    s!"\n{ctxStr}\n----------------------\n{reprStr g.target}\n"
+
+partial def repl (stdin : IO.FS.Stream) (stdout : IO.FS.Stream) (env : GlobalEnv) (ps : Option ProofState) : IO Unit := do
+  stdout.putStr (if ps.isSome then "ITP> " else "> ")
   stdout.flush
   let line ← stdin.getLine
   let input := line.trimAscii.toString
-  if input == "done" then
-    return acc
-  else
-    match parseFormula input with
-    | some f => readFormulas stdin stdout (acc ++ [f])
-    | none =>
-        stdout.putStrLn "Invalid format. Logical operators (~, &, v, ->) must be applied to full relations. Example: '~(x = y)', '(a e b) & (c = d)'."
-        readFormulas stdin stdout acc
+  if input == "exit" then
+    return ()
 
---------------------------------------------------------------------------------
--- 2. MAIN EXECUTION LOOP
---------------------------------------------------------------------------------
--- Drives the REPL, collecting user input and parsing it into a compound
--- formula, then passing it to the `nf-validate` evaluator.
+  let parts := input.splitOn " "
+  let cmd := parts.head!
+  let args := parts.tail
+
+  if cmd == "help" then
+    stdout.putStrLn "Commands:"
+    stdout.putStrLn "  help                          - Show this help message"
+    stdout.putStrLn "  exit                          - Exit the REPL"
+    stdout.putStrLn "  save_session <file>           - Save current session to a JSON file"
+    stdout.putStrLn "  load_session <file>           - Load a session from a JSON file"
+    stdout.putStrLn "  eval <formula>                - Evaluate a formula"
+    stdout.putStrLn "  step <formula>                - Step-by-step diagnostic evaluation"
+    stdout.putStrLn "  assume <name> <formula>       - Add a named axiom"
+    stdout.putStrLn "  theorem <name> <formula>      - Set a new goal to prove"
+    stdout.putStrLn "  show_goal                     - Show the current goal state"
+    stdout.putStrLn "  intro [name]                  - Introduce a hypothesis or variable"
+    stdout.putStrLn "  exact <name>                  - Close goal if it matches hypothesis exactly"
+    stdout.putStrLn "  split                         - Split a conjunction goal into two"
+    stdout.putStrLn "  left                          - Prove left side of a disjunction"
+    stdout.putStrLn "  right                         - Prove right side of a disjunction"
+    stdout.putStrLn "  apply <name>                  - Apply a theorem/hypothesis"
+    stdout.putStrLn "  destruct <name> [n1] [n2]     - Break down a hypothesis"
+    stdout.putStrLn "  rewrite <name>                - Substitute variables using equality"
+    stdout.putStrLn "  qed                           - Finish proof"
+    stdout.putStrLn "  abort                         - Abort current proof"
+    repl stdin stdout env ps
+  else if cmd == "save_session" then
+    let filename := args.head!
+    let session : Session := { env := env, activeGoals := ps }
+    let json := toJson session
+    IO.FS.writeFile filename json.pretty
+    stdout.putStrLn s!"Session saved to {filename}."
+    repl stdin stdout env ps
+  else if cmd == "load_session" then
+    let filename := args.head!
+    match ← IO.FS.readFile filename |>.toBaseIO with
+    | Except.ok content =>
+      match Json.parse content with
+      | Except.ok json =>
+        match fromJson? json with
+        | Except.ok (session : Session) =>
+          stdout.putStrLn s!"Session loaded from {filename}."
+          if session.activeGoals.isSome then
+            stdout.putStrLn (printState session.activeGoals.get!)
+          repl stdin stdout session.env session.activeGoals
+        | Except.error e =>
+          stdout.putStrLn s!"Failed to deserialize session: {e}"
+          repl stdin stdout env ps
+      | Except.error e =>
+        stdout.putStrLn s!"Failed to parse JSON: {e}"
+        repl stdin stdout env ps
+    | Except.error _ =>
+      stdout.putStrLn s!"Failed to read file {filename}."
+      repl stdin stdout env ps
+  else if cmd == "eval" then
+    let formulaStr := String.intercalate " " args
+    match parseFormula formulaStr with
+    | some f =>
+      match evaluateFullFormula f with
+      | StratificationResult.success w => stdout.putStrLn s!"Stratification successful. Witness: {formatWitness w}"
+      | StratificationResult.failure c e => stdout.putStrLn s!"Error: {formatDetailedCycleSandbox c e}"
+      repl stdin stdout env ps
+    | none =>
+      stdout.putStrLn "Failed to parse formula."
+      repl stdin stdout env ps
+  else if cmd == "step" then
+    stdout.putStrLn "Step not fully implemented in Lean CLI, use eval."
+    repl stdin stdout env ps
+  else if cmd == "show_goal" then
+    if ps.isSome then stdout.putStrLn (printState ps.get!) else stdout.putStrLn "No active goals."
+    repl stdin stdout env ps
+  else match ps with
+  | none =>
+    if cmd == "theorem" then
+      let name := args.head!
+      let formulaStr := String.intercalate " " args.tail
+      match parseFormula formulaStr with
+      | some f =>
+        stdout.putStrLn s!"Starting proof of {name}"
+        let initialGoal : Goal := { ctx := env.theorems, target := f }
+        repl stdin stdout env (some [initialGoal])
+      | none =>
+        stdout.putStrLn "Failed to parse formula."
+        repl stdin stdout env ps
+    else if cmd == "assume" then
+      let name := args.head!
+      let formulaStr := String.intercalate " " args.tail
+      match parseFormula formulaStr with
+      | some f =>
+        stdout.putStrLn s!"Axiom {name} added."
+        repl stdin stdout { env with theorems := (name, f) :: env.theorems } ps
+      | none =>
+        stdout.putStrLn "Failed to parse formula."
+        repl stdin stdout env ps
+    else
+      stdout.putStrLn "Unknown command. Type 'help' for available commands."
+      repl stdin stdout env ps
+  | some state =>
+    if cmd == "intro" then
+      let name := if args.isEmpty then "H" else args.head!
+      match introTactic name state with
+      | Except.ok s => stdout.putStrLn (printState s); repl stdin stdout env (some s)
+      | Except.error e => stdout.putStrLn e; repl stdin stdout env (some state)
+    else if cmd == "exact" then
+      let name := args.head!
+      match exactTactic name state with
+      | Except.ok s => stdout.putStrLn (printState s); repl stdin stdout env (some s)
+      | Except.error e => stdout.putStrLn e; repl stdin stdout env (some state)
+    else if cmd == "apply" then
+      let name := args.head!
+      match applyTactic name state with
+      | Except.ok s => stdout.putStrLn (printState s); repl stdin stdout env (some s)
+      | Except.error e => stdout.putStrLn e; repl stdin stdout env (some state)
+    else if cmd == "split" then
+      match splitTactic state with
+      | Except.ok s => stdout.putStrLn (printState s); repl stdin stdout env (some s)
+      | Except.error e => stdout.putStrLn e; repl stdin stdout env (some state)
+    else if cmd == "left" then
+      match leftTactic state with
+      | Except.ok s => stdout.putStrLn (printState s); repl stdin stdout env (some s)
+      | Except.error e => stdout.putStrLn e; repl stdin stdout env (some state)
+    else if cmd == "right" then
+      match rightTactic state with
+      | Except.ok s => stdout.putStrLn (printState s); repl stdin stdout env (some s)
+      | Except.error e => stdout.putStrLn e; repl stdin stdout env (some state)
+    else if cmd == "destruct" then
+      let name := args.head!
+      let n1 := args.getD 1 ""
+      let n2 := args.getD 2 ""
+      match destructTactic name n1 n2 state with
+      | Except.ok s => stdout.putStrLn (printState s); repl stdin stdout env (some s)
+      | Except.error e => stdout.putStrLn e; repl stdin stdout env (some state)
+    else if cmd == "rewrite" then
+      let name := args.head!
+      match rewriteTactic name state with
+      | Except.ok s => stdout.putStrLn (printState s); repl stdin stdout env (some s)
+      | Except.error e => stdout.putStrLn e; repl stdin stdout env (some state)
+    else if cmd == "qed" then
+      if state.isEmpty then
+        stdout.putStrLn "Proof accepted."
+        repl stdin stdout env none
+      else
+        stdout.putStrLn "Proof is not complete."
+        repl stdin stdout env (some state)
+    else if cmd == "abort" then
+      stdout.putStrLn "Proof aborted."
+      repl stdin stdout env none
+    else
+      stdout.putStrLn "Unknown tactic."
+      repl stdin stdout env (some state)
 
 def main : IO Unit := do
   let stdin ← IO.getStdin
   let stdout ← IO.getStdout
 
-  stdout.putStrLn "=== NF Stratification Validator ==="
-  stdout.putStrLn "Enter formulas to build a conjunction."
-  stdout.putStrLn "Accepted syntax: Relational statements ('x = y', 'x e y') combined with logical operators ('~', '&', 'v', '->'). Example: '~(x = y) & (y e z)'."
-  stdout.putStrLn "Type 'done' to evaluate the combined formula."
-
-  let atoms ← readFormulas stdin stdout []
-  match buildConjunction atoms with
-  | none => stdout.putStrLn "Execution terminated. No formulas were entered."
-  | some f =>
-      stdout.putStrLn "\nEvaluating constraint graph with DNF conversion and cycle detection..."
-      match evaluateFullFormula f with
-      | StratificationResult.success witness =>
-          stdout.putStrLn "Result: The formula is stratifiable."
-          stdout.putStrLn s!"Witness Context: {formatWitness witness}"
-      | StratificationResult.failure cycle edges =>
-          stdout.putStrLn "Result: Not stratifiable. A type contradiction was detected in all branches."
-          stdout.putStrLn (formatDetailedCycleSandbox cycle edges)
+  stdout.putStrLn "=== Lean ITP REPL ==="
+  stdout.putStrLn "Type 'help' for a list of commands, or 'exit' to quit."
+  repl stdin stdout { theorems := [] } none

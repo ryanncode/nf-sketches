@@ -383,11 +383,11 @@ def reduceCut {Γ Δ : Context} (A : Formula) (d1 : Derivation ⟨Γ, A :: Δ⟩
                            | _ => "?"
               Except.error (ReductionError.StratificationFailure s!"instantiation [x ↦ {t_str}]" cycle edges)
           | StratificationResult.success _ =>
-              -- Step 3.2: Substitution Closure Guarantee
+              -- Substitution Closure Guarantee
               -- We successfully performed dynamic re-leveling during beta-reduction!
               -- The grammatical substitution is valid and closed.
 
-              -- Phase 4: The Extensionality Collision
+              -- The Extensionality Collision
               -- Now we push the dynamically leveled sets upward until they mathematically collide
               -- with Extensionality's rigid structural equivalence requirement (`x = y`).
               let extensionality_collision := Formula.conj instantiated_scoped (Formula.eq t_mem t_phi)

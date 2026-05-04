@@ -1,4 +1,8 @@
 import Init.Data.List.Basic
+import Lean
+
+open Lean
+
 
 /-!
 # NF Validate: Core Syntax and Evaluation Pipeline
@@ -16,7 +20,7 @@ first-order logical mechanics.
 inductive Var where
   | free : String → Var
   | bound : Nat → Var
-  deriving Repr, DecidableEq
+  deriving Repr, DecidableEq, ToJson, FromJson
 
 --------------------------------------------------------------------------------
 -- 1. ABSTRACT SYNTAX TREE (AST)
@@ -37,7 +41,7 @@ inductive Atomic where
   | qproj2 : Var → Var → Atomic      -- z = π_2(p)
   | app : Var → Var → Var → Atomic   -- z = u(v)
   | lam : Var → Var → Var → Atomic   -- z = \lambda x. t
-  deriving Repr, DecidableEq
+  deriving Repr, DecidableEq, ToJson, FromJson
 
 /--
 The `Formula` type represents the compound logical structure.
@@ -55,7 +59,7 @@ inductive Formula where
   | impl : Formula → Formula → Formula
   | univ : Nat → String → Formula → Formula
   | comp : Nat → String → Formula → Formula
-  deriving Repr, DecidableEq
+  deriving Repr, DecidableEq, ToJson, FromJson
 
 def Formula.eq (x y : Var) : Formula := Formula.atom (Atomic.eq x y)
 def Formula.mem (x y : Var) : Formula := Formula.atom (Atomic.mem x y)
@@ -76,7 +80,7 @@ structure Constraint where
   v2 : ScopedVar
   diff : Int
   directed : Bool := false -- If true, only generates a single directional edge
-  deriving Repr, DecidableEq
+  deriving Repr, DecidableEq, ToJson, FromJson
 
 def extractConstraintsAux (scope : Nat) : Formula → List Constraint
   | Formula.atom (Atomic.eq x y) => [{ v1 := (x, scope), v2 := (y, scope), diff := 0 }]
@@ -124,7 +128,7 @@ structure Edge where
   src : ScopedVar
   dst : ScopedVar
   weight : Int
-  deriving Repr, DecidableEq
+  deriving Repr, DecidableEq, ToJson, FromJson
 
 def buildEdges : List Constraint → List Edge
   | [] => []

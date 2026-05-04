@@ -99,11 +99,11 @@ Stratification functions purely as a grammatical constraint. Coding this validat
 
 The repository proves the algorithm's internal monotonicity and convergence, guaranteeing the search map never regresses into cyclic instability. A formalized K-Iteration bound mathematically restricts the depth of type derivations strictly to the number of variables present. This mechanism guarantees termination without unchecked iterative expansion. Ultimately, the `stratification_sound` theorem proves that computational satisfiability in the geometric domain inherently guarantees valid syntax, securing a soundness proof entirely independent of traditional model-theoretic structures.
 
-### `parse-strat`: The Interactive Sandbox
+### `parse-strat`: The Interactive ITP Sandbox
 
-This program provides a tactile, responsive REPL environment for testing edge cases in the constraint solver without compromising the formal proofs of the main diagnostic suite.
+This program provides a tactile, responsive Read-Eval-Print Loop (REPL) environment acting as a full Interactive Theorem Prover (ITP). It allows users to explore the boundaries of **weak stratification constraints** in Quine's New Foundations using classical Natural Deduction tactics while being supported by a powerful topological graph-flattening backend.
 
-A lexical scanner and recursive descent parser allow users to manually inject arbitrary set-theoretic strings (e.g., `~(x = y) & (y e z)`). The algorithm immediately generates the topological graph, detects cycles, and prints the distance maps or exact algebraic telescoping sum contradictions. This sandbox invites researchers to manually test the boundaries of Quine's systemic ambiguity and observe the mechanical reality of the algorithm in real-time.
+A lexical scanner and recursive descent parser allow users to manually inject arbitrary first-order logic formulas (e.g., `forall x y, ~(x = y) -> (y e z)`). Users can enter a tactical proof mode to symbolically break down implications using standard LCF-style tactics (`intro`, `destruct`, `rewrite`, `apply`). To verify mathematical consistency without infinite regress, the engine can dynamically bypass symbolic evaluation, generate the Bellman-Ford topological constraint graph of the active logical boundaries, detect cycles, and print the resulting typestate distance maps (Witness Context). This sandbox invites researchers to interactively test the boundaries of Quine's systemic ambiguity and observe the mechanical reality of the algorithm in real-time.
 
 ### `seq-embed`: The Formal Diagnostic Tool
 
