@@ -1,0 +1,13 @@
+theorem Subset_Trans forall A , forall B , forall C , forall z , ( ( z e A -> z e B ) & ( z e B -> z e C ) ) -> ( z e A -> z e C )
+intro A
+intro B
+intro C
+intro z
+intro H
+destruct H H1 H2
+intro Hz
+apply H2
+apply H1
+exact Hz
+qed
+exit

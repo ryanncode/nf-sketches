@@ -1,0 +1,2 @@
+step forall a , forall b , forall K , ~ forall x , ~ forall y , ( x e K & x = a ) & ( y e K & ( y = a v y = b ) )
+exit

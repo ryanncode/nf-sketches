@@ -1,0 +1,18 @@
+theorem Distributivity_LR forall x , forall A , forall B , forall C , ( x e A & ( x e B v x e C ) ) -> ( ( x e A & x e B ) v ( x e A & x e C ) )
+intro x
+intro A
+intro B
+intro C
+intro H
+destruct H HA HBC
+destruct HBC HB HC
+left
+split
+exact HA
+exact HB
+right
+split
+exact HA
+exact HC
+qed
+exit

@@ -1,0 +1,11 @@
+theorem Union_Addition forall x , forall A , forall B , x e A -> ( x e A v x e B )
+intro x
+intro A
+intro B
+intro H
+cut ( x e A v x e B )
+exact Cut
+left
+exact H
+qed
+exit

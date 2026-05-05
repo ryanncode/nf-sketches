@@ -1,0 +1,11 @@
+theorem Strict_Sub_Asym forall A , forall B , ( ( forall x , x e A -> x e B ) & ~ ( forall y , y e B -> y e A ) ) -> ~ ( A = B )
+intro A
+intro B
+intro H
+destruct H H_sub H_nsub
+focus_hyp H_sub
+intro H_eq
+rewrite H_eq
+exact H_nsub
+qed
+exit

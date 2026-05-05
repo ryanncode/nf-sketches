@@ -19,6 +19,7 @@ inductive Token where
   | conj : Token
   | disj : Token
   | impl : Token
+  | iff : Token
   | lparen : Token
   | rparen : Token
   | forall_tok : Token
@@ -39,6 +40,7 @@ partial def tokenize (s : String) : List Token :=
     | '~' :: rest => go rest (Token.neg :: acc)
     | 'v' :: rest => go rest (Token.disj :: acc)
     | '&' :: rest => go rest (Token.conj :: acc)
+    | '<' :: '-' :: '>' :: rest => go rest (Token.iff :: acc)
     | '-' :: '>' :: rest => go rest (Token.impl :: acc)
     | '=' :: rest => go rest (Token.eq :: acc)
     | 'e' :: rest => go rest (Token.mem :: acc)
@@ -54,62 +56,112 @@ partial def tokenize (s : String) : List Token :=
           go rest acc
   go s.toList []
 
-partial def parseAtomic (toks : List Token) : Option (Formula × List Token) :=
+
+def expandMacro (f : Formula) (params : List String) (args : List String) : Formula :=
+  let rec goVar (v : Var) : Var :=
+    match v with
+    | Var.free s =>
+      match params.zip args |>.find? (fun (k, _) => k == s) with
+      | some (_, v') => Var.free v'
+      | none => v
+    | _ => v
+  let goAtomic (a : Atomic) : Atomic :=
+    match a with
+    | Atomic.eq x y => Atomic.eq (goVar x) (goVar y)
+    | Atomic.mem x y => Atomic.mem (goVar x) (goVar y)
+    | _ => a
+  let rec go (f : Formula) : Formula :=
+    match f with
+    | Formula.atom a => Formula.atom (goAtomic a)
+    | Formula.neg p => Formula.neg (go p)
+    | Formula.conj p q => Formula.conj (go p) (go q)
+    | Formula.disj p q => Formula.disj (go p) (go q)
+    | Formula.impl p q => Formula.impl (go p) (go q)
+    | Formula.univ n x p => Formula.univ n x (go p)
+    | Formula.comp n x p => Formula.comp n x (go p)
+  go f
+
+partial def parseArgs (toks : List Token) (acc : List String) : Option (List String × List Token) :=
+  match toks with
+  | Token.rparen :: rest => some (acc.reverse, rest)
+  | Token.var x :: Token.rparen :: rest => some ((x :: acc).reverse, rest)
+  | Token.var x :: Token.comma :: rest => parseArgs rest (x :: acc)
+  | _ => none
+
+partial def parseAtomic (toks : List Token) (macros : List (String × List String × Formula)) : Option (Formula × List Token) :=
   match toks with
   | Token.var x :: Token.eq :: Token.var y :: rest => some (Formula.atom (Atomic.eq (Var.free x) (Var.free y)), rest)
   | Token.var x :: Token.mem :: Token.var y :: rest => some (Formula.atom (Atomic.mem (Var.free x) (Var.free y)), rest)
+  | Token.var f :: Token.lparen :: rest =>
+      match parseArgs rest [] with
+      | some (args, rest') =>
+          match macros.find? (fun (k, _, _) => k == f) with
+          | some (_, params, formula) =>
+              if params.length == args.length then
+                some (expandMacro formula params args, rest')
+              else none
+          | none => none
+      | none => none
   | Token.var x :: rest => some (Formula.atom (Atomic.eq (Var.free x) (Var.free x)), rest) -- fallback for propositions
   | _ => none
 
 mutual
-partial def parsePrimary (toks : List Token) : Option (Formula × List Token) :=
+partial def parsePrimary (toks : List Token) (macros : List (String × List String × Formula)) : Option (Formula × List Token) :=
   match toks with
   | Token.neg :: rest =>
-      match parsePrimary rest with
+      match parsePrimary rest macros with
       | some (f, rest') => some (Formula.neg f, rest')
       | none => none
   | Token.forall_tok :: Token.var x :: Token.comma :: rest =>
-      match parseImpl rest with
+      match parseIff rest macros with
       | some (f, rest') => some (Formula.univ 0 x f, rest')
       | none => none
   | Token.exists_tok :: Token.var x :: Token.comma :: rest =>
       -- Emulated via ~forall x, ~P
-      match parseImpl rest with
+      match parseIff rest macros with
       | some (f, rest') => some (Formula.neg (Formula.univ 0 x (Formula.neg f)), rest')
       | none => none
   | Token.lparen :: rest =>
-      match parseImpl rest with
+      match parseIff rest macros with
       | some (f, Token.rparen :: rest') => some (f, rest')
       | _ => none
-  | _ => parseAtomic toks
+  | _ => parseAtomic toks macros
 
-partial def parseConj (toks : List Token) : Option (Formula × List Token) :=
-  match parsePrimary toks with
+partial def parseConj (toks : List Token) (macros : List (String × List String × Formula)) : Option (Formula × List Token) :=
+  match parsePrimary toks macros with
   | some (f1, Token.conj :: rest) =>
-      match parseConj rest with
+      match parseConj rest macros with
       | some (f2, rest') => some (Formula.conj f1 f2, rest')
       | none => none
   | res => res
 
-partial def parseDisj (toks : List Token) : Option (Formula × List Token) :=
-  match parseConj toks with
+partial def parseDisj (toks : List Token) (macros : List (String × List String × Formula)) : Option (Formula × List Token) :=
+  match parseConj toks macros with
   | some (f1, Token.disj :: rest) =>
-      match parseDisj rest with
+      match parseDisj rest macros with
       | some (f2, rest') => some (Formula.disj f1 f2, rest')
       | none => none
   | res => res
 
-partial def parseImpl (toks : List Token) : Option (Formula × List Token) :=
-  match parseDisj toks with
+partial def parseImpl (toks : List Token) (macros : List (String × List String × Formula)) : Option (Formula × List Token) :=
+  match parseDisj toks macros with
   | some (f1, Token.impl :: rest) =>
-      match parseImpl rest with
+      match parseImpl rest macros with
       | some (f2, rest') => some (Formula.impl f1 f2, rest')
+      | none => none
+  | res => res
+
+partial def parseIff (toks : List Token) (macros : List (String × List String × Formula)) : Option (Formula × List Token) :=
+  match parseImpl toks macros with
+  | some (f1, Token.iff :: rest) =>
+      match parseIff rest macros with
+      | some (f2, rest') => some (Formula.conj (Formula.impl f1 f2) (Formula.impl f2 f1), rest')
       | none => none
   | res => res
 end
 
-partial def parseFormula (s : String) : Option Formula :=
-  match parseImpl (tokenize s) with
+partial def parseFormula (s : String) (macros : List (String × List String × Formula)) : Option Formula :=
+  match parseIff (tokenize s) macros with
   | some (f, []) => some f
   | _ => none
 
@@ -119,7 +171,7 @@ partial def parseFormula (s : String) : Option Formula :=
 
 structure GlobalEnv where
   theorems : List (String × Formula)
-  macros : List (String × Formula) := []
+  macros : List (String × List String × Formula) := []
   deriving Repr, ToJson, FromJson
 
 structure Session where
@@ -215,7 +267,7 @@ partial def repl (stdin : IO.FS.Stream) (stdout : IO.FS.Stream) (env : GlobalEnv
       repl stdin stdout env ps
   else if cmd == "eval" then
     let formulaStr := String.intercalate " " args
-    match parseFormula formulaStr with
+    match parseFormula formulaStr env.macros with
     | some f =>
       match evaluateFullFormula f with
       | StratificationResult.success w => stdout.putStrLn s!"Stratification successful. Witness: {formatWitness w}"
@@ -226,18 +278,43 @@ partial def repl (stdin : IO.FS.Stream) (stdout : IO.FS.Stream) (env : GlobalEnv
       repl stdin stdout env ps
   else if cmd == "check_strat" then
     let formulaStr := String.intercalate " " args
-    match parseFormula formulaStr with
+    match parseFormula formulaStr env.macros with
     | some f =>
       match evaluateFullFormula f with
       | StratificationResult.success _ => stdout.putStrLn "Stratification successful. Topologically sound."
-      | StratificationResult.failure c e => stdout.putStrLn s!"Error: Negative-weight cycle detected"
+      | StratificationResult.failure _ _ => stdout.putStrLn "Error: Negative-weight cycle detected"
       repl stdin stdout env ps
     | none =>
       stdout.putStrLn "Failed to parse formula."
       repl stdin stdout env ps
   else if cmd == "step" then
-    stdout.putStrLn "Step not fully implemented in Lean CLI, use eval."
-    repl stdin stdout env ps
+    let formulaStr := String.intercalate " " args
+    match parseFormula formulaStr env.macros with
+    | some f =>
+      let constraints := extractConstraints f
+      stdout.putStrLn "--- Extracting Constraints ---"
+      for c in constraints do
+        stdout.putStrLn (reprStr c)
+
+      let edges := buildEdges constraints
+      let vars := getVars constraints
+
+      stdout.putStrLn "--- Graph Nodes ---"
+      for v in vars do
+        stdout.putStrLn (reprStr v)
+
+      stdout.putStrLn "--- Graph Edges ---"
+      for e in edges do
+        stdout.putStrLn (reprStr e)
+
+      stdout.putStrLn "--- Running Bellman-Ford ---"
+      match evaluateFullFormula f with
+      | StratificationResult.success _ => stdout.putStrLn "Stratification successful."
+      | StratificationResult.failure _ _ => stdout.putStrLn "Error: Negative-weight cycle detected"
+      repl stdin stdout env ps
+    | none =>
+      stdout.putStrLn "Failed to parse formula."
+      repl stdin stdout env ps
   else if cmd == "show_goal" then
     if ps.isSome then stdout.putStrLn (printState ps.get!) else stdout.putStrLn "No active goals."
     repl stdin stdout env ps
@@ -246,7 +323,7 @@ partial def repl (stdin : IO.FS.Stream) (stdout : IO.FS.Stream) (env : GlobalEnv
     if cmd == "theorem" then
       let name := args.head!
       let formulaStr := String.intercalate " " args.tail
-      match parseFormula formulaStr with
+      match parseFormula formulaStr env.macros with
       | some f =>
         stdout.putStrLn s!"Starting proof of {name}"
         let initialGoal : Goal := { ctx := env.theorems, target := f }
@@ -255,32 +332,37 @@ partial def repl (stdin : IO.FS.Stream) (stdout : IO.FS.Stream) (env : GlobalEnv
         stdout.putStrLn "Failed to parse formula."
         repl stdin stdout env ps
     else if cmd == "deff" then
-      let name := args.head!
-      -- Syntax: deff name := formula
+      -- Syntax: deff name arg1 arg2 ... := formula
       let eqIdx := args.findIdx? (fun x => x == ":=")
       match eqIdx with
       | some i =>
-        let formulaStr := String.intercalate " " (args.drop (i + 1))
-        match parseFormula formulaStr with
-        | some f =>
-          -- Kosaraju SCC Flattening Simulation (we just verify it parses and stratifies)
-          match evaluateFullFormula f with
-          | StratificationResult.success _ =>
-            stdout.putStrLn s!"Macro {name} defined and SCC flattened."
-            repl stdin stdout { env with macros := (name, f) :: env.macros } ps
-          | StratificationResult.failure _ _ =>
-            stdout.putStrLn "Failed to stratify macro. Negative cycle detected."
-            repl stdin stdout env ps
-        | none =>
-          stdout.putStrLn "Failed to parse formula."
+        let macroArgs := args.take i
+        if macroArgs.isEmpty then
+          stdout.putStrLn "Usage: deff <name> [args...] := <formula>"
           repl stdin stdout env ps
+        else
+          let macroName := macroArgs.head!
+          let macroParams := macroArgs.tail
+          let formulaStr := String.intercalate " " (args.drop (i + 1))
+          match parseFormula formulaStr env.macros with
+          | some f =>
+            match evaluateFullFormula f with
+            | StratificationResult.success _ =>
+              stdout.putStrLn s!"Macro {macroName} defined and SCC flattened."
+              repl stdin stdout { env with macros := (macroName, macroParams, f) :: env.macros } ps
+            | StratificationResult.failure _ _ =>
+              stdout.putStrLn "Failed to stratify macro. Negative cycle detected."
+              repl stdin stdout env ps
+          | none =>
+            stdout.putStrLn "Failed to parse formula."
+            repl stdin stdout env ps
       | none =>
-        stdout.putStrLn "Usage: deff <name> := <formula>"
+        stdout.putStrLn "Usage: deff <name> [args...] := <formula>"
         repl stdin stdout env ps
     else if cmd == "assume" then
       let name := args.head!
       let formulaStr := String.intercalate " " args.tail
-      match parseFormula formulaStr with
+      match parseFormula formulaStr env.macros with
       | some f =>
         stdout.putStrLn s!"Axiom {name} added."
         repl stdin stdout { env with theorems := (name, f) :: env.theorems } ps
@@ -329,11 +411,17 @@ partial def repl (stdin : IO.FS.Stream) (stdout : IO.FS.Stream) (env : GlobalEnv
       | Except.error e => stdout.putStrLn e; repl stdin stdout env (some state)
     else if cmd == "cut" then
       let formulaStr := String.intercalate " " args
-      match parseFormula formulaStr with
+      match parseFormula formulaStr env.macros with
       | some f =>
-        match cutTactic f state with
-        | Except.ok s => stdout.putStrLn (printState s); repl stdin stdout env (some s)
-        | Except.error e => stdout.putStrLn e; repl stdin stdout env (some state)
+        match evaluateFullFormula f with
+        | StratificationResult.failure c e =>
+          stdout.putStrLn "Extensionality Collision!"
+          stdout.putStrLn (formatDetailedCycleSandbox c e)
+          repl stdin stdout env (some state)
+        | StratificationResult.success _ =>
+          match cutTactic f state with
+          | Except.ok s => stdout.putStrLn (printState s); repl stdin stdout env (some s)
+          | Except.error e => stdout.putStrLn e; repl stdin stdout env (some state)
       | none =>
         stdout.putStrLn "Failed to parse formula for cut."
         repl stdin stdout env (some state)

@@ -122,7 +122,7 @@ The Lean `parse-strat` ITP uses a command set strictly unified with the Rust bac
 ### Axioms & Proofs
 * `assume <name> <formula>`: Register a named axiom into the global environment.
 * `theorem <name> <formula>`: Start a new proof with a target goal and enter tactical mode.
-* `deff <name> := <formula>`: Pre-compile an AST Macro. This runs Kosaraju's SCC algorithm instantly, mapping zero-weight connections into a flattened DAG ready for injection into proof graphs.
+* `deff <name> <args...> := <formula>`: Pre-compile an AST Macro. This runs Kosaraju's SCC algorithm instantly, mapping zero-weight connections into a flattened DAG ready for injection into proof graphs.
 * `show_goal`: Print the active target goal and its local context/hypotheses. Note that variable De Bruijn occurrences (`@n`) are kept invisible inside the active tactic state for cleaner navigation.
 * `qed`: Conclude an interactive proof if all goals are solved.
 * `abort`: Cancel the current interactive proof.

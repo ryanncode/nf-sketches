@@ -1,0 +1,5 @@
+theorem Trivial_Identity forall A , A = A
+intro A
+cut x e x
+abort
+exit

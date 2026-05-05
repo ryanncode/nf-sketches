@@ -24,7 +24,7 @@ def introTactic (name : String) : Tactic
   | g :: gs =>
     match g.target with
     | impl p q => Except.ok ({ g with ctx := (name, p) :: g.ctx, target := q } :: gs)
-    | univ n x p => Except.ok ({ g with ctx := (name, Formula.atom (Atomic.eq (Var.free name) (Var.free name))) :: g.ctx, target := p } :: gs) -- simplified
+    | univ _ _ p => Except.ok ({ g with ctx := (name, Formula.atom (Atomic.eq (Var.free name) (Var.free name))) :: g.ctx, target := p } :: gs) -- simplified
     | _ => Except.error "intro: goal is not an implication or universal quantifier."
 
 def exactTactic (name : String) : Tactic

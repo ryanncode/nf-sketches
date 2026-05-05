@@ -1,0 +1,4 @@
+theorem Q_Injective forall a , forall b , forall c , forall d , forall Qab , forall Qcd , ( Qab = Qcd ) -> ( a = c & b = d )
+eval ( ( Qab = Qcd ) & ( a = c ) ) & ( b = d )
+abort
+exit
