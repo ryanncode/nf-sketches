@@ -1,0 +1,21 @@
+deff SUBSET := forall u , ( u e x -> u e y )
+check_strat ( a e x -> a e y )
+theorem Advanced_Test forall a , forall b , forall c , ( ( a e b & b e c ) -> a e c )
+intro a
+intro b
+intro c
+intro H
+destruct H H1 H2
+show_goal
+focus_hyp H2
+show_goal
+cut a e b
+show_goal
+intro H_cut
+show_goal
+exact H1
+show_goal
+defer
+show_goal
+eval ( ( a e b & b e c ) -> a e c )
+exit

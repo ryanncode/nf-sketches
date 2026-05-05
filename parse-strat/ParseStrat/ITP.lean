@@ -83,6 +83,30 @@ def destructTactic (name : String) (n1 n2 : String) : Tactic
     | some _ => Except.error s!"destruct: hypothesis {name} is not a conjunction or disjunction."
     | none => Except.error s!"destruct: hypothesis {name} not found."
 
+def deferTactic : Tactic
+  | [] => Except.error "No active goals."
+  | g :: gs =>
+    if gs.isEmpty then
+      Except.error "Only one active goal."
+    else
+      Except.ok (gs ++ [g])
+
+def focusHypTactic (name : String) : Tactic
+  | [] => Except.error "No active goals."
+  | g :: gs =>
+    match g.ctx.find? (fun (n, _) => n == name) with
+    | some hyp =>
+      let ctx' := g.ctx.filter (fun (n, _) => n != name)
+      Except.ok ({ g with ctx := hyp :: ctx' } :: gs)
+    | none => Except.error s!"focus_hyp: hypothesis {name} not found."
+
+def cutTactic (f : Formula) : Tactic
+  | [] => Except.error "No active goals."
+  | g :: gs =>
+    let g1 := { g with target := f }
+    let g2 := { g with ctx := ("Cut", f) :: g.ctx }
+    Except.ok (g2 :: g1 :: gs)
+
 def substVarAtomic (x y : Var) : Atomic → Atomic
   | Atomic.eq a b => Atomic.eq (if a == x then y else a) (if b == x then y else b)
   | Atomic.mem a b => Atomic.mem (if a == x then y else a) (if b == x then y else b)

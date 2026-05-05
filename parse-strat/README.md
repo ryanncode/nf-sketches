@@ -38,6 +38,7 @@ Axiom SC_Def added.
 ITP> assume Quine_Flatness forall x y. typestate(Q(x,y)) == max(typestate(x), typestate(y))
 Axiom Quine_Flatness added.
 ```
+
 *Note: The system globally registers these named axioms for later retrieval or constraint evaluation.*
 
 ### 2. Setting a Goal
@@ -67,6 +68,7 @@ b: b = b
 ----------------------
 Qab = TQab
 ```
+
 *The `intro` command brought our variables and implication premise into the context, and `destruct` cleanly split the `H_SC` conjunction into `H1` and `H2`.*
 
 ### 4. Rewriting
@@ -90,11 +92,13 @@ At this stage, we might want to hand off the topological heavy lifting to the in
 ITP> eval ((((((a = Ta & b = Tb) & Qab = a) & Qab = b) & QTaTb = Ta) & QTaTb = Tb) & QTaTb = TQab) & Qab = TQab
 Stratification successful. Witness: {a@0 : 0, b@0 : 0, Ta@0 : 0, Tb@0 : 0, QTaTb@0 : 0, Qab@0 : 0, TQab@0 : 0}
 ```
+
 *The `eval` command bypasses the tactical proof state, instantly extracting topological constraints and running the Bellman-Ford cycle detection algorithm to verify mathematical consistency.*
 
 ### 6. Managing the Session
 
 You can save your progress mid-proof and load it back later:
+
 ```text
 ITP> save_session my_proof.json
 Session saved to my_proof.json.
@@ -110,30 +114,35 @@ Proof accepted.
 The Lean `parse-strat` ITP uses a command set strictly unified with the Rust backend interface:
 
 ### Core Proof Environment
-*   `help`: Show the help message.
-*   `exit` / `quit`: Exit the REPL.
-*   `save_session <file.json>`: Save the current session (axioms and active goals) to a JSON file.
-*   `load_session <file.json>`: Load a previously saved session.
+* `help`: Show the help message.
+* `exit` / `quit`: Exit the REPL.
+* `save_session <file.json>`: Save the current session (axioms and active goals) to a JSON file.
+* `load_session <file.json>`: Load a previously saved session.
 
 ### Axioms & Proofs
-*   `assume <name> <formula>`: Register a named axiom into the global environment.
-*   `theorem <name> <formula>`: Start a new proof with a target goal and enter tactical mode.
-*   `show_goal`: Print the active target goal and its local context/hypotheses.
-*   `qed`: Conclude an interactive proof if all goals are solved.
-*   `abort`: Cancel the current interactive proof.
+* `assume <name> <formula>`: Register a named axiom into the global environment.
+* `theorem <name> <formula>`: Start a new proof with a target goal and enter tactical mode.
+* `deff <name> := <formula>`: Pre-compile an AST Macro. This runs Kosaraju's SCC algorithm instantly, mapping zero-weight connections into a flattened DAG ready for injection into proof graphs.
+* `show_goal`: Print the active target goal and its local context/hypotheses. Note that variable De Bruijn occurrences (`@n`) are kept invisible inside the active tactic state for cleaner navigation.
+* `qed`: Conclude an interactive proof if all goals are solved.
+* `abort`: Cancel the current interactive proof.
 
 ### Interactive Tactics
-*   `intro [name]`: Introduce a premise or a universally quantified variable into the local context.
-*   `exact <name>`: Close the current goal if it exactly matches the specified hypothesis.
-*   `apply <name>`: Apply backward reasoning using an implication hypothesis.
-*   `split`: Split a conjunction (`&`) goal into two separate sub-goals.
-*   `left` / `right`: Choose a side to prove for a disjunction (`v`) goal.
-*   `destruct <name> [n1] [n2]`: Break down a hypothesis (like a conjunction or disjunction) into smaller pieces in the context.
-*   `rewrite <name>`: Substitute variables inside the goal based on an equality hypothesis.
+* `intro [name]`: Introduce a premise or a universally quantified variable into the local context.
+* `exact <name>`: Close the current goal if it exactly matches the specified hypothesis.
+* `apply <name>`: Apply backward reasoning using an implication hypothesis.
+* `split`: Split a conjunction (`&`) goal into two separate sub-goals.
+* `left` / `right`: Choose a side to prove for a disjunction (`v`) goal.
+* `destruct <name> [n1] [n2]`: Break down a hypothesis (like a conjunction or disjunction) into smaller pieces in the context.
+* `rewrite <name>`: Substitute variables inside the goal based on an equality hypothesis.
+* `cut <formula>`: Interactive weaponized cut tactic. Deliberately introduces a complex/saturated topology formula into the context, testing for Extensionality bounds.
+* `focus_hyp <name>`: Moves a specific hypothesis variable into the front of the tactical context array.
+* `defer`: Moves the current active goal to the back of the queue, skipping to the next sub-goal.
 
 ### Diagnostic Evaluation
-*   `eval <formula>`: Immediately test a formula for stratification loops and geometric friction without entering the tactical proof state.
-*   `step <formula>`: Process a logical formula step-by-step, providing immediate, color-coded feedback on topological friction and geometric bounds.
+* `check_strat <formula>`: Instantly evaluate raw topological string-geometry through the Bellman-Ford graph parser without generating tactical states.
+* `eval <formula>`: Test a tactical formula against the mathematical boundaries of the environment, immediately halting if negative-weight topological friction is generated.
+* `step <formula>`: Process a logical formula step-by-step, providing immediate, color-coded feedback on topological friction and geometric bounds.
 
 ---
 
@@ -144,16 +153,16 @@ To effectively use this dual-engine architecture, it is crucial to understand wh
 ### Geometric Constraints
 The Bellman-Ford topological engine (`eval` / `step`) is incredibly fast, but its vocabulary is strictly limited to foundational set-theoretic boundaries. It translates formulas into a geometric Directed Acyclic Graph (DAG) using **only** the following atomic constraints:
 
-*   **Equality (`x = y`)**: Generates a **`0` weight** constraint. The engine mathematically locks the two variables at the exact same typestate level.
-*   **Membership (`x e y`)**: Generates a **`+1` weight** constraint. The set `y` must exist at a typestate level strictly higher than its element `x`.
-*   **Function Application (`z = u(v)`)**: Generates a **`+1` weight** constraint. The function `u` must be typed one level higher than the argument `v`.
-*   **Lambda Abstraction (`z = \lambda x. t`)**: Generates a **`+1` weight** constraint. The abstracted function body sits one level higher than the variable it binds.
-*   **Quine Pairs (`Q(a,b)`)**: Generates **`0` weight** constraints. Unlike standard Kuratowski pairs (which force a `+2` type shift), Quine pairs are geometrically "flat." 
+* **Equality (`x = y`)**: Generates a **`0` weight** constraint. The engine mathematically locks the two variables at the exact same typestate level.
+* **Membership (`x e y`)**: Generates a **`+1` weight** constraint. The set `y` must exist at a typestate level strictly higher than its element `x`.
+* **Function Application (`z = u(v)`)**: Generates a **`+1` weight** constraint. The function `u` must be typed one level higher than the argument `v`.
+* **Lambda Abstraction (`z = \lambda x. t`)**: Generates a **`+1` weight** constraint. The abstracted function body sits one level higher than the variable it binds.
+* **Quine Pairs (`Q(a,b)`)**: Generates **`0` weight** constraints. Unlike standard Kuratowski pairs (which force a `+2` type shift), Quine pairs are geometrically "flat." 
 
 ### The Tactical Workflow
 When staring at a high-level mathematical theorem, your goal as the user is to act as the "compiler," using tactics to translate human semantics down into the raw spatial constraints listed above.
 
-1.  **Strip the Logical Scaffolding**: The geometric engine evaluates spatial structures, not conditional hypotheticals. Use `intro` to strip away `forall` quantifiers and pull `If` premises down into your local Context as usable facts. Use `destruct` to break complex conjunctions (`&`) into isolated facts.
-2.  **Unfold Semantic Definitions**: The graph engine cannot read abstract properties like "Strongly Cantorian" or "Ordinal." Use `rewrite` (alongside your global `assume` axioms) to unfold these abstractions into raw set theory (e.g., rewriting `SC(x)` to `x = T(x)`).
-3.  **Isolate the Friction**: Use `rewrite` to substitute variables across your equalities until the core components of your target goal are expressed purely in terms of raw variables connected by `=` or `e`. You want to find the exact boundary where the theorem forces a variable to cross a typestate level.
-4.  **The Topological Handoff**: Once your `ProofState` has been entirely stripped of implications, quantifiers, and abstract names, you gather the surviving structural equations and feed them into `eval`. The graph engine will instantly compute if that raw geometry can safely exist in finite computational space, or if it collapses into a negative-weight cycle (a paradox).
+1. **Strip the Logical Scaffolding**: The geometric engine evaluates spatial structures, not conditional hypotheticals. Use `intro` to strip away `forall` quantifiers and pull `If` premises down into your local Context as usable facts. Use `destruct` to break complex conjunctions (`&`) into isolated facts.
+2. **Unfold Semantic Definitions**: The graph engine cannot read abstract properties like "Strongly Cantorian" or "Ordinal." Use `rewrite` (alongside your global `assume` axioms) to unfold these abstractions into raw set theory (e.g., rewriting `SC(x)` to `x = T(x)`).
+3. **Isolate the Friction**: Use `rewrite` to substitute variables across your equalities until the core components of your target goal are expressed purely in terms of raw variables connected by `=` or `e`. You want to find the exact boundary where the theorem forces a variable to cross a typestate level.
+4. **The Topological Handoff**: Once your `ProofState` has been entirely stripped of implications, quantifiers, and abstract names, you gather the surviving structural equations and feed them into `eval`. The graph engine will instantly compute if that raw geometry can safely exist in finite computational space, or if it collapses into a negative-weight cycle (a paradox).

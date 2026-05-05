@@ -142,3 +142,13 @@ def test_dynamic_soundness : Formula :=
 #eval! IO.print (assertTest "Equality Cycle" paradox_eq_cycle false)
 
 #eval! IO.print (assertTest "Dynamic Soundness Partitioning" test_dynamic_soundness true)
+
+def runReplTest (name : String) (file : String) : IO Unit := do
+  let out ← IO.Process.output { cmd := "sh", args := #["-c", s!"lake exe parse-strat < {file}"] }
+  if out.exitCode == 0 then
+    IO.println s!"[PASS] REPL Test: {name}"
+  else
+    IO.println s!"[FAIL] REPL Test: {name}\n{out.stderr}\n{out.stdout}"
+
+#eval! runReplTest "SC Stability" "Tests/test_sc_stability.txt"
+#eval! runReplTest "Cut/Focus/Defer" "Tests/test_cut_focus_defer.txt"
