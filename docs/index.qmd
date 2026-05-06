@@ -2,9 +2,11 @@
 
 ## The Acyclic Lean Architecture
 
-The `nf-sketches` repository provides a computationally verifiable, topologically-bound combinatory logic engine. This documentation is organized to guide engineers and researchers through utilizing the ecosystem practically, before diving into the architectural mechanics.
+The `nf-sketches` repository provides a computationally verifiable, topologically-bound combinatory logic engine. This documentation guides engineers and researchers through the ecosystem's theoretical validation matrix.
 
-The primary objective of this architecture is to resolve cyclical logic constraints without relying on external garbage collection or global substitution environments. By formalizing Quine's systemic ambiguity into geometric routing rules, the logic engine natively processes highly entangled variables by extracting topological paths directly from the Abstract Syntax Tree (AST).
+The primary objective of this architecture is to resolve cyclical logic constraints without relying on external garbage collection, hierarchical universes (like HoTT or ZFC), or global substitution environments. By formalizing Quine's systemic ambiguity into geometric routing rules, the logic engine natively processes highly entangled variables by extracting topological paths directly from the Abstract Syntax Tree (AST). 
+
+This repository functions as the theoretical **laboratory**—utilizing Lean 4's trusted kernel to formally prove algorithmic stratification, K-Iteration limits, and topological boundaries. It conducts the rigorous diagnostic work required to secure cryptographic certainty before the mathematical concepts are independently forged into custom bare-metal engines (like the Rust-based `monist` engine).
 
 ---
 
@@ -28,8 +30,10 @@ These commands synchronize the mathematical verification matrices with the exact
 
 ## The Workflow Paradigm
 
-The development lifecycle within `nf-sketches` follows a distinct progression from string parsing to bare-metal compilation:
+The development lifecycle within `nf-sketches` follows a distinct progression from string parsing to combinatory execution limits:
 
-* **Interactive Sandbox (`parse-strat`):** Users first define logical constraints using standard ASCII syntax to test stratification boundaries.
-* **Primitive Assembly (`CombLib`):** Mathematical concepts are assembled via variable-free combinators, completely bypassing standard dependent types.
-* **Executable Deployment (`ExPrograms`):** Verified logic structures are deployed as functional scripts that map natively onto Interaction Nets for $O(V+E)$ performance limits.
+1. **Interactive Sandbox (`parse-strat`):** Users first define logical constraints using standard ASCII syntax to test stratification boundaries and manually trace Extensionality Collisions.
+2. **Static Validation (`nf-validate`):** The logic is converted into constraint algebra, running Bellman-Ford evaluation to intercept topological paradoxes as negative-weight cycles.
+3. **Formal Diagnostics (`seq-embed`):** Deep embedding of Sequent Calculus simulating cut-reduction dynamically against comprehension axioms.
+4. **Primitive Assembly (`CombLib` & `untyped-comb`):** Mathematical concepts are assembled via variable-free combinators, bypassing dependent types entirely. 
+5. **Executable Deployment (`ExPrograms`):** Verified logic structures are deployed as functional scripts that map natively onto Interaction Nets, setting the physical proofs for combinatorial execution algorithms.

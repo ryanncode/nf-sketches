@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>8&nbsp; Transfinite Calculus and Strongly Cantorian Sets – NF Sketches: Documentation</title>
+<title>8&nbsp; Transfinite Logic &amp; Choice-Free Arithmetic – NF Sketches: Documentation</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -114,7 +114,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./08-transfinite.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transfinite Calculus and Strongly Cantorian Sets</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./08-transfinite.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transfinite Logic &amp; Choice-Free Arithmetic</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -187,19 +187,19 @@ window.Quarto = {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./08-transfinite.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transfinite Calculus and Strongly Cantorian Sets</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transfinite Logic &amp; Choice-Free Arithmetic</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./09-categorical.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Categorical Semantics (The SPE)</span></span></a>
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Categorical Semantics &amp; The SPE Architecture</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./10-monism.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Causal Graph Syntactic Monism</span></span></a>
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Syntactic Monism vs The Hierarchy</span></span></a>
   </div>
 </li>
     </ul>
@@ -212,8 +212,12 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#choice-free-mathematics" id="toc-choice-free-mathematics" class="nav-link active" data-scroll-target="#choice-free-mathematics"><span class="header-section-number">8.1</span> Choice-Free Mathematics</a></li>
-  <li><a href="#retractions-and-sc-stability" id="toc-retractions-and-sc-stability" class="nav-link" data-scroll-target="#retractions-and-sc-stability"><span class="header-section-number">8.2</span> Retractions and SC Stability</a></li>
+  <li><a href="#expanding-the-axioms" id="toc-expanding-the-axioms" class="nav-link active" data-scroll-target="#expanding-the-axioms"><span class="header-section-number">8.1</span> Expanding the Axioms</a></li>
+  <li><a href="#choice-free-cardinal-arithmetic" id="toc-choice-free-cardinal-arithmetic" class="nav-link" data-scroll-target="#choice-free-cardinal-arithmetic"><span class="header-section-number">8.2</span> Choice-Free Cardinal Arithmetic</a></li>
+  <li><a href="#strongly-cantorian-retractions" id="toc-strongly-cantorian-retractions" class="nav-link" data-scroll-target="#strongly-cantorian-retractions"><span class="header-section-number">8.3</span> Strongly Cantorian Retractions</a>
+  <ul class="collapse">
+  <li><a href="#classical-islands" id="toc-classical-islands" class="nav-link" data-scroll-target="#classical-islands"><span class="header-section-number">8.3.1</span> Classical Islands</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -222,7 +226,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transfinite Calculus and Strongly Cantorian Sets</span></h1>
+<h1 class="title"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transfinite Logic &amp; Choice-Free Arithmetic</span></h1>
 </div>
 
 
@@ -239,25 +243,70 @@ window.Quarto = {
 </header>
 
 
-<section id="choice-free-mathematics" class="level2" data-number="8.1">
-<h2 data-number="8.1" class="anchored" data-anchor-id="choice-free-mathematics"><span class="header-section-number">8.1</span> Choice-Free Mathematics</h2>
-<p>Within the untyped execution pipeline, the logic engine natively evaluates complex mathematical boundaries, such as transfinite sums, by replacing traditional external axioms with computational topology.</p>
-<p>In standard formal systems, calculating quantities across uncomputable domains often requires external theoretical assumptions, such as the Axiom of Choice, to maintain stability. The <code>nf-sketches</code> architecture bypasses this necessity by evaluating cardinal arithmetic through pure bracket abstraction (<span class="math inline">\(\lambda \to S, K\)</span>) over disjoint union topologies.</p>
-<p>Transfinite summations (e.g., <span class="math inline">\(\aleph_0 + \aleph_0\)</span>) are processed geometrically. The execution boundary is stabilized by explicitly tracking the required integer type shifts and injecting <span class="math inline">\(T\)</span>-operator matrices dynamically, routing the infinite calculation directly into finite structural limits.</p>
-<hr>
+<section id="expanding-the-axioms" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="expanding-the-axioms"><span class="header-section-number">8.1</span> Expanding the Axioms</h2>
+<p>Standard mathematical frameworks like ZFC handle infinities through the Axiom of Choice and the creation of larger, ascending cardinals. <code>nf-sketches</code> allows the architecture to handle infinity purely geometrically through structural mapping, without relying on the Axiom of Choice or infinite universes.</p>
 </section>
-<section id="retractions-and-sc-stability" class="level2" data-number="8.2">
-<h2 data-number="8.2" class="anchored" data-anchor-id="retractions-and-sc-stability"><span class="header-section-number">8.2</span> Retractions and SC Stability</h2>
-<p>To execute standard inductive and classical logic natively inside this graph environment without triggering the cycle detectors, the architecture defines “islands of classicality.”</p>
-<p>These computational islands are established using Strongly Cantorian (SC) retractions. A set is evaluated as Strongly Cantorian if it strictly correlates across type shifts via <span class="math inline">\(K_t(t(x)) = K[t(x)]\)</span>. When the engine identifies that local graph execution operates completely inside a Strong Connected Component where this boundary is maintained, it explicitly isolates the logic using an <code>SC_CUT</code> execution wrapper.</p>
-<pre class="lean"><code>#| label: verify-sc-stability
+<section id="choice-free-cardinal-arithmetic" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="choice-free-cardinal-arithmetic"><span class="header-section-number">8.2</span> Choice-Free Cardinal Arithmetic</h2>
+<p>The <code>Cardinals.lean</code> module maps out Transfinite Calculus natively. Cardinal summation (<code>Card_Add</code>) is implemented via pure bracket abstraction over disjoint union topologies (<span class="math inline">\(\lambda \to S, K\)</span>).</p>
+<pre class="lean"><code>#| label: add-aleph
 #| eval: false
 
-def verifySCStability (L : SCLattice) (F : Int → Int) : Option Int :=
-  if !isMonotone L F then</code></pre>
-<p>Before this suspended classical evaluation is returned to the broader topological graph, the <code>verifySCStability</code> function structurally confirms the limit using Knaster-Tarski least fixpoint calculations (<span class="math inline">\(\text{lfp}(F)\)</span>). This secures the computational loop, guaranteeing stability.</p>
+/--
+  Execute Cardinal Addition: |A| + |B| = |A ∪ B|.
+  The engine mechanically synthesizes Thomas Forster's T-operator (x ↦ ι"x) on-the-fly,
+  shifting the relative integer weights of the variables to ensure the S and K
+  reductions remain completely type-safe through self-regulation.
+-/
+def addAlephNulls : Comb :=
+  cardAdd aleph0 aleph0
+
+#eval normalize addAlephNulls</code></pre>
+<p>Bounds like <span class="math inline">\(\aleph_0\)</span> are anchored using the infinite <span class="math inline">\(Y\)</span>-combinator stream generator. By synthesizing the <span class="math inline">\(T\)</span>-functor mappings natively on unbound operations (such as <span class="math inline">\(\aleph_0 + \aleph_0\)</span>), the engine mechanically aligns operations without external tracking, permanently bypassing the Axiom of Choice.</p>
+<hr>
+</section>
+<section id="strongly-cantorian-retractions" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="strongly-cantorian-retractions"><span class="header-section-number">8.3</span> Strongly Cantorian Retractions</h2>
+<p>The architecture restricts classical mathematical reductions within explicit, computationally verified domains. Strongly Cantorian (SC) sets are defined through the correlation function <span class="math inline">\(K_t(t(x)) = K[t(x)]\)</span> and restricted by Buss’s polynomial-time computable boundaries (<span class="math inline">\(\Sigma_1^b\)</span> formulas).</p>
+<section id="classical-islands" class="level3" data-number="8.3.1">
+<h3 data-number="8.3.1" class="anchored" data-anchor-id="classical-islands"><span class="header-section-number">8.3.1</span> Classical Islands</h3>
+<p>By identifying when local graph execution operates completely inside a Strong Connected Component where <span class="math inline">\(T(m) = m\)</span>, the <code>DAG.lean</code> evaluation structure dynamically wraps these retractions in an <code>SC_CUT</code> isolation boundary.</p>
+<p>Before execution is permitted to unwrap and return this data to the volatile exterior, it mechanically triggers Knaster-Tarski least fixpoint calculations (<span class="math inline">\(\text{lfp}(F)\)</span>) via the <code>verifySCStability</code> function.</p>
+<pre class="lean"><code>#| label: verify-sc
+#| eval: false
+
+/--
+  Define a local Strongly Cantorian Lattice representing an isolated classical island.
+  Domain: {0, 1, 2, 3, 4, 5} with standard integer ordering.
+-/
+def local_sc_domain : SCLattice := {
+  domain := [0, 1, 2, 3, 4, 5],
+  le := fun x y =&gt; x ≤ y,
+  bottom := 0
+}
+
+/--
+  An inductive step function defined within the isolated domain.
+-/
+def F_inductive (x : Int) : Int :=
+  if x &lt; 3 then x + 1 else 3
+
+/--
+  Calculates the Knaster-Tarski least fixpoint lfp(F).
+  This acts as the mathematical lock before allowing the result back into the
+  volatile unstratified global graph.
+-/
+def executeSCStabilityCheck : Comb :=
+  match verifySCStability local_sc_domain F_inductive with
+  | some fixpoint =&gt;
+      app (terminal "SC_STABLE_RESULT") (terminal (toString fixpoint))
+  | none =&gt;
+      terminal "SC_UNSTABLE_REJECTION"</code></pre>
+<p>These <strong>“islands of classicality”</strong> allow choice functions and constant-time inductive logic to bypass global cycle detectors natively. It permits standard arithmetic and recursion to operate inside the unstratified graph without generating unverified topological paradoxes, effectively evaluating the Hereditarily Strongly Cantorian Class (<span class="math inline">\(H_{stcan}\)</span>) to internally prove the <strong>Axiom of Counting</strong>.</p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -668,8 +717,8 @@ def verifySCStability (L : SCLattice) (F : Int → Int) : Option Int :=
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./09-categorical.html" class="pagination-link" aria-label="Categorical Semantics (The SPE)">
-        <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Categorical Semantics (The SPE)</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./09-categorical.html" class="pagination-link" aria-label="Categorical Semantics &amp; The SPE Architecture">
+        <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Categorical Semantics &amp; The SPE Architecture</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

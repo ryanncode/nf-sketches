@@ -73,6 +73,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -158,19 +187,19 @@ ul.task-list li input[type="checkbox"] {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./08-transfinite.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transfinite Calculus and Strongly Cantorian Sets</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transfinite Logic &amp; Choice-Free Arithmetic</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./09-categorical.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Categorical Semantics (The SPE)</span></span></a>
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Categorical Semantics &amp; The SPE Architecture</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./10-monism.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Causal Graph Syntactic Monism</span></span></a>
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Syntactic Monism vs The Hierarchy</span></span></a>
   </div>
 </li>
     </ul>
@@ -184,8 +213,19 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#the-diagnostic-sandbox" id="toc-the-diagnostic-sandbox" class="nav-link active" data-scroll-target="#the-diagnostic-sandbox"><span class="header-section-number">2.1</span> The Diagnostic Sandbox</a></li>
-  <li><a href="#syntax-parsing" id="toc-syntax-parsing" class="nav-link" data-scroll-target="#syntax-parsing"><span class="header-section-number">2.2</span> Syntax Parsing</a></li>
-  <li><a href="#analyzing-cycle-extraction" id="toc-analyzing-cycle-extraction" class="nav-link" data-scroll-target="#analyzing-cycle-extraction"><span class="header-section-number">2.3</span> Analyzing Cycle Extraction</a></li>
+  <li><a href="#tactical-workflow-geometric-feedback" id="toc-tactical-workflow-geometric-feedback" class="nav-link" data-scroll-target="#tactical-workflow-geometric-feedback"><span class="header-section-number">2.2</span> Tactical Workflow &amp; Geometric Feedback</a>
+  <ul class="collapse">
+  <li><a href="#interactive-proof-example-strong-cantorian-preservation" id="toc-interactive-proof-example-strong-cantorian-preservation" class="nav-link" data-scroll-target="#interactive-proof-example-strong-cantorian-preservation"><span class="header-section-number">2.2.1</span> 1. Interactive Proof Example: Strong Cantorian Preservation</a></li>
+  <li><a href="#exploring-extensionality-with-weaponized-cuts" id="toc-exploring-extensionality-with-weaponized-cuts" class="nav-link" data-scroll-target="#exploring-extensionality-with-weaponized-cuts"><span class="header-section-number">2.2.2</span> 2. Exploring Extensionality with “Weaponized Cuts”</a></li>
+  <li><a href="#subset-transitivity-tactical-completion" id="toc-subset-transitivity-tactical-completion" class="nav-link" data-scroll-target="#subset-transitivity-tactical-completion"><span class="header-section-number">2.2.3</span> 3. Subset Transitivity (Tactical Completion)</a></li>
+  <li><a href="#kuratowski-bounding-tests" id="toc-kuratowski-bounding-tests" class="nav-link" data-scroll-target="#kuratowski-bounding-tests"><span class="header-section-number">2.2.4</span> 4. Kuratowski Bounding Tests</a></li>
+  </ul></li>
+  <li><a href="#core-command-reference" id="toc-core-command-reference" class="nav-link" data-scroll-target="#core-command-reference"><span class="header-section-number">2.3</span> Core Command Reference</a>
+  <ul class="collapse">
+  <li><a href="#axioms-session-management" id="toc-axioms-session-management" class="nav-link" data-scroll-target="#axioms-session-management"><span class="header-section-number">2.3.1</span> Axioms &amp; Session Management</a></li>
+  <li><a href="#interactive-tactics" id="toc-interactive-tactics" class="nav-link" data-scroll-target="#interactive-tactics"><span class="header-section-number">2.3.2</span> Interactive Tactics</a></li>
+  <li><a href="#diagnostics" id="toc-diagnostics" class="nav-link" data-scroll-target="#diagnostics"><span class="header-section-number">2.3.3</span> Diagnostics</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -213,31 +253,157 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="the-diagnostic-sandbox" class="level2" data-number="2.1">
 <h2 data-number="2.1" class="anchored" data-anchor-id="the-diagnostic-sandbox"><span class="header-section-number">2.1</span> The Diagnostic Sandbox</h2>
-<p>The <code>parse-strat</code> module provides a tactile, responsive REPL environment for analyzing how the constraint solver resolves logical loops. Before writing custom algorithmic programs, researchers utilize this sandbox to manually observe the topological bounds of specific formulas.</p>
-<p>Rather than running heavy formal proofs through the <code>seq-embed</code> verifier, the <code>parse-strat</code> environment acts as a direct interface to the Bellman-Ford traversal algorithms. It enables rapid iteration when designing non-well-founded logical sequences.</p>
+<p>The <code>parse-strat</code> module provides a tactile, responsive Read-Eval-Print Loop (REPL) environment acting as a full Interactive Theorem Prover (ITP). Before dispatching hardcoded models to the formal Sequent verifier (<code>seq-embed</code>), researchers utilize this sandbox to manually explore the boundaries of <strong>weak stratification constraints</strong> in Quine’s New Foundations using classical Natural Deduction tactics.</p>
+<p>The REPL is supported by a powerful topological graph-flattening backend, giving immediate feedback on Extensionality bounds.</p>
 <hr>
 </section>
-<section id="syntax-parsing" class="level2" data-number="2.2">
-<h2 data-number="2.2" class="anchored" data-anchor-id="syntax-parsing"><span class="header-section-number">2.2</span> Syntax Parsing</h2>
-<p>The module utilizes a custom recursive descent parser to translate raw ASCII representations of set theory directly into the internal AST geometry.</p>
-<pre class="lean"><code>#| label: parse-formula-signature
-#| eval: false
-
-partial def parseFormula (s : String) : Option Formula :=
-  match parseImpl (tokenize s) with</code></pre>
-<p>The parser correctly interprets standard logical connectives, translating operations like <code>~(x = y) &amp; (y e z)</code> into structural weight boundaries.</p>
-<hr>
-</section>
-<section id="analyzing-cycle-extraction" class="level2" data-number="2.3">
-<h2 data-number="2.3" class="anchored" data-anchor-id="analyzing-cycle-extraction"><span class="header-section-number">2.3</span> Analyzing Cycle Extraction</h2>
-<p>When a user submits a formula to the sandbox, the engine algorithmically translates it into a relative constraint graph.</p>
+<section id="tactical-workflow-geometric-feedback" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="tactical-workflow-geometric-feedback"><span class="header-section-number">2.2</span> Tactical Workflow &amp; Geometric Feedback</h2>
+<p>To effectively use this dual-engine architecture, users must understand how tactical symbolic reasoning maps down into raw spatial constraints. The internal constraint engine translates formulas into a geometric Directed Acyclic Graph (DAG) using specific weight mappings:</p>
 <ul>
-<li><strong>Successful Stratification:</strong> If the graph flattens successfully, the parser returns a valid distance map representing the exact topological shift between variables.</li>
-<li><strong>Paradox Detection:</strong> If a structural paradox (such as an unresolvable self-reference) is detected, the engine isolates it natively. The parser outputs the exact sequence of vertices comprising the negative-weight cycle.</li>
+<li><strong>Equality (<code>x = y</code>)</strong> / <strong>Quine Pairs (<code>Q(a,b)</code>)</strong>: Generates a <strong><code>0</code> weight</strong> constraint.</li>
+<li><strong>Membership (<code>x e y</code>)</strong> / <strong>Application (<code>z = u(v)</code>)</strong> / <strong>Lambda</strong>: Generates a <strong><code>+1</code> weight</strong> constraint.</li>
 </ul>
-<p>This rapid feedback loop allows developers to verify the topological integrity of their logic models before committing them to the <code>CombLib</code> execution primitives.</p>
+<section id="interactive-proof-example-strong-cantorian-preservation" class="level3" data-number="2.2.1">
+<h3 data-number="2.2.1" class="anchored" data-anchor-id="interactive-proof-example-strong-cantorian-preservation"><span class="header-section-number">2.2.1</span> 1. Interactive Proof Example: Strong Cantorian Preservation</h3>
+<p>To prove that the Quine pair preserves Strongly Cantorian (SC) sets, we first define our theorem and then use natural deduction to break it down.</p>
+<pre class="text"><code>&gt; Starting proof of SC_Preservation
+ITP&gt; 
+a : a = a
+----------------------
+forall b. ((a = Ta /\ b = Tb) -&gt; Qab = TQab)
+
+ITP&gt; 
+b : b = b
+a : a = a
+----------------------
+((a = Ta /\ b = Tb) -&gt; Qab = TQab)
+
+ITP&gt; 
+H_SC : (a = Ta /\ b = Tb)
+b : b = b
+a : a = a
+----------------------
+Qab = TQab
+
+ITP&gt; 
+H1 : a = Ta
+H2 : b = Tb
+b : b = b
+a : a = a
+----------------------
+Qab = TQab</code></pre>
+<p>We then feed the equations into the <code>eval</code> command, which bypasses the tactical proof state to extract topological constraints directly from the strings and run Bellman-Ford cycle detection.</p>
+<pre class="text"><code>ITP&gt; Stratification successful. Witness: {a@0 : 0, b@0 : 0, Ta@0 : 0, Tb@0 : 0, QTaTb@0 : 0, Qab@0 : 0, TQab@0 : 0}</code></pre>
+<p>Because no negative-weight cycles were generated, the system confirms mathematical consistency, proving that Quine pairs successfully preserve SC status without collapsing.</p>
+</section>
+<section id="exploring-extensionality-with-weaponized-cuts" class="level3" data-number="2.2.2">
+<h3 data-number="2.2.2" class="anchored" data-anchor-id="exploring-extensionality-with-weaponized-cuts"><span class="header-section-number">2.2.2</span> 2. Exploring Extensionality with “Weaponized Cuts”</h3>
+<p>We can manually verify how Extensionality Collisions break typestate bounds using the <code>cut</code> tactic.</p>
+<pre class="text"><code>&gt; Starting proof of Trivial_Identity
+ITP&gt; 
+A : A = A
+----------------------
+A = A
+
+ITP&gt; Extensionality Collision!
+Contradiction Path: x@0 ∈ x@0 (-1)
+  Requires l(x@0) = l(x@0) + -1
+ITP&gt; Proof aborted.</code></pre>
+<p>By intentionally introducing a saturated boundary (<code>x e x</code>), we can use the engine to observe exactly where the unstratifiable loop causes the engine to flag a negative-weight cycle and abort the proof.</p>
+</section>
+<section id="subset-transitivity-tactical-completion" class="level3" data-number="2.2.3">
+<h3 data-number="2.2.3" class="anchored" data-anchor-id="subset-transitivity-tactical-completion"><span class="header-section-number">2.2.3</span> 3. Subset Transitivity (Tactical Completion)</h3>
+<p>We can also execute complete formal derivations directly within the REPL, such as the proof of Subset Transitivity.</p>
+<pre class="text"><code>&gt; Starting proof of Subset_Trans
+ITP&gt; 
+A : A = A
+----------------------
+forall B. forall C. forall z. (((z e A -&gt; z e B) /\ (z e B -&gt; z e C)) -&gt; (z e A -&gt; z e C))
+
+ITP&gt; 
+H : ((z e A -&gt; z e B) /\ (z e B -&gt; z e C))
+z : z = z
+C : C = C
+B : B = B
+A : A = A
+----------------------
+(z e A -&gt; z e C)
+
+ITP&gt; 
+H1 : (z e A -&gt; z e B)
+H2 : (z e B -&gt; z e C)
+z : z = z
+C : C = C
+B : B = B
+A : A = A
+----------------------
+(z e A -&gt; z e C)
+
+ITP&gt; 
+Hz : z e A
+H1 : (z e A -&gt; z e B)
+H2 : (z e B -&gt; z e C)
+z : z = z
+C : C = C
+B : B = B
+A : A = A
+----------------------
+z e C
+
+ITP&gt; No more goals. Proof complete!
+ITP&gt; Proof accepted.</code></pre>
+</section>
+<section id="kuratowski-bounding-tests" class="level3" data-number="2.2.4">
+<h3 data-number="2.2.4" class="anchored" data-anchor-id="kuratowski-bounding-tests"><span class="header-section-number">2.2.4</span> 4. Kuratowski Bounding Tests</h3>
+<p>The REPL natively parses and checks topological bounds instantly using the <code>step</code> command, useful for analyzing multi-level type deviations like the Kuratowski pair (<span class="math inline">\(P = \{\{a\}, \{a, b\}\}\)</span>).</p>
+<pre class="text"><code>&gt; --- Extracting Constraints ---
+{ v1 := (Var.free "x", 0), v2 := (Var.free "K", 0), diff := 1, directed := false }
+{ v1 := (Var.free "x", 0), v2 := (Var.free "a", 0), diff := 0, directed := false }
+{ v1 := (Var.free "y", 0), v2 := (Var.free "K", 0), diff := 1, directed := false }
+{ v1 := (Var.free "y", 0), v2 := (Var.free "a", 0), diff := 0, directed := false }
+{ v1 := (Var.free "y", 0), v2 := (Var.free "b", 0), diff := 0, directed := false }
+--- Graph Edges ---
+{ src := (Var.free "x", 0), dst := (Var.free "K", 0), weight := 1 }
+{ src := (Var.free "K", 0), dst := (Var.free "x", 0), weight := -1 }
+{ src := (Var.free "x", 0), dst := (Var.free "a", 0), weight := 0 }
+...
+--- Running Bellman-Ford ---
+Stratification successful.</code></pre>
+<p>The constraint extraction clearly visualizes how <code>K</code> acts as the set boundary, routing connections symmetrically across <code>x</code> and <code>y</code> while mathematically tracking exactly how <code>K</code> sits above <code>a</code> and <code>b</code>.</p>
+<hr>
+</section>
+</section>
+<section id="core-command-reference" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="core-command-reference"><span class="header-section-number">2.3</span> Core Command Reference</h2>
+<section id="axioms-session-management" class="level3" data-number="2.3.1">
+<h3 data-number="2.3.1" class="anchored" data-anchor-id="axioms-session-management"><span class="header-section-number">2.3.1</span> Axioms &amp; Session Management</h3>
+<ul>
+<li><code>assume &lt;name&gt; &lt;formula&gt;</code>: Register a named axiom globally.</li>
+<li><code>theorem &lt;name&gt; &lt;formula&gt;</code>: Start a new proof with a target goal.</li>
+<li><code>save_session &lt;file&gt;</code> / <code>load_session &lt;file&gt;</code>: Persist proof state JSONs.</li>
+<li><code>deff &lt;name&gt; &lt;args...&gt; := &lt;formula&gt;</code>: Pre-compile an AST Macro.</li>
+</ul>
+</section>
+<section id="interactive-tactics" class="level3" data-number="2.3.2">
+<h3 data-number="2.3.2" class="anchored" data-anchor-id="interactive-tactics"><span class="header-section-number">2.3.2</span> Interactive Tactics</h3>
+<ul>
+<li><code>intro [name]</code>: Introduce a premise.</li>
+<li><code>exact &lt;name&gt;</code>: Close the current goal if it exactly matches the hypothesis.</li>
+<li><code>destruct &lt;name&gt;</code>: Break down conjunctions or disjunctions in context.</li>
+<li><code>rewrite &lt;name&gt;</code>: Substitute variables inside the goal.</li>
+<li><code>cut &lt;formula&gt;</code>: Introduce new hypothesis branches.</li>
+</ul>
+</section>
+<section id="diagnostics" class="level3" data-number="2.3.3">
+<h3 data-number="2.3.3" class="anchored" data-anchor-id="diagnostics"><span class="header-section-number">2.3.3</span> Diagnostics</h3>
+<ul>
+<li><code>eval &lt;formula&gt;</code>: Parse topological shift and halt if structural loops emerge.</li>
+<li><code>step &lt;formula&gt;</code>: Process a logical formula step-by-step, providing immediate feedback on geometric bounds.</li>
+</ul>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

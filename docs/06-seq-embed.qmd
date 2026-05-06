@@ -2,15 +2,27 @@
 
 ## Proof-Theoretic Embedding
 
-The `seq-embed` environment formalizes the structural proof theory required to manage logical derivations securely. By constructing a deep embedding of Gentzen's Sequent Calculus within Lean 4, the architecture gains strict programmatic control over the deductive pathways.
+The `seq-embed` environment formalizes the structural proof theory required to manage logical derivations securely. By constructing a deep embedding of Gentzen's Sequent Calculus within Lean 4, the architecture gains strict programmatic control over the deductive pathways before dispatching logic to the `untyped-comb` DAG.
 
-This module fundamentally restricts classical deductive freedom. The logic engine will not evaluate a set comprehension rule within the sequent tree unless it has been explicitly authorized by a `StratificationWitness` output from the `nf-validate` module.
+This module fundamentally restricts classical deductive freedom. The logic engine will not evaluate a set comprehension rule within the sequent tree unless it has been explicitly authorized by a valid algorithmic graph structure.
+
+```lean
+#| label: compl-restriction
+#| eval: false
+
+-- The `compL` rule enforces that comprehension is strictly gated
+-- behind the successful Bellman-Ford evaluation (StratificationWitness).
+| compL {Γ Δ : Context} (A : Formula) (w : StratificationWitness) 
+  (d : Derivation ⟨A :: Γ, Δ⟩) : Derivation ⟨Γ, Δ⟩
+```
+
+By explicitly parameterizing the comprehension rule with the `StratificationWitness` output from the `nf-validate` module, the `seq-embed` framework mechanically locks deductive reasoning down to computable geometric boundaries.
 
 ---
 
-## Evaluating Substitutions 
+## Targeted Cut Reduction and Substitution
 
-To systematically analyze the behavior of highly entangled graph structures, the diagnostic engine simulates substitutions and evaluates the intermediate lemmas via the `reduceCut` pipeline.
+To systematically analyze the behavior of highly entangled graph structures, the diagnostic engine simulates substitutions and evaluates intermediate lemmas via the `reduceCut` pipeline.
 
 ```lean
 #| label: reduce-cut
@@ -18,17 +30,29 @@ To systematically analyze the behavior of highly entangled graph structures, the
 
 def reduceCut {Γ Δ : Context} (A : Formula) 
   (d1 : Derivation ⟨Γ, A :: Δ⟩) 
-  (d2 : Derivation ⟨A :: Γ, Δ⟩) : ReduceResult Γ Δ :=
+  (d2 : Derivation ⟨A :: Γ, Δ⟩) : ReduceResult Γ Δ
 ```
 
-The system bypasses standard structural normalization, intentionally forcing logical substitutions dynamically back through the validation matrix. This mechanical stress test surfaces exactly where grammatical structures break down during cyclic execution.
+The system bypasses standard structural normalization, intentionally forcing logical substitutions dynamically back through the validation matrix. When encountering a `cut` against the `compL` rule, it invokes `getSimulatedSubstitution` to extract canonical targets, substitutes them, and forcefully evaluates the altered structure via `evaluateFullFormula`.
 
 ---
 
-## Navigating Extensionality
+## The Extensionality Collision
 
-The primary analytical utility of `seq-embed` is calculating the operational cost of the Axiom of Extensionality.
+The primary analytical utility of `seq-embed` is calculating the operational cost of the Axiom of Extensionality. 
 
-The system utilizes weak stratification to parse constraints efficiently. Weak stratification partitions the graph by binding scope, allowing local variables to re-level their integer weights dynamically. This dynamic local re-leveling maintains the stability of the graph during operations like substitution.
+The system utilizes **weak stratification**, which partitions the graph by binding scope, allowing local variables to re-level their integer weights dynamically. This restores grammatical substitution closure. 
 
-However, the Axiom of Extensionality dictates that $x = y$ mandates total structural equivalence. When dynamically re-leveled variables interact with this rigid structural mandate, the compiler is forced to equate items with conflicting topological weights. This collision triggers a mathematically verifiable negative-weight cycle. The `reduceCut` engine actively maps this specific "Extensionality Collision," allowing the execution backend to intercept and route around these paradoxical limitations.
+However, the Axiom of Extensionality dictates that $x = y$ mandates total structural equivalence. When dynamically re-leveled scopes collide with this rigid structural mandate, the compiler is forced to equate items with conflicting topological weights. `reduceCut` actively logs this exact event as an **Extensionality Collision**, tracking the mathematically rigorous generation of a negative-weight cycle.
+
+---
+
+## Canonical Failure Diagnostics
+
+The `main` executable bypasses manual REPL interaction to automatically run hardcoded, canonical derivation trees, proving the mathematical trace outputs of classical failure structures:
+
+1. **The Identity Collapse (`idCollapse_A`)**: Asserts $z = A$ where $\forall y(y \in A \leftrightarrow y = z)$, immediately collapsing the $+1$ level difference.
+2. **The Impredicative Singleton (`singCollapse_A`)**: Models the Russell variant $\forall x(x \in S \leftrightarrow x \notin w)$. Substituting $w = S$ catches the breakdown when Extensionality attempts to globally unify the disparate levels.
+3. **The Transitive Membership Collapse**: Cuts a transitive chain ($y \in A \land A \in B \land B \in C$) against the assertion $A = C$, proving the engine can isolate multi-tiered negative cycles across expanded geometric intervals.
+4. **Russell-Prawitz Normalization Breakdown**: Computationally intercepts the proof-theoretic infinite regress of $R \in R$, proving the geometric self-loop halts.
+5. **Kuratowski Ordered Pair Type-Shift**: Asserts an ordered pair $P$ is identical to its foundational element ($P = A$), detecting the unstratifiable topological collapse across multiple hierarchical boundaries.

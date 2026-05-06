@@ -2,33 +2,162 @@
 
 ## The Diagnostic Sandbox
 
-The `parse-strat` module provides a tactile, responsive REPL environment for analyzing how the constraint solver resolves logical loops. Before writing custom algorithmic programs, researchers utilize this sandbox to manually observe the topological bounds of specific formulas.
+The `parse-strat` module provides a tactile, responsive Read-Eval-Print Loop (REPL) environment acting as a full Interactive Theorem Prover (ITP). Before dispatching hardcoded models to the formal Sequent verifier (`seq-embed`), researchers utilize this sandbox to manually explore the boundaries of **weak stratification constraints** in Quine's New Foundations using classical Natural Deduction tactics.
 
-Rather than running heavy formal proofs through the `seq-embed` verifier, the `parse-strat` environment acts as a direct interface to the Bellman-Ford traversal algorithms. It enables rapid iteration when designing non-well-founded logical sequences.
+The REPL is supported by a powerful topological graph-flattening backend, giving immediate feedback on Extensionality bounds.
 
 ---
 
-## Syntax Parsing
+## Tactical Workflow & Geometric Feedback
 
-The module utilizes a custom recursive descent parser to translate raw ASCII representations of set theory directly into the internal AST geometry.
+To effectively use this dual-engine architecture, users must understand how tactical symbolic reasoning maps down into raw spatial constraints. The internal constraint engine translates formulas into a geometric Directed Acyclic Graph (DAG) using specific weight mappings:
 
-```lean
-#| label: parse-formula-signature
-#| eval: false
+* **Equality (`x = y`)** / **Quine Pairs (`Q(a,b)`)**: Generates a **`0` weight** constraint.
+* **Membership (`x e y`)** / **Application (`z = u(v)`)** / **Lambda**: Generates a **`+1` weight** constraint.
 
-partial def parseFormula (s : String) : Option Formula :=
-  match parseImpl (tokenize s) with
+### 1. Interactive Proof Example: Strong Cantorian Preservation
+
+To prove that the Quine pair preserves Strongly Cantorian (SC) sets, we first define our theorem and then use natural deduction to break it down.
+
+```text
+> Starting proof of SC_Preservation
+ITP> 
+a : a = a
+----------------------
+forall b. ((a = Ta /\ b = Tb) -> Qab = TQab)
+
+ITP> 
+b : b = b
+a : a = a
+----------------------
+((a = Ta /\ b = Tb) -> Qab = TQab)
+
+ITP> 
+H_SC : (a = Ta /\ b = Tb)
+b : b = b
+a : a = a
+----------------------
+Qab = TQab
+
+ITP> 
+H1 : a = Ta
+H2 : b = Tb
+b : b = b
+a : a = a
+----------------------
+Qab = TQab
 ```
 
-The parser correctly interprets standard logical connectives, translating operations like `~(x = y) & (y e z)` into structural weight boundaries. 
+We then feed the equations into the `eval` command, which bypasses the tactical proof state to extract topological constraints directly from the strings and run Bellman-Ford cycle detection.
+
+```text
+ITP> Stratification successful. Witness: {a@0 : 0, b@0 : 0, Ta@0 : 0, Tb@0 : 0, QTaTb@0 : 0, Qab@0 : 0, TQab@0 : 0}
+```
+
+Because no negative-weight cycles were generated, the system confirms mathematical consistency, proving that Quine pairs successfully preserve SC status without collapsing.
+
+### 2. Exploring Extensionality with "Weaponized Cuts"
+
+We can manually verify how Extensionality Collisions break typestate bounds using the `cut` tactic.
+
+```text
+> Starting proof of Trivial_Identity
+ITP> 
+A : A = A
+----------------------
+A = A
+
+ITP> Extensionality Collision!
+Contradiction Path: x@0 ∈ x@0 (-1)
+  Requires l(x@0) = l(x@0) + -1
+ITP> Proof aborted.
+```
+
+By intentionally introducing a saturated boundary (`x e x`), we can use the engine to observe exactly where the unstratifiable loop causes the engine to flag a negative-weight cycle and abort the proof.
+
+### 3. Subset Transitivity (Tactical Completion)
+
+We can also execute complete formal derivations directly within the REPL, such as the proof of Subset Transitivity.
+
+```text
+> Starting proof of Subset_Trans
+ITP> 
+A : A = A
+----------------------
+forall B. forall C. forall z. (((z e A -> z e B) /\ (z e B -> z e C)) -> (z e A -> z e C))
+
+ITP> 
+H : ((z e A -> z e B) /\ (z e B -> z e C))
+z : z = z
+C : C = C
+B : B = B
+A : A = A
+----------------------
+(z e A -> z e C)
+
+ITP> 
+H1 : (z e A -> z e B)
+H2 : (z e B -> z e C)
+z : z = z
+C : C = C
+B : B = B
+A : A = A
+----------------------
+(z e A -> z e C)
+
+ITP> 
+Hz : z e A
+H1 : (z e A -> z e B)
+H2 : (z e B -> z e C)
+z : z = z
+C : C = C
+B : B = B
+A : A = A
+----------------------
+z e C
+
+ITP> No more goals. Proof complete!
+ITP> Proof accepted.
+```
+
+### 4. Kuratowski Bounding Tests
+
+The REPL natively parses and checks topological bounds instantly using the `step` command, useful for analyzing multi-level type deviations like the Kuratowski pair ($P = \{\{a\}, \{a, b\}\}$).
+
+```text
+> --- Extracting Constraints ---
+{ v1 := (Var.free "x", 0), v2 := (Var.free "K", 0), diff := 1, directed := false }
+{ v1 := (Var.free "x", 0), v2 := (Var.free "a", 0), diff := 0, directed := false }
+{ v1 := (Var.free "y", 0), v2 := (Var.free "K", 0), diff := 1, directed := false }
+{ v1 := (Var.free "y", 0), v2 := (Var.free "a", 0), diff := 0, directed := false }
+{ v1 := (Var.free "y", 0), v2 := (Var.free "b", 0), diff := 0, directed := false }
+--- Graph Edges ---
+{ src := (Var.free "x", 0), dst := (Var.free "K", 0), weight := 1 }
+{ src := (Var.free "K", 0), dst := (Var.free "x", 0), weight := -1 }
+{ src := (Var.free "x", 0), dst := (Var.free "a", 0), weight := 0 }
+...
+--- Running Bellman-Ford ---
+Stratification successful.
+```
+The constraint extraction clearly visualizes how `K` acts as the set boundary, routing connections symmetrically across `x` and `y` while mathematically tracking exactly how `K` sits above `a` and `b`.
 
 ---
 
-## Analyzing Cycle Extraction
+## Core Command Reference
 
-When a user submits a formula to the sandbox, the engine algorithmically translates it into a relative constraint graph. 
+### Axioms & Session Management
+* `assume <name> <formula>`: Register a named axiom globally.
+* `theorem <name> <formula>`: Start a new proof with a target goal.
+* `save_session <file>` / `load_session <file>`: Persist proof state JSONs.
+* `deff <name> <args...> := <formula>`: Pre-compile an AST Macro.
 
-* **Successful Stratification:** If the graph flattens successfully, the parser returns a valid distance map representing the exact topological shift between variables.
-* **Paradox Detection:** If a structural paradox (such as an unresolvable self-reference) is detected, the engine isolates it natively. The parser outputs the exact sequence of vertices comprising the negative-weight cycle.
+### Interactive Tactics
+* `intro [name]`: Introduce a premise.
+* `exact <name>`: Close the current goal if it exactly matches the hypothesis.
+* `destruct <name>`: Break down conjunctions or disjunctions in context.
+* `rewrite <name>`: Substitute variables inside the goal.
+* `cut <formula>`: Introduce new hypothesis branches.
 
-This rapid feedback loop allows developers to verify the topological integrity of their logic models before committing them to the `CombLib` execution primitives.
+### Diagnostics
+* `eval <formula>`: Parse topological shift and halt if structural loops emerge.
+* `step <formula>`: Process a logical formula step-by-step, providing immediate feedback on geometric bounds.

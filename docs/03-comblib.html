@@ -187,19 +187,19 @@ window.Quarto = {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./08-transfinite.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transfinite Calculus and Strongly Cantorian Sets</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transfinite Logic &amp; Choice-Free Arithmetic</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./09-categorical.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Categorical Semantics (The SPE)</span></span></a>
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Categorical Semantics &amp; The SPE Architecture</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./10-monism.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Causal Graph Syntactic Monism</span></span></a>
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Syntactic Monism vs The Hierarchy</span></span></a>
   </div>
 </li>
     </ul>
@@ -213,8 +213,9 @@ window.Quarto = {
    
   <ul>
   <li><a href="#the-combinatory-library" id="toc-the-combinatory-library" class="nav-link active" data-scroll-target="#the-combinatory-library"><span class="header-section-number">3.1</span> The Combinatory Library</a></li>
-  <li><a href="#base-primitives" id="toc-base-primitives" class="nav-link" data-scroll-target="#base-primitives"><span class="header-section-number">3.2</span> Base Primitives</a></li>
-  <li><a href="#extending-the-library" id="toc-extending-the-library" class="nav-link" data-scroll-target="#extending-the-library"><span class="header-section-number">3.3</span> Extending the Library</a></li>
+  <li><a href="#transfinite-macro-primitives" id="toc-transfinite-macro-primitives" class="nav-link" data-scroll-target="#transfinite-macro-primitives"><span class="header-section-number">3.2</span> Transfinite Macro-Primitives</a></li>
+  <li><a href="#holographic-data-search-isolation" id="toc-holographic-data-search-isolation" class="nav-link" data-scroll-target="#holographic-data-search-isolation"><span class="header-section-number">3.3</span> Holographic Data &amp; Search Isolation</a></li>
+  <li><a href="#extending-the-library" id="toc-extending-the-library" class="nav-link" data-scroll-target="#extending-the-library"><span class="header-section-number">3.4</span> Extending the Library</a></li>
   </ul>
 </nav>
     </div>
@@ -243,30 +244,38 @@ window.Quarto = {
 <section id="the-combinatory-library" class="level2" data-number="3.1">
 <h2 data-number="3.1" class="anchored" data-anchor-id="the-combinatory-library"><span class="header-section-number">3.1</span> The Combinatory Library</h2>
 <p>The <code>CombLib</code> module provides the native mathematical primitives for the <code>nf-sketches</code> logic engine. Rather than relying on the Calculus of Inductive Constructions, this library implements all mathematical logic entirely via point-free bracket abstraction using the core <code>Comb</code> AST.</p>
-<p>By eliminating named variables during execution, the memory architecture avoids the overhead of managing substitution scopes.</p>
+<p>By eliminating named variables during execution, the memory architecture avoids the overhead of managing substitution scopes and maps efficiently to parallel GPU evaluation pipelines (e.g.&nbsp;Interaction Nets).</p>
 <hr>
 </section>
-<section id="base-primitives" class="level2" data-number="3.2">
-<h2 data-number="3.2" class="anchored" data-anchor-id="base-primitives"><span class="header-section-number">3.2</span> Base Primitives</h2>
-<p>The library builds complex structures utilizing the <span class="math inline">\(S\)</span> and <span class="math inline">\(K\)</span> combinators:</p>
+<section id="transfinite-macro-primitives" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="transfinite-macro-primitives"><span class="header-section-number">3.2</span> Transfinite Macro-Primitives</h2>
+<p>Building upon the Topologically-Guided boundaries established in <code>untyped-comb</code>, the framework implements highly saturated configurations natively via Church Encodings:</p>
 <ul>
-<li><strong>Booleans:</strong> Structural routing nodes are defined to explicitly map control flow without allocating external memory.</li>
-<li><strong>Numerals:</strong> The engine utilizes B-combinator-based structures to execute additive and multiplicative transformations.</li>
-<li><strong>Lists:</strong> Inductive topologies (<code>cons</code>, <code>head</code>, <code>tail</code>) are managed as executable graph paths rather than static arrays.</li>
+<li><strong>Core Operators:</strong> Node-collision <code>Booleans</code> (<code>and</code>, <code>or</code>, <code>not</code>), B-combinator-based <code>Numerals</code> (<code>succ</code>, <code>add</code>, <code>mult</code>), and inductive <code>Lists</code> geometries via raw bracket abstraction.</li>
+<li><strong>Recursive Self-Models (<span class="math inline">\(V \in V\)</span>):</strong> The <code>SelfModels.lean</code> primitive constructs a mathematically robust Quine atom (<span class="math inline">\(\Omega = \{\Omega\}\)</span>) natively inside the engine utilizing the Y-combinator. The architecture evaluates a structure containing an unreduced copy of itself, relying directly on K-Iteration bounds to safely halt the resulting paradox.</li>
+<li><strong>Choice-Free Cardinal Arithmetic:</strong> Implements Transfinite Calculus (e.g., Cardinal Addition <span class="math inline">\(|A| + |B|\)</span>) via pure bracket abstraction over disjoint union topologies. Operations are bounded structurally across stratification hierarchies using <code>t_inject</code> topological friction markers, completely bypassing the Axiom of Choice.</li>
+<li><strong>Physical Observables &amp; Particles:</strong> Explicitly extracts theoretical physics metrics (Rest Mass, Coupling Constant) from structured particle knots (<code>electron_knot</code>) by measuring bounded topological recursion costs.</li>
 </ul>
 <hr>
 </section>
-<section id="extending-the-library" class="level2" data-number="3.3">
-<h2 data-number="3.3" class="anchored" data-anchor-id="extending-the-library"><span class="header-section-number">3.3</span> Extending the Library</h2>
+<section id="holographic-data-search-isolation" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="holographic-data-search-isolation"><span class="header-section-number">3.3</span> Holographic Data &amp; Search Isolation</h2>
+<p>Because the engine processes a closed, saturated universe governed by Syntactic Monism, it natively supports operations based on the absolute complement (<span class="math inline">\(\{x \mid x \notin A\}\)</span>), a construct strictly forbidden in standard ZFC.</p>
+<p>The <code>Holographic.lean</code> module operationalizes this complement space. Instead of iterating through data via traditional <span class="math inline">\(O(N)\)</span> list sweeps, the compiler constructs “exclusion-first” logic gate wrappers. By compiling the query to the complement mapping of the target identity, the framework evaluates a localized topological sweep that filters out non-matching paths in <span class="math inline">\(O(1)\)</span> time.</p>
+<p>Furthermore, by passing distributed data swarms through the <span class="math inline">\(O(V+E)\)</span> DAG topological sort, the pipeline actively isolates unresolvable contradictions across the entire network in linear time.</p>
+<hr>
+</section>
+<section id="extending-the-library" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="extending-the-library"><span class="header-section-number">3.4</span> Extending the Library</h2>
 <p>Developers can contribute to <code>CombLib</code> by defining new Church-encoded structures. When extending the library, algorithms must be written strictly as combinatorial compositions.</p>
-<p>Because the engine processes an unstratified universe, developers must account for structural loops natively. If an algorithm requires unbounded iteration, the developer must utilize the <span class="math inline">\(T\)</span>-operator injection (<code>Comb.t_inject</code>) to explicitly mark the recursive topological cost, or rely on the engine’s built-in Minimum Cycle Mean bounds to freeze runaway recursion.</p>
+<p>Because the engine processes an unstratified universe, developers must account for structural loops natively.</p>
 <pre class="lean"><code>#| label: extending-comblib
 #| eval: false
 
--- Example structure for adding custom logic
+-- Example structure utilizing Schönfinkel primitives
 def customCombinator : Comb :=
   app Comb.S (app Comb.K Comb.I)</code></pre>
-<p>By conforming to these geometric routing limits, newly added modules remain perfectly compliant with the <span class="math inline">\(O(V+E)\)</span> evaluation metrics expected by the runtime environment.</p>
+<p>If an algorithm requires unbounded iteration, the developer must utilize the <span class="math inline">\(T\)</span>-operator injection (<code>Comb.t_inject</code>) to explicitly mark the recursive topological cost, allowing the underlying geometry constraint solvers to trace the mathematical limits without infinite regress.</p>
 
 
 </section>

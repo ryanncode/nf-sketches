@@ -187,19 +187,19 @@ window.Quarto = {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./08-transfinite.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transfinite Calculus and Strongly Cantorian Sets</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transfinite Logic &amp; Choice-Free Arithmetic</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./09-categorical.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Categorical Semantics (The SPE)</span></span></a>
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Categorical Semantics &amp; The SPE Architecture</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./10-monism.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Causal Graph Syntactic Monism</span></span></a>
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Syntactic Monism vs The Hierarchy</span></span></a>
   </div>
 </li>
     </ul>
@@ -213,8 +213,9 @@ window.Quarto = {
    
   <ul>
   <li><a href="#proof-theoretic-embedding" id="toc-proof-theoretic-embedding" class="nav-link active" data-scroll-target="#proof-theoretic-embedding"><span class="header-section-number">6.1</span> Proof-Theoretic Embedding</a></li>
-  <li><a href="#evaluating-substitutions" id="toc-evaluating-substitutions" class="nav-link" data-scroll-target="#evaluating-substitutions"><span class="header-section-number">6.2</span> Evaluating Substitutions</a></li>
-  <li><a href="#navigating-extensionality" id="toc-navigating-extensionality" class="nav-link" data-scroll-target="#navigating-extensionality"><span class="header-section-number">6.3</span> Navigating Extensionality</a></li>
+  <li><a href="#targeted-cut-reduction-and-substitution" id="toc-targeted-cut-reduction-and-substitution" class="nav-link" data-scroll-target="#targeted-cut-reduction-and-substitution"><span class="header-section-number">6.2</span> Targeted Cut Reduction and Substitution</a></li>
+  <li><a href="#the-extensionality-collision" id="toc-the-extensionality-collision" class="nav-link" data-scroll-target="#the-extensionality-collision"><span class="header-section-number">6.3</span> The Extensionality Collision</a></li>
+  <li><a href="#canonical-failure-diagnostics" id="toc-canonical-failure-diagnostics" class="nav-link" data-scroll-target="#canonical-failure-diagnostics"><span class="header-section-number">6.4</span> Canonical Failure Diagnostics</a></li>
   </ul>
 </nav>
     </div>
@@ -242,27 +243,47 @@ window.Quarto = {
 
 <section id="proof-theoretic-embedding" class="level2" data-number="6.1">
 <h2 data-number="6.1" class="anchored" data-anchor-id="proof-theoretic-embedding"><span class="header-section-number">6.1</span> Proof-Theoretic Embedding</h2>
-<p>The <code>seq-embed</code> environment formalizes the structural proof theory required to manage logical derivations securely. By constructing a deep embedding of Gentzen’s Sequent Calculus within Lean 4, the architecture gains strict programmatic control over the deductive pathways.</p>
-<p>This module fundamentally restricts classical deductive freedom. The logic engine will not evaluate a set comprehension rule within the sequent tree unless it has been explicitly authorized by a <code>StratificationWitness</code> output from the <code>nf-validate</code> module.</p>
+<p>The <code>seq-embed</code> environment formalizes the structural proof theory required to manage logical derivations securely. By constructing a deep embedding of Gentzen’s Sequent Calculus within Lean 4, the architecture gains strict programmatic control over the deductive pathways before dispatching logic to the <code>untyped-comb</code> DAG.</p>
+<p>This module fundamentally restricts classical deductive freedom. The logic engine will not evaluate a set comprehension rule within the sequent tree unless it has been explicitly authorized by a valid algorithmic graph structure.</p>
+<pre class="lean"><code>#| label: compl-restriction
+#| eval: false
+
+-- The `compL` rule enforces that comprehension is strictly gated
+-- behind the successful Bellman-Ford evaluation (StratificationWitness).
+| compL {Γ Δ : Context} (A : Formula) (w : StratificationWitness) 
+  (d : Derivation ⟨A :: Γ, Δ⟩) : Derivation ⟨Γ, Δ⟩</code></pre>
+<p>By explicitly parameterizing the comprehension rule with the <code>StratificationWitness</code> output from the <code>nf-validate</code> module, the <code>seq-embed</code> framework mechanically locks deductive reasoning down to computable geometric boundaries.</p>
 <hr>
 </section>
-<section id="evaluating-substitutions" class="level2" data-number="6.2">
-<h2 data-number="6.2" class="anchored" data-anchor-id="evaluating-substitutions"><span class="header-section-number">6.2</span> Evaluating Substitutions</h2>
-<p>To systematically analyze the behavior of highly entangled graph structures, the diagnostic engine simulates substitutions and evaluates the intermediate lemmas via the <code>reduceCut</code> pipeline.</p>
+<section id="targeted-cut-reduction-and-substitution" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="targeted-cut-reduction-and-substitution"><span class="header-section-number">6.2</span> Targeted Cut Reduction and Substitution</h2>
+<p>To systematically analyze the behavior of highly entangled graph structures, the diagnostic engine simulates substitutions and evaluates intermediate lemmas via the <code>reduceCut</code> pipeline.</p>
 <pre class="lean"><code>#| label: reduce-cut
 #| eval: false
 
 def reduceCut {Γ Δ : Context} (A : Formula) 
   (d1 : Derivation ⟨Γ, A :: Δ⟩) 
-  (d2 : Derivation ⟨A :: Γ, Δ⟩) : ReduceResult Γ Δ :=</code></pre>
-<p>The system bypasses standard structural normalization, intentionally forcing logical substitutions dynamically back through the validation matrix. This mechanical stress test surfaces exactly where grammatical structures break down during cyclic execution.</p>
+  (d2 : Derivation ⟨A :: Γ, Δ⟩) : ReduceResult Γ Δ</code></pre>
+<p>The system bypasses standard structural normalization, intentionally forcing logical substitutions dynamically back through the validation matrix. When encountering a <code>cut</code> against the <code>compL</code> rule, it invokes <code>getSimulatedSubstitution</code> to extract canonical targets, substitutes them, and forcefully evaluates the altered structure via <code>evaluateFullFormula</code>.</p>
 <hr>
 </section>
-<section id="navigating-extensionality" class="level2" data-number="6.3">
-<h2 data-number="6.3" class="anchored" data-anchor-id="navigating-extensionality"><span class="header-section-number">6.3</span> Navigating Extensionality</h2>
+<section id="the-extensionality-collision" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="the-extensionality-collision"><span class="header-section-number">6.3</span> The Extensionality Collision</h2>
 <p>The primary analytical utility of <code>seq-embed</code> is calculating the operational cost of the Axiom of Extensionality.</p>
-<p>The system utilizes weak stratification to parse constraints efficiently. Weak stratification partitions the graph by binding scope, allowing local variables to re-level their integer weights dynamically. This dynamic local re-leveling maintains the stability of the graph during operations like substitution.</p>
-<p>However, the Axiom of Extensionality dictates that <span class="math inline">\(x = y\)</span> mandates total structural equivalence. When dynamically re-leveled variables interact with this rigid structural mandate, the compiler is forced to equate items with conflicting topological weights. This collision triggers a mathematically verifiable negative-weight cycle. The <code>reduceCut</code> engine actively maps this specific “Extensionality Collision,” allowing the execution backend to intercept and route around these paradoxical limitations.</p>
+<p>The system utilizes <strong>weak stratification</strong>, which partitions the graph by binding scope, allowing local variables to re-level their integer weights dynamically. This restores grammatical substitution closure.</p>
+<p>However, the Axiom of Extensionality dictates that <span class="math inline">\(x = y\)</span> mandates total structural equivalence. When dynamically re-leveled scopes collide with this rigid structural mandate, the compiler is forced to equate items with conflicting topological weights. <code>reduceCut</code> actively logs this exact event as an <strong>Extensionality Collision</strong>, tracking the mathematically rigorous generation of a negative-weight cycle.</p>
+<hr>
+</section>
+<section id="canonical-failure-diagnostics" class="level2" data-number="6.4">
+<h2 data-number="6.4" class="anchored" data-anchor-id="canonical-failure-diagnostics"><span class="header-section-number">6.4</span> Canonical Failure Diagnostics</h2>
+<p>The <code>main</code> executable bypasses manual REPL interaction to automatically run hardcoded, canonical derivation trees, proving the mathematical trace outputs of classical failure structures:</p>
+<ol type="1">
+<li><strong>The Identity Collapse (<code>idCollapse_A</code>)</strong>: Asserts <span class="math inline">\(z = A\)</span> where <span class="math inline">\(\forall y(y \in A \leftrightarrow y = z)\)</span>, immediately collapsing the <span class="math inline">\(+1\)</span> level difference.</li>
+<li><strong>The Impredicative Singleton (<code>singCollapse_A</code>)</strong>: Models the Russell variant <span class="math inline">\(\forall x(x \in S \leftrightarrow x \notin w)\)</span>. Substituting <span class="math inline">\(w = S\)</span> catches the breakdown when Extensionality attempts to globally unify the disparate levels.</li>
+<li><strong>The Transitive Membership Collapse</strong>: Cuts a transitive chain (<span class="math inline">\(y \in A \land A \in B \land B \in C\)</span>) against the assertion <span class="math inline">\(A = C\)</span>, proving the engine can isolate multi-tiered negative cycles across expanded geometric intervals.</li>
+<li><strong>Russell-Prawitz Normalization Breakdown</strong>: Computationally intercepts the proof-theoretic infinite regress of <span class="math inline">\(R \in R\)</span>, proving the geometric self-loop halts.</li>
+<li><strong>Kuratowski Ordered Pair Type-Shift</strong>: Asserts an ordered pair <span class="math inline">\(P\)</span> is identical to its foundational element (<span class="math inline">\(P = A\)</span>), detecting the unstratifiable topological collapse across multiple hierarchical boundaries.</li>
+</ol>
 
 
 </section>

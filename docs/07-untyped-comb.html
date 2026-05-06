@@ -187,19 +187,19 @@ window.Quarto = {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./08-transfinite.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transfinite Calculus and Strongly Cantorian Sets</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transfinite Logic &amp; Choice-Free Arithmetic</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./09-categorical.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Categorical Semantics (The SPE)</span></span></a>
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Categorical Semantics &amp; The SPE Architecture</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./10-monism.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Causal Graph Syntactic Monism</span></span></a>
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Syntactic Monism vs The Hierarchy</span></span></a>
   </div>
 </li>
     </ul>
@@ -213,8 +213,12 @@ window.Quarto = {
    
   <ul>
   <li><a href="#the-combinatory-architecture" id="toc-the-combinatory-architecture" class="nav-link active" data-scroll-target="#the-combinatory-architecture"><span class="header-section-number">7.1</span> The Combinatory Architecture</a></li>
-  <li><a href="#directed-acyclic-translation" id="toc-directed-acyclic-translation" class="nav-link" data-scroll-target="#directed-acyclic-translation"><span class="header-section-number">7.2</span> Directed Acyclic Translation</a></li>
-  <li><a href="#stabilizing-the-execution-layer" id="toc-stabilizing-the-execution-layer" class="nav-link" data-scroll-target="#stabilizing-the-execution-layer"><span class="header-section-number">7.3</span> Stabilizing the Execution Layer</a></li>
+  <li><a href="#directed-acyclic-translation-flattening" id="toc-directed-acyclic-translation-flattening" class="nav-link" data-scroll-target="#directed-acyclic-translation-flattening"><span class="header-section-number">7.2</span> Directed Acyclic Translation &amp; Flattening</a></li>
+  <li><a href="#topologically-guided-lazy-reduction" id="toc-topologically-guided-lazy-reduction" class="nav-link" data-scroll-target="#topologically-guided-lazy-reduction"><span class="header-section-number">7.3</span> Topologically-Guided Lazy Reduction</a>
+  <ul class="collapse">
+  <li><a href="#dynamic-t-weaking-pipeline" id="toc-dynamic-t-weaking-pipeline" class="nav-link" data-scroll-target="#dynamic-t-weaking-pipeline"><span class="header-section-number">7.3.1</span> Dynamic T-Weaking Pipeline</a></li>
+  <li><a href="#mcm-bounds-and-terminal-states" id="toc-mcm-bounds-and-terminal-states" class="nav-link" data-scroll-target="#mcm-bounds-and-terminal-states"><span class="header-section-number">7.3.2</span> MCM Bounds and Terminal States</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -242,39 +246,57 @@ window.Quarto = {
 
 <section id="the-combinatory-architecture" class="level2" data-number="7.1">
 <h2 data-number="7.1" class="anchored" data-anchor-id="the-combinatory-architecture"><span class="header-section-number">7.1</span> The Combinatory Architecture</h2>
-<p>The <code>untyped-comb</code> module handles the transformation of verified logic into an executable format. The system structurally translates the Abstract Syntax Tree (AST) away from dependent types into a flat, variable-free combinatory representation.</p>
+<p>The <code>untyped-comb</code> module handles the transformation of verified logic into an executable format, acting as the critical bridge to the WGPU Physics backend. The system structurally translates the Abstract Syntax Tree (AST) away from dependent types into a flat, variable-free combinatory representation.</p>
 <pre class="lean"><code>#| label: comb-inductive-type
-#| eval: false
 
 inductive Comb
-  | K : Comb 
-  | S : Comb 
-  | I : Comb 
-  | U : Comb 
+  | K : Comb -- Schönfinkel's C (Konstanz) / Erasure
+  | S : Comb -- Fusion / Duplication
+  | I : Comb -- Identity
+  | U : Comb -- Schönfinkel's Unverträglichkeit (NAND logic for SPE integration)
   | var : String -&gt; Comb
   | app : Comb -&gt; Comb -&gt; Comb
-  | t_inject : Comb -&gt; Comb
-  | lazy_thunk : Comb -&gt; Comb
-  | terminal : String -&gt; Comb</code></pre>
+  | t_inject : Comb -&gt; Comb -- The geometric type-shifting endofunctor
+  | lazy_thunk : Comb -&gt; Comb -- Explicit Call-by-Need thunk for impredicative boundaries
+  | terminal : String -&gt; Comb -- Stabilized terminal state</code></pre>
 <p>This compilation model replaces hierarchical memory structures with precise routing combinators. Variables and substitution environments are removed from the operational layer, replaced entirely by the structural fusion and duplication rules dictated by the <span class="math inline">\(S\)</span> and <span class="math inline">\(K\)</span> execution nodes.</p>
 <hr>
 </section>
-<section id="directed-acyclic-translation" class="level2" data-number="7.2">
-<h2 data-number="7.2" class="anchored" data-anchor-id="directed-acyclic-translation"><span class="header-section-number">7.2</span> Directed Acyclic Translation</h2>
-<p>To safely process highly entangled combinator streams on bare-metal hardware, the execution engine translates the operations into a Directed Acyclic Graph (DAG).</p>
-<p>The compiler executes an <span class="math inline">\(O(V+E)\)</span> topological sort utilizing Kosaraju’s algorithm to analyze the semantic graph. By identifying 0-weight semantic cycles (Strongly Connected Components), the engine safely projects non-well-founded referential loops without triggering memory exhaustion.</p>
+<section id="directed-acyclic-translation-flattening" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="directed-acyclic-translation-flattening"><span class="header-section-number">7.2</span> Directed Acyclic Translation &amp; Flattening</h2>
+<p>To safely process highly entangled combinator streams on bare-metal hardware (like Interaction Nets with 32-bit pointers), the execution engine translates operations into a Directed Acyclic Graph (DAG).</p>
+<p>The compiler executes an <span class="math inline">\(O(V+E)\)</span> topological sort utilizing Kosaraju’s algorithm. By identifying 0-weight semantic cycles (Strongly Connected Components), the engine safely projects non-well-founded referential loops natively into flat structures, neutralizing exponential memory blowup prior to execution.</p>
 <hr>
 </section>
-<section id="stabilizing-the-execution-layer" class="level2" data-number="7.3">
-<h2 data-number="7.3" class="anchored" data-anchor-id="stabilizing-the-execution-layer"><span class="header-section-number">7.3</span> Stabilizing the Execution Layer</h2>
-<p>Because the <code>nf-sketches</code> architecture evaluates an unstratified universe natively, it requires specific mechanical safeguards to manage execution limits structurally:</p>
-<ul>
-<li><strong>Algorithmic T-Weaking:</strong> The compiler utilizes the integer distances generated by the static verification matrix to dynamically inject <span class="math inline">\(T\)</span>-operators (<code>Comb.t_inject</code>). These topological markers stabilize the geometric mapping of operations, acting as self-regulating type-shifts natively within the unstratified graph.</li>
-<li><strong>MCM Bounds:</strong> The Minimum Cycle Mean is utilized to calculate dynamic operational limits across semantic boundaries, freezing unresolvable calculations safely as <code>terminal</code> structures.</li>
-<li><strong>Backend Targeting:</strong> Once formatted as an acyclic combinatory DAG, the data is optimally structured for parallel, high-performance evaluation inside topological frameworks like Interaction Nets or HVM2, bypassing standard von Neumann memory management overhead.</li>
-</ul>
+<section id="topologically-guided-lazy-reduction" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="topologically-guided-lazy-reduction"><span class="header-section-number">7.3</span> Topologically-Guided Lazy Reduction</h2>
+<p>Because the <code>nf-sketches</code> architecture evaluates an unstratified universe natively, it utilizes specific mechanical safeguards to manage execution limits structurally:</p>
+<section id="dynamic-t-weaking-pipeline" class="level3" data-number="7.3.1">
+<h3 data-number="7.3.1" class="anchored" data-anchor-id="dynamic-t-weaking-pipeline"><span class="header-section-number">7.3.1</span> Dynamic T-Weaking Pipeline</h3>
+<p>The integer distances generated by the <code>NfValidate</code> static matrix algorithmically inform where structural friction occurs. The engine synthesizes dynamic bounds through the <code>buildDynamicDistanceMap</code>:</p>
+<pre class="lean"><code>#| label: build-dynamic-distance
+#| eval: false
+
+def buildDynamicDistanceMap (w : StratificationWitness) (scope : Nat) : Comb → Option Int
+  | Comb.var s =&gt;
+      if s.startsWith "_" then
+        let n := (s.drop 1).toNat!
+        some (getWeightFromWitness w scope (Var.bound n))
+      else
+        some (getWeightFromWitness w scope (Var.free s))
+  | Comb.t_inject c =&gt;
+      match buildDynamicDistanceMap w scope c with
+      | some w_c =&gt; some (w_c + 1)
+      | none =&gt; none</code></pre>
+<p>By extracting the verified scope constraints (<code>StratificationWitness</code>), the compiler utilizes <code>algorithmicTWeaking</code> to natively inject <code>Comb.t_inject</code> wrappers into the graph exactly where bounds are violated. This geometric self-regulation ensures that unstratified arrays stabilize natively without an infinite type hierarchy.</p>
+</section>
+<section id="mcm-bounds-and-terminal-states" class="level3" data-number="7.3.2">
+<h3 data-number="7.3.2" class="anchored" data-anchor-id="mcm-bounds-and-terminal-states"><span class="header-section-number">7.3.2</span> MCM Bounds and Terminal States</h3>
+<p>The Minimum Cycle Mean (MCM) calculates dynamic operational limits across semantic boundaries. When evaluating saturated subsets (e.g.&nbsp;<span class="math inline">\(V \in V\)</span>), the engine tracks the explicit recursion friction via explicit <code>lazy_thunk</code> states. When the distance map reaches a negative convergence limit, the execution is mathematically intercepted and frozen as a <code>Comb.terminal "K_ITERATION_HALT"</code>.</p>
+<p>Once formatted through this pipeline, the AST is perfectly pruned for WGPU parallel reduction loops where atomic Compare-And-Swap (CAS) instructions handle graph rewiring completely lock-free.</p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -685,8 +707,8 @@ inductive Comb
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./08-transfinite.html" class="pagination-link" aria-label="Transfinite Calculus and Strongly Cantorian Sets">
-        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transfinite Calculus and Strongly Cantorian Sets</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./08-transfinite.html" class="pagination-link" aria-label="Transfinite Logic &amp; Choice-Free Arithmetic">
+        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transfinite Logic &amp; Choice-Free Arithmetic</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

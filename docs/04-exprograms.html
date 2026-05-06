@@ -187,19 +187,19 @@ window.Quarto = {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./08-transfinite.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transfinite Calculus and Strongly Cantorian Sets</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transfinite Logic &amp; Choice-Free Arithmetic</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./09-categorical.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Categorical Semantics (The SPE)</span></span></a>
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Categorical Semantics &amp; The SPE Architecture</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./10-monism.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Causal Graph Syntactic Monism</span></span></a>
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Syntactic Monism vs The Hierarchy</span></span></a>
   </div>
 </li>
     </ul>
@@ -213,8 +213,13 @@ window.Quarto = {
    
   <ul>
   <li><a href="#assembling-executable-logic" id="toc-assembling-executable-logic" class="nav-link active" data-scroll-target="#assembling-executable-logic"><span class="header-section-number">4.1</span> Assembling Executable Logic</a></li>
-  <li><a href="#simulating-execution" id="toc-simulating-execution" class="nav-link" data-scroll-target="#simulating-execution"><span class="header-section-number">4.2</span> Simulating Execution</a></li>
-  <li><a href="#designing-new-programs" id="toc-designing-new-programs" class="nav-link" data-scroll-target="#designing-new-programs"><span class="header-section-number">4.3</span> Designing New Programs</a></li>
+  <li><a href="#executable-diagnostics-physical-proofs" id="toc-executable-diagnostics-physical-proofs" class="nav-link" data-scroll-target="#executable-diagnostics-physical-proofs"><span class="header-section-number">4.2</span> Executable Diagnostics &amp; Physical Proofs</a>
+  <ul class="collapse">
+  <li><a href="#intercepting-the-russell-paradox" id="toc-intercepting-the-russell-paradox" class="nav-link" data-scroll-target="#intercepting-the-russell-paradox"><span class="header-section-number">4.2.1</span> 1. Intercepting the Russell Paradox</a></li>
+  <li><a href="#quine-atom-stabilization" id="toc-quine-atom-stabilization" class="nav-link" data-scroll-target="#quine-atom-stabilization"><span class="header-section-number">4.2.2</span> 2. Quine Atom Stabilization</a></li>
+  <li><a href="#agentic-workflows-and-sandboxed-loops" id="toc-agentic-workflows-and-sandboxed-loops" class="nav-link" data-scroll-target="#agentic-workflows-and-sandboxed-loops"><span class="header-section-number">4.2.3</span> 3. Agentic Workflows and Sandboxed Loops</a></li>
+  <li><a href="#simulating-causal-graph-irreducibility" id="toc-simulating-causal-graph-irreducibility" class="nav-link" data-scroll-target="#simulating-causal-graph-irreducibility"><span class="header-section-number">4.2.4</span> 4. Simulating Causal Graph Irreducibility</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -242,32 +247,70 @@ window.Quarto = {
 
 <section id="assembling-executable-logic" class="level2" data-number="4.1">
 <h2 data-number="4.1" class="anchored" data-anchor-id="assembling-executable-logic"><span class="header-section-number">4.1</span> Assembling Executable Logic</h2>
-<p>The <code>ExPrograms</code> directory acts as the final deployment target for verified logic within the Lean 4 laboratory. Programs written here structurally demonstrate the topological bounds functioning in real-time.</p>
-<p>To write a functional program within <code>ExPrograms</code>, a developer combines the abstract logic structures generated in <code>CombLib</code> and binds them to the execution engine’s structural constraints.</p>
+<p>The <code>ExPrograms</code> directory acts as the final deployment target for verified logic within the Lean 4 theoretical laboratory. Programs written here structurally demonstrate the topological bounds functioning in real-time execution space.</p>
+<p>By combining the abstract primitives generated in <code>CombLib</code> and binding them to the <code>UntypedComb</code> constraints, these executables computationally yield physical proofs of Quine’s systemic ambiguity.</p>
 <hr>
 </section>
-<section id="simulating-execution" class="level2" data-number="4.2">
-<h2 data-number="4.2" class="anchored" data-anchor-id="simulating-execution"><span class="header-section-number">4.2</span> Simulating Execution</h2>
-<p>Because Lean 4 is utilized as the static oracle prior to hardware deployment, these programs execute by simulating the recursive topological cost that an Interaction Net backend will eventually process natively.</p>
-<p>The framework provides specific wrapper functions to trace the execution path of complex logic.</p>
-<pre class="lean"><code>#| label: execute-holographic
+<section id="executable-diagnostics-physical-proofs" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="executable-diagnostics-physical-proofs"><span class="header-section-number">4.2</span> Executable Diagnostics &amp; Physical Proofs</h2>
+<p>The directory provides a suite of executables that map the boundaries of unstratified logic natively without encountering standard memory blowouts.</p>
+<section id="intercepting-the-russell-paradox" class="level3" data-number="4.2.1">
+<h3 data-number="4.2.1" class="anchored" data-anchor-id="intercepting-the-russell-paradox"><span class="header-section-number">4.2.1</span> 1. Intercepting the Russell Paradox</h3>
+<p>Evaluating <span class="math inline">\(R \in R\)</span> (where <span class="math inline">\(R = \{x \mid x \notin x\}\)</span>) normally causes unbounded recursion. The <code>Russell.lean</code> execution mechanically synthesizes the <span class="math inline">\(M\)</span> combinator (<span class="math inline">\(\lambda x. x x\)</span>) inside the absolute complement and tracks the topological cost using Minimum Cycle Mean (MCM) approximation.</p>
+<pre class="lean"><code>#| label: evaluate-russell
 #| eval: false
 
-def executeHolographicSweep : Comb :=
-  app (Comb.terminal "SC_CUT") (app swarmFilter mockSwarm)</code></pre>
-<p>In the example above, <code>executeHolographicSweep</code> wraps a combinatorial data-filtering operation inside a structural bound (<code>SC_CUT</code>). This boundary isolates the execution from triggering global cycle detectors, allowing the algorithm to execute an absolute complement search dynamically.</p>
-<hr>
+def russellSet : Comb := absoluteComplement M
+
+def evaluateRussell : Comb := app russellSet russellSet
+
+-- Automatically intercepts via MCM and halts cleanly as a `Comb.terminal`
+#eval normalize evaluateRussell</code></pre>
 </section>
-<section id="designing-new-programs" class="level2" data-number="4.3">
-<h2 data-number="4.3" class="anchored" data-anchor-id="designing-new-programs"><span class="header-section-number">4.3</span> Designing New Programs</h2>
-<p>When designing new executables (such as the <code>AgenticPlanning</code> or <code>ColliderSimulation</code> algorithms), developers follow these standard integration steps:</p>
-<ul>
-<li><strong>Initialize Variables:</strong> Import the base math primitives from <code>CombLib</code>.</li>
-<li><strong>Establish Bounds:</strong> Identify the areas where semantic recursion occurs. Wrap these regions utilizing the engine’s Strongly Cantorian fixpoint evaluators or manual <span class="math inline">\(T\)</span>-injections.</li>
-<li><strong>Execute and Trace:</strong> Map the result to an IO wrapper (like <code>execute_agent_loop</code>) to observe the final topological distance generated by the logic compilation.</li>
-</ul>
+<section id="quine-atom-stabilization" class="level3" data-number="4.2.2">
+<h3 data-number="4.2.2" class="anchored" data-anchor-id="quine-atom-stabilization"><span class="header-section-number">4.2.2</span> 2. Quine Atom Stabilization</h3>
+<p>The Quine Atom (<span class="math inline">\(\Omega = \{\Omega\}\)</span>) models a set containing only an unreduced copy of itself. The <code>QuineAtom.lean</code> script validates that the <span class="math inline">\(Y\)</span> combinator correctly maps the self-referential graph loop using the <span class="math inline">\(U\)</span> combinator before it crashes the stack.</p>
+</section>
+<section id="agentic-workflows-and-sandboxed-loops" class="level3" data-number="4.2.3">
+<h3 data-number="4.2.3" class="anchored" data-anchor-id="agentic-workflows-and-sandboxed-loops"><span class="header-section-number">4.2.3</span> 3. Agentic Workflows and Sandboxed Loops</h3>
+<p>The framework supports simulating autonomous logic via Sandboxes. <code>AgenticReflection.lean</code> demonstrates an autonomous graph entity simulating a future interaction, measuring the algorithmic cost via MCM bounds, and committing the state to an SC memory lattice.</p>
+<pre class="lean"><code>#| label: agentic-reflection
+#| eval: false
+
+def execute_agent_loop : IO Unit := do
+  let agent_core := Comb.I
+  let environmental_action := Comb.app Comb.S Comb.K
+
+  -- The agent constructs the hypothetical future state (A -&gt; TA boundary)
+  let hypothetical_graph := simulate_hypothetical agent_core environmental_action
+
+  -- The engine calculates the precise thermodynamic cost of the decision
+  let _evaluation_result := UntypedComb.DAG.reduce hypothetical_graph
+
+  -- The agent accepts the state and cools it into a Strongly Cantorian memory block
+  let memory_block := commit_to_memory hypothetical_graph</code></pre>
+<p><code>AgenticPlanning.lean</code> expands on this by building a parallel decision matrix, evaluating divergent topologies simultaneously and mechanically selecting the outcome requiring the lowest recursive topological cost.</p>
+</section>
+<section id="simulating-causal-graph-irreducibility" class="level3" data-number="4.2.4">
+<h3 data-number="4.2.4" class="anchored" data-anchor-id="simulating-causal-graph-irreducibility"><span class="header-section-number">4.2.4</span> 4. Simulating Causal Graph Irreducibility</h3>
+<p>The <code>CausalIrreducibility.lean</code> program simulates a local causal state colliding with the saturated world boundary. The engine dynamically computes the algorithmic randomness generated by symmetric nodes.</p>
+<pre class="lean"><code>#| label: causal-irreducibility
+#| eval: false
+
+def evaluate_causal_friction : IO Unit := do
+  let local_state := Comb.I
+
+  -- Braid the local state into a symmetric node with the saturated boundary
+  let world_graph :=
+    Comb.app (Comb.app causal_braid local_state) (symmetric_node local_state saturated_boundary)
+
+  -- The engine processes the irreducible graph, injecting T-operators 
+  -- dynamically at structural collision points.
+  let result := DAG.reduce world_graph</code></pre>
+<p>This physically proves that tracking dynamic extensional collisions inside a finite graph natively generates calculable syntactic friction.</p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

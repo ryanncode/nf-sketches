@@ -107,35 +107,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 </head>
 
@@ -221,19 +192,19 @@ window.Quarto = {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./08-transfinite.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transfinite Calculus and Strongly Cantorian Sets</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transfinite Logic &amp; Choice-Free Arithmetic</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./09-categorical.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Categorical Semantics (The SPE)</span></span></a>
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Categorical Semantics &amp; The SPE Architecture</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./10-monism.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Causal Graph Syntactic Monism</span></span></a>
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Syntactic Monism vs The Hierarchy</span></span></a>
   </div>
 </li>
     </ul>
@@ -281,8 +252,9 @@ window.Quarto = {
 <h1 data-number="1"><span class="header-section-number">1</span> Introduction and Setup</h1>
 <section id="the-acyclic-lean-architecture" class="level2" data-number="1.1">
 <h2 data-number="1.1" class="anchored" data-anchor-id="the-acyclic-lean-architecture"><span class="header-section-number">1.1</span> The Acyclic Lean Architecture</h2>
-<p>The <code>nf-sketches</code> repository provides a computationally verifiable, topologically-bound combinatory logic engine. This documentation is organized to guide engineers and researchers through utilizing the ecosystem practically, before diving into the architectural mechanics.</p>
-<p>The primary objective of this architecture is to resolve cyclical logic constraints without relying on external garbage collection or global substitution environments. By formalizing Quine’s systemic ambiguity into geometric routing rules, the logic engine natively processes highly entangled variables by extracting topological paths directly from the Abstract Syntax Tree (AST).</p>
+<p>The <code>nf-sketches</code> repository provides a computationally verifiable, topologically-bound combinatory logic engine. This documentation guides engineers and researchers through the ecosystem’s theoretical validation matrix.</p>
+<p>The primary objective of this architecture is to resolve cyclical logic constraints without relying on external garbage collection, hierarchical universes (like HoTT or ZFC), or global substitution environments. By formalizing Quine’s systemic ambiguity into geometric routing rules, the logic engine natively processes highly entangled variables by extracting topological paths directly from the Abstract Syntax Tree (AST).</p>
+<p>This repository functions as the theoretical <strong>laboratory</strong>—utilizing Lean 4’s trusted kernel to formally prove algorithmic stratification, K-Iteration limits, and topological boundaries. It conducts the rigorous diagnostic work required to secure cryptographic certainty before the mathematical concepts are independently forged into custom bare-metal engines (like the Rust-based <code>monist</code> engine).</p>
 <hr>
 </section>
 <section id="practical-setup" class="level2" data-number="1.2">
@@ -299,12 +271,14 @@ window.Quarto = {
 </section>
 <section id="the-workflow-paradigm" class="level2" data-number="1.3">
 <h2 data-number="1.3" class="anchored" data-anchor-id="the-workflow-paradigm"><span class="header-section-number">1.3</span> The Workflow Paradigm</h2>
-<p>The development lifecycle within <code>nf-sketches</code> follows a distinct progression from string parsing to bare-metal compilation:</p>
-<ul>
-<li><strong>Interactive Sandbox (<code>parse-strat</code>):</strong> Users first define logical constraints using standard ASCII syntax to test stratification boundaries.</li>
-<li><strong>Primitive Assembly (<code>CombLib</code>):</strong> Mathematical concepts are assembled via variable-free combinators, completely bypassing standard dependent types.</li>
-<li><strong>Executable Deployment (<code>ExPrograms</code>):</strong> Verified logic structures are deployed as functional scripts that map natively onto Interaction Nets for <span class="math inline">\(O(V+E)\)</span> performance limits.</li>
-</ul>
+<p>The development lifecycle within <code>nf-sketches</code> follows a distinct progression from string parsing to combinatory execution limits:</p>
+<ol type="1">
+<li><strong>Interactive Sandbox (<code>parse-strat</code>):</strong> Users first define logical constraints using standard ASCII syntax to test stratification boundaries and manually trace Extensionality Collisions.</li>
+<li><strong>Static Validation (<code>nf-validate</code>):</strong> The logic is converted into constraint algebra, running Bellman-Ford evaluation to intercept topological paradoxes as negative-weight cycles.</li>
+<li><strong>Formal Diagnostics (<code>seq-embed</code>):</strong> Deep embedding of Sequent Calculus simulating cut-reduction dynamically against comprehension axioms.</li>
+<li><strong>Primitive Assembly (<code>CombLib</code> &amp; <code>untyped-comb</code>):</strong> Mathematical concepts are assembled via variable-free combinators, bypassing dependent types entirely.</li>
+<li><strong>Executable Deployment (<code>ExPrograms</code>):</strong> Verified logic structures are deployed as functional scripts that map natively onto Interaction Nets, setting the physical proofs for combinatorial execution algorithms.</li>
+</ol>
 
 
 </section>

@@ -4,13 +4,15 @@
 
 The `nf-validate` module serves as the primary verification matrix for the logic engine. Rather than utilizing external axioms to prevent logical loops, this module parses syntax to ensure operations conform to strict algorithmic bounds.
 
-It utilizes the principles of Quine's systemic ambiguity. The logic is computationally converted into a relative constraint graph. An operation is deemed stratifiable, and thus structurally safe, if the graph flattens without generating any negative-weight cycles. 
+It utilizes the principles of Quine's systemic ambiguity. The logic is computationally converted into a relative constraint graph. An operation is deemed stratifiable, and thus structurally safe, if the graph flattens without generating any negative-weight cycles. By translating syntax into graph distance semantics, contradictions natively manifest as purely geometric failures.
 
 ---
 
 ## Extracting Constraints
 
-The compiler parses the Abstract Syntax Tree (AST) and generates a system of directed and bidirectional weights based on set-theoretic relations.
+The compiler parses the Abstract Syntax Tree (AST) and generates a system of directed and bidirectional weights based on set-theoretic relations. 
+
+Variables are strictly partitioned into `Atomic` definitions (`eq`, `mem`, `qpair`) and higher-order `Formula` wrappers. 
 
 ```lean
 #| label: extract-constraints-ast
@@ -27,11 +29,48 @@ As demonstrated in the extraction pipeline, structural equivalence ($x = y$) map
 
 ---
 
-## The Bellman-Ford Matrix
+## Graph Semantics and Path Definitions
 
-Once the edges are defined, the graph is processed through a modified Bellman-Ford shortest-path evaluator.
+Once edges are mapped, we calculate structural weight sums through geometric recursion. `NfValidate.GraphSemantics` natively bounds this structural execution:
 
-* **Topological Limits:** The module formally mathematically restricts the depth of evaluations strictly to the number of variables present in the execution path. This K-Iteration limit guarantees that the recursion engine halts.
-* **Negative Cycles:** Instead of relying on model-theoretic proofs to analyze contradictions, contradictions manifest purely geometrically. If a variable is topologically shifted in a manner that creates an unresolvable structural paradox, the Bellman-Ford algorithm surfaces it as a negative integer constraint path. 
+```lean
+#| label: graph-path
+#| eval: false
 
-This strict geometric boundary allows the engine to analyze self-referential graph reductions securely before deploying them to the untyped combinatory backend.
+inductive Path (edges : List Edge) : ScopedVar → ScopedVar → Type where
+  | nil (u : ScopedVar) : Path edges u u
+  | cons {w : ScopedVar} (e : Edge) (h_in : e ∈ edges) (p : Path edges e.dst w) : Path edges e.src w
+
+def pathWeight {edges : List Edge} {u v : ScopedVar} : Path edges u v → Int
+  | Path.nil _ => 0
+  | Path.cons e _ p => e.weight + pathWeight p
+```
+
+---
+
+## The Bellman-Ford Matrix & Soundness
+
+The graph is processed through a modified Bellman-Ford shortest-path evaluator.
+
+* **Topological Limits:** The module mathematically restricts the depth of evaluations strictly to the number of variables present in the execution path (`k_iteration_bound`). This K-Iteration limit guarantees the engine halts.
+* **Negative Cycles:** If a variable is topologically shifted in a manner that creates an unresolvable structural paradox, the algorithm surfaces it as a negative integer constraint path (`NegativeCycle`).
+
+To prove this algorithmically guarantees mathematical soundness, the system maps constraint satisfiability to strict inequality theorems:
+
+```lean
+#| label: graph-satisfiability
+#| eval: false
+
+def SatisfiesEdge (d : ScopedVar → Int) (e : Edge) : Prop :=
+  d e.dst - d e.src ≤ e.weight
+
+theorem no_valid_context_for_negative_cycle {edges : List Edge}
+  (nc : NegativeCycle edges) (d : ScopedVar → Int) :
+  ¬ SatisfiesGraph d edges := by
+  intro h_sat
+  have h_path := path_inequality d h_sat nc.cycle
+  have h_neg := nc.is_negative
+  omega
+```
+
+This rigid bound mathematically proves that a closed loop with a strictly negative weight precludes any valid semantic interpretation. This geometric foundation allows the engine to analyze self-referential graph reductions securely before deploying them to the untyped combinatory backend.

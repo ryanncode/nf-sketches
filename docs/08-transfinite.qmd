@@ -1,27 +1,74 @@
-# Transfinite Calculus and Strongly Cantorian Sets
+# Transfinite Logic & Choice-Free Arithmetic
 
-## Choice-Free Mathematics
+## Expanding the Axioms
 
-Within the untyped execution pipeline, the logic engine natively evaluates complex mathematical boundaries, such as transfinite sums, by replacing traditional external axioms with computational topology. 
+Standard mathematical frameworks like ZFC handle infinities through the Axiom of Choice and the creation of larger, ascending cardinals. `nf-sketches` allows the architecture to handle infinity purely geometrically through structural mapping, without relying on the Axiom of Choice or infinite universes.
 
-In standard formal systems, calculating quantities across uncomputable domains often requires external theoretical assumptions, such as the Axiom of Choice, to maintain stability. The `nf-sketches` architecture bypasses this necessity by evaluating cardinal arithmetic through pure bracket abstraction ($\lambda \to S, K$) over disjoint union topologies.
+## Choice-Free Cardinal Arithmetic
 
-Transfinite summations (e.g., $\aleph_0 + \aleph_0$) are processed geometrically. The execution boundary is stabilized by explicitly tracking the required integer type shifts and injecting $T$-operator matrices dynamically, routing the infinite calculation directly into finite structural limits.
+The `Cardinals.lean` module maps out Transfinite Calculus natively. Cardinal summation (`Card_Add`) is implemented via pure bracket abstraction over disjoint union topologies ($\lambda \to S, K$).
+
+```lean
+#| label: add-aleph
+#| eval: false
+
+/--
+  Execute Cardinal Addition: |A| + |B| = |A ∪ B|.
+  The engine mechanically synthesizes Thomas Forster's T-operator (x ↦ ι"x) on-the-fly,
+  shifting the relative integer weights of the variables to ensure the S and K
+  reductions remain completely type-safe through self-regulation.
+-/
+def addAlephNulls : Comb :=
+  cardAdd aleph0 aleph0
+
+#eval normalize addAlephNulls
+```
+
+Bounds like $\aleph_0$ are anchored using the infinite $Y$-combinator stream generator. By synthesizing the $T$-functor mappings natively on unbound operations (such as $\aleph_0 + \aleph_0$), the engine mechanically aligns operations without external tracking, permanently bypassing the Axiom of Choice.
 
 ---
 
-## Retractions and SC Stability
+## Strongly Cantorian Retractions
 
-To execute standard inductive and classical logic natively inside this graph environment without triggering the cycle detectors, the architecture defines "islands of classicality."
+The architecture restricts classical mathematical reductions within explicit, computationally verified domains. Strongly Cantorian (SC) sets are defined through the correlation function $K_t(t(x)) = K[t(x)]$ and restricted by Buss's polynomial-time computable boundaries ($\Sigma_1^b$ formulas).
 
-These computational islands are established using Strongly Cantorian (SC) retractions. A set is evaluated as Strongly Cantorian if it strictly correlates across type shifts via $K_t(t(x)) = K[t(x)]$. When the engine identifies that local graph execution operates completely inside a Strong Connected Component where this boundary is maintained, it explicitly isolates the logic using an `SC_CUT` execution wrapper.
+### Classical Islands
+
+By identifying when local graph execution operates completely inside a Strong Connected Component where $T(m) = m$, the `DAG.lean` evaluation structure dynamically wraps these retractions in an `SC_CUT` isolation boundary. 
+
+Before execution is permitted to unwrap and return this data to the volatile exterior, it mechanically triggers Knaster-Tarski least fixpoint calculations ($\text{lfp}(F)$) via the `verifySCStability` function.
 
 ```lean
-#| label: verify-sc-stability
+#| label: verify-sc
 #| eval: false
 
-def verifySCStability (L : SCLattice) (F : Int → Int) : Option Int :=
-  if !isMonotone L F then
+/--
+  Define a local Strongly Cantorian Lattice representing an isolated classical island.
+  Domain: {0, 1, 2, 3, 4, 5} with standard integer ordering.
+-/
+def local_sc_domain : SCLattice := {
+  domain := [0, 1, 2, 3, 4, 5],
+  le := fun x y => x ≤ y,
+  bottom := 0
+}
+
+/--
+  An inductive step function defined within the isolated domain.
+-/
+def F_inductive (x : Int) : Int :=
+  if x < 3 then x + 1 else 3
+
+/--
+  Calculates the Knaster-Tarski least fixpoint lfp(F).
+  This acts as the mathematical lock before allowing the result back into the
+  volatile unstratified global graph.
+-/
+def executeSCStabilityCheck : Comb :=
+  match verifySCStability local_sc_domain F_inductive with
+  | some fixpoint =>
+      app (terminal "SC_STABLE_RESULT") (terminal (toString fixpoint))
+  | none =>
+      terminal "SC_UNSTABLE_REJECTION"
 ```
 
-Before this suspended classical evaluation is returned to the broader topological graph, the `verifySCStability` function structurally confirms the limit using Knaster-Tarski least fixpoint calculations ($\text{lfp}(F)$). This secures the computational loop, guaranteeing stability.
+These **"islands of classicality"** allow choice functions and constant-time inductive logic to bypass global cycle detectors natively. It permits standard arithmetic and recursion to operate inside the unstratified graph without generating unverified topological paradoxes, effectively evaluating the Hereditarily Strongly Cantorian Class ($H_{stcan}$) to internally prove the **Axiom of Counting**.

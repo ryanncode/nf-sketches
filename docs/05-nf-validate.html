@@ -187,19 +187,19 @@ window.Quarto = {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./08-transfinite.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transfinite Calculus and Strongly Cantorian Sets</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transfinite Logic &amp; Choice-Free Arithmetic</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./09-categorical.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Categorical Semantics (The SPE)</span></span></a>
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Categorical Semantics &amp; The SPE Architecture</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./10-monism.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Causal Graph Syntactic Monism</span></span></a>
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Syntactic Monism vs The Hierarchy</span></span></a>
   </div>
 </li>
     </ul>
@@ -214,7 +214,8 @@ window.Quarto = {
   <ul>
   <li><a href="#algorithmic-syntax-verification" id="toc-algorithmic-syntax-verification" class="nav-link active" data-scroll-target="#algorithmic-syntax-verification"><span class="header-section-number">5.1</span> Algorithmic Syntax Verification</a></li>
   <li><a href="#extracting-constraints" id="toc-extracting-constraints" class="nav-link" data-scroll-target="#extracting-constraints"><span class="header-section-number">5.2</span> Extracting Constraints</a></li>
-  <li><a href="#the-bellman-ford-matrix" id="toc-the-bellman-ford-matrix" class="nav-link" data-scroll-target="#the-bellman-ford-matrix"><span class="header-section-number">5.3</span> The Bellman-Ford Matrix</a></li>
+  <li><a href="#graph-semantics-and-path-definitions" id="toc-graph-semantics-and-path-definitions" class="nav-link" data-scroll-target="#graph-semantics-and-path-definitions"><span class="header-section-number">5.3</span> Graph Semantics and Path Definitions</a></li>
+  <li><a href="#the-bellman-ford-matrix-soundness" id="toc-the-bellman-ford-matrix-soundness" class="nav-link" data-scroll-target="#the-bellman-ford-matrix-soundness"><span class="header-section-number">5.4</span> The Bellman-Ford Matrix &amp; Soundness</a></li>
   </ul>
 </nav>
     </div>
@@ -243,12 +244,13 @@ window.Quarto = {
 <section id="algorithmic-syntax-verification" class="level2" data-number="5.1">
 <h2 data-number="5.1" class="anchored" data-anchor-id="algorithmic-syntax-verification"><span class="header-section-number">5.1</span> Algorithmic Syntax Verification</h2>
 <p>The <code>nf-validate</code> module serves as the primary verification matrix for the logic engine. Rather than utilizing external axioms to prevent logical loops, this module parses syntax to ensure operations conform to strict algorithmic bounds.</p>
-<p>It utilizes the principles of Quine’s systemic ambiguity. The logic is computationally converted into a relative constraint graph. An operation is deemed stratifiable, and thus structurally safe, if the graph flattens without generating any negative-weight cycles.</p>
+<p>It utilizes the principles of Quine’s systemic ambiguity. The logic is computationally converted into a relative constraint graph. An operation is deemed stratifiable, and thus structurally safe, if the graph flattens without generating any negative-weight cycles. By translating syntax into graph distance semantics, contradictions natively manifest as purely geometric failures.</p>
 <hr>
 </section>
 <section id="extracting-constraints" class="level2" data-number="5.2">
 <h2 data-number="5.2" class="anchored" data-anchor-id="extracting-constraints"><span class="header-section-number">5.2</span> Extracting Constraints</h2>
 <p>The compiler parses the Abstract Syntax Tree (AST) and generates a system of directed and bidirectional weights based on set-theoretic relations.</p>
+<p>Variables are strictly partitioned into <code>Atomic</code> definitions (<code>eq</code>, <code>mem</code>, <code>qpair</code>) and higher-order <code>Formula</code> wrappers.</p>
 <pre class="lean"><code>#| label: extract-constraints-ast
 #| eval: false
 
@@ -260,14 +262,43 @@ def extractConstraintsAux (scope : Nat) : Formula → List Constraint
 <p>As demonstrated in the extraction pipeline, structural equivalence (<span class="math inline">\(x = y\)</span>) maps to a stable 0-weight constraint, while logical membership (<span class="math inline">\(x \in y\)</span>) maps to a precise topological depth shift of 1. Variables are also strictly tagged with their lexical binding depth (<code>scope</code>), preventing scope interference during the traversal.</p>
 <hr>
 </section>
-<section id="the-bellman-ford-matrix" class="level2" data-number="5.3">
-<h2 data-number="5.3" class="anchored" data-anchor-id="the-bellman-ford-matrix"><span class="header-section-number">5.3</span> The Bellman-Ford Matrix</h2>
-<p>Once the edges are defined, the graph is processed through a modified Bellman-Ford shortest-path evaluator.</p>
+<section id="graph-semantics-and-path-definitions" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="graph-semantics-and-path-definitions"><span class="header-section-number">5.3</span> Graph Semantics and Path Definitions</h2>
+<p>Once edges are mapped, we calculate structural weight sums through geometric recursion. <code>NfValidate.GraphSemantics</code> natively bounds this structural execution:</p>
+<pre class="lean"><code>#| label: graph-path
+#| eval: false
+
+inductive Path (edges : List Edge) : ScopedVar → ScopedVar → Type where
+  | nil (u : ScopedVar) : Path edges u u
+  | cons {w : ScopedVar} (e : Edge) (h_in : e ∈ edges) (p : Path edges e.dst w) : Path edges e.src w
+
+def pathWeight {edges : List Edge} {u v : ScopedVar} : Path edges u v → Int
+  | Path.nil _ =&gt; 0
+  | Path.cons e _ p =&gt; e.weight + pathWeight p</code></pre>
+<hr>
+</section>
+<section id="the-bellman-ford-matrix-soundness" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="the-bellman-ford-matrix-soundness"><span class="header-section-number">5.4</span> The Bellman-Ford Matrix &amp; Soundness</h2>
+<p>The graph is processed through a modified Bellman-Ford shortest-path evaluator.</p>
 <ul>
-<li><strong>Topological Limits:</strong> The module formally mathematically restricts the depth of evaluations strictly to the number of variables present in the execution path. This K-Iteration limit guarantees that the recursion engine halts.</li>
-<li><strong>Negative Cycles:</strong> Instead of relying on model-theoretic proofs to analyze contradictions, contradictions manifest purely geometrically. If a variable is topologically shifted in a manner that creates an unresolvable structural paradox, the Bellman-Ford algorithm surfaces it as a negative integer constraint path.</li>
+<li><strong>Topological Limits:</strong> The module mathematically restricts the depth of evaluations strictly to the number of variables present in the execution path (<code>k_iteration_bound</code>). This K-Iteration limit guarantees the engine halts.</li>
+<li><strong>Negative Cycles:</strong> If a variable is topologically shifted in a manner that creates an unresolvable structural paradox, the algorithm surfaces it as a negative integer constraint path (<code>NegativeCycle</code>).</li>
 </ul>
-<p>This strict geometric boundary allows the engine to analyze self-referential graph reductions securely before deploying them to the untyped combinatory backend.</p>
+<p>To prove this algorithmically guarantees mathematical soundness, the system maps constraint satisfiability to strict inequality theorems:</p>
+<pre class="lean"><code>#| label: graph-satisfiability
+#| eval: false
+
+def SatisfiesEdge (d : ScopedVar → Int) (e : Edge) : Prop :=
+  d e.dst - d e.src ≤ e.weight
+
+theorem no_valid_context_for_negative_cycle {edges : List Edge}
+  (nc : NegativeCycle edges) (d : ScopedVar → Int) :
+  ¬ SatisfiesGraph d edges := by
+  intro h_sat
+  have h_path := path_inequality d h_sat nc.cycle
+  have h_neg := nc.is_negative
+  omega</code></pre>
+<p>This rigid bound mathematically proves that a closed loop with a strictly negative weight precludes any valid semantic interpretation. This geometric foundation allows the engine to analyze self-referential graph reductions securely before deploying them to the untyped combinatory backend.</p>
 
 
 </section>
