@@ -4,7 +4,7 @@
 
 This report audits the `nf-sketches` codebase, covering the `nf-validate`, `parse-strat`, and `seq-embed` modules. It defends the project's foundational theory against claims of methodological defects by proving that Quine's New Foundations (NF) rules are enforced via mechanically-verified computational geometry.
 
-The architecture relies on combinatorial guarantees, algebraic telescoping sums, and Lean 4's dependent type theory to secure logical soundness and termination. By analyzing the Abstract Syntax Tree (AST), Graph Semantics, Bellman-Ford Evaluator, Mathematical Certification, and Executable Pipelines, we establish that the system operates without heuristic shortcuts to verify proofs directly.
+The architecture relies on combinatorial guarantees, algebraic telescoping sums, and Lean's dependent type theory to secure logical soundness and termination. By analyzing the Abstract Syntax Tree (AST), Graph Semantics, Bellman-Ford Evaluator, Mathematical Certification, and Executable Pipelines, we establish that the system operates without heuristic shortcuts to verify proofs directly.
 
 ---
 

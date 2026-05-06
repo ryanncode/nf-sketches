@@ -4,7 +4,7 @@ The `untyped-comb` module serves as the bare-metal combinatory execution phase o
 
 ## Overview
 
-This Lean 4 module bypasses the Calculus of Inductive Constructions to establish a flat operational domain. By applying Moses Schönfinkel and Haskell Curry's combinators ($S$, $K$, $I$, $U$), the system maps Extensionality Collisions natively.
+This Lean module bypasses the Calculus of Inductive Constructions to establish a flat operational domain. By applying Moses Schönfinkel and Haskell Curry's combinators ($S$, $K$, $I$, $U$), the system maps Extensionality Collisions natively.
 
 Standard execution of highly saturated impredicative sets (e.g., $V \in V$) exhausts memory boundaries due to unbounded recursion. `untyped-comb` solves this through:
 

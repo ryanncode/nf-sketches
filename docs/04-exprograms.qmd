@@ -2,7 +2,7 @@
 
 ## Assembling Executable Logic
 
-The `ExPrograms` directory acts as the final deployment target for verified logic within the Lean 4 theoretical laboratory. Programs written here structurally demonstrate the topological bounds functioning in real-time execution space.
+The `ExPrograms` directory acts as the final deployment target for verified logic within the Lean theoretical laboratory. Programs written here structurally demonstrate the topological bounds functioning in real-time execution space.
 
 By combining the abstract primitives generated in `CombLib` and binding them to the `UntypedComb` constraints, these executables computationally yield physical proofs of Quine's systemic ambiguity.
 

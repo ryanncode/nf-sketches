@@ -12,7 +12,7 @@
 
 ---
 
-**NF Sketches** provides a bifurcated architecture designed to natively process saturated states, highly entangled sets, and self-referential graph evaluations. By utilizing Lean 4 for $O(V+E)$ topological bounds checking, the engine translates syntax into a Directed Acyclic Graph (DAG). It then algorithmically compiles the verified logic into a flat operational domain of untyped $S$ and $K$ combinators. 
+**NF Sketches** provides a bifurcated architecture designed to natively process saturated states, highly entangled sets, and self-referential graph evaluations. By utilizing Lean for $O(V+E)$ topological bounds checking, the engine translates syntax into a Directed Acyclic Graph (DAG). It then algorithmically compiles the verified logic into a flat operational domain of untyped $S$ and $K$ combinators. 
 
 This repository functions as the theoretical **laboratory**—utilizing Lean's trusted kernel to formally prove algorithmic stratification, K-Iteration limits, and topological boundaries. It conducts the rigorous diagnostic work required to secure cryptographic certainty before the concepts are independently forged into the custom bare-metal engine.
 
@@ -20,7 +20,7 @@ This repository functions as the theoretical **laboratory**—utilizing Lean's t
 
 ## Setup and Building
 
-This repository contains multiple interconnected Lean 4 projects. 
+This repository contains multiple interconnected Lean projects. 
 
 ### Quick Build
 To execute a fast build of a specific module (e.g. the REPL sandbox), navigate to its directory and run:

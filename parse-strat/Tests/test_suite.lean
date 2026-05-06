@@ -152,7 +152,7 @@ def runReplTest (name : String) (file : String) : IO Unit := do
 
 #eval! runReplTest "SC Stability" "Tests/test_sc_stability.txt"
 #eval! runReplTest "Cut/Focus/Defer" "Tests/test_cut_focus_defer.txt"
-#eval! runReplTest "Weaponized Cut" "Tests/test_weaponized_cut.txt"
+#eval! runReplTest "Collision on Cut" "Tests/test_cut_collision.txt"
 #eval! runReplTest "Strategic Cut" "Tests/test_strategic_cut.txt"
 #eval! runReplTest "Kuratowski Bounds" "Tests/test_kuratowski_bounds.txt"
 #eval! runReplTest "Quine Pair Injectivity" "Tests/test_q_injective.txt"

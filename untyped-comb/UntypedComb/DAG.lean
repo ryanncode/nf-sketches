@@ -8,7 +8,7 @@ namespace UntypedComb
 /--
   The Missing Verification Bridge.
   Evaluates a local subgraph during the DAG topological sort, and requires a formal
-  Lean 4 proof that the subgraph satisfies `StronglyCantorianSets.is_sc`
+  Lean proof that the subgraph satisfies `StronglyCantorianSets.is_sc`
   before wrapping it in the `Comb.terminal "SC_CUT"` tag.
 -/
 def verifyAndWrapSC {V : Type} {spe : StratifiedPseudoElephant V}

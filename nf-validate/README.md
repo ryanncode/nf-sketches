@@ -1,6 +1,6 @@
 # NF-Validate: Core NF Logic Stratification Library
 
-A mathematical validation engine for Quine's New Foundations (NF) set theory. This Lean 4 library evaluates logical formulas to determine structural soundness and stratifiability. Built as a "compiler-as-witness," the codebase strictly translates abstract philosophical logic into machine-readable syntax, subsequently mathematically guaranteeing its own accuracy through dependent type theory.
+A mathematical validation engine for Quine's New Foundations (NF) set theory. This Lean library evaluates logical formulas to determine structural soundness and stratifiability. Built as a "compiler-as-witness," the codebase strictly translates abstract philosophical logic into machine-readable syntax, subsequently mathematically guaranteeing its own accuracy through dependent type theory.
 
 ## Philosophical Explication: The Grammar of Sets
 
@@ -15,7 +15,7 @@ By approaching set theory as a structural proof problem, this validator avoids r
 
 ## Architecture
 
-The software architecture is structured as a continuous mathematical proof. The transition from abstract syntax evaluation to graph-theoretic verification is rigorously certified within the Lean 4 environment.
+The software architecture is structured as a continuous mathematical proof. The transition from abstract syntax evaluation to graph-theoretic verification is rigorously certified within the Lean environment.
 
 ### 1. Abstract Syntax Tree (AST) Bifurcation
 

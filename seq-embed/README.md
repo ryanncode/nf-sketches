@@ -1,6 +1,6 @@
 # Seq-Embed: Deep Embedding of Stratified Sequent Calculus
 
-This project provides a formal deductive environment in Lean 4 for navigating the structural proof theory of Quine's New Foundations (NF). By deeply embedding Gentzen's Sequent Calculus, the system creates an isolated computational arena that restricts set comprehension exclusively to well-stratified formulas.
+This project provides a formal deductive environment in Lean for navigating the structural proof theory of Quine's New Foundations (NF). By deeply embedding Gentzen's Sequent Calculus, the system creates an isolated computational arena that restricts set comprehension exclusively to well-stratified formulas.
 
 ## Core Objective
 

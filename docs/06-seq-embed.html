@@ -243,7 +243,7 @@ window.Quarto = {
 
 <section id="proof-theoretic-embedding" class="level2" data-number="6.1">
 <h2 data-number="6.1" class="anchored" data-anchor-id="proof-theoretic-embedding"><span class="header-section-number">6.1</span> Proof-Theoretic Embedding</h2>
-<p>The <code>seq-embed</code> environment formalizes the structural proof theory required to manage logical derivations securely. By constructing a deep embedding of Gentzen’s Sequent Calculus within Lean 4, the architecture gains strict programmatic control over the deductive pathways before dispatching logic to the <code>untyped-comb</code> DAG.</p>
+<p>The <code>seq-embed</code> environment formalizes the structural proof theory required to manage logical derivations securely. By constructing a deep embedding of Gentzen’s Sequent Calculus within Lean, the architecture gains strict programmatic control over the deductive pathways before dispatching logic to the <code>untyped-comb</code> DAG.</p>
 <p>This module fundamentally restricts classical deductive freedom. The logic engine will not evaluate a set comprehension rule within the sequent tree unless it has been explicitly authorized by a valid algorithmic graph structure.</p>
 <pre class="lean"><code>#| label: compl-restriction
 #| eval: false

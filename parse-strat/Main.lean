@@ -3,9 +3,12 @@ import Lean
 import NfValidate
 import ParseStrat
 import ParseStrat.ITP
+import ParseStrat.SmtIngest
 
 open Lean
 open ITP
+open ParseStrat.SmtIngest
+
 
 /-!
 # ParseStrat: Interactive REPL Sandbox for ITP
@@ -451,7 +454,14 @@ partial def repl (stdin : IO.FS.Stream) (stdout : IO.FS.Stream) (env : GlobalEnv
       stdout.putStrLn "Unknown tactic."
       repl stdin stdout env (some state)
 
-def main : IO Unit := do
+def main (args : List String) : IO Unit := do
+  if args.contains "--ingest-smt" then
+    let stdin ← IO.getStdin
+    let content ← stdin.readToEnd
+    let smt := parseSmtLib content
+    performEquivalenceCheck smt
+    return ()
+
   let stdin ← IO.getStdin
   let stdout ← IO.getStdout
 

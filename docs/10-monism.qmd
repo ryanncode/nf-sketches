@@ -24,7 +24,7 @@ Looking toward the integration with the Monist Engine, the framework explores **
 
 ## The WGPU Interaction Net Horizon
 
-The theoretical proofs established in the `nf-sketches` Lean 4 laboratory directly inform the architecture of advanced hardware backends (like the **WGPU Physics Backend** implemented in `monist`). 
+The theoretical proofs established in the `nf-sketches` Lean laboratory directly inform the architecture of advanced hardware backends (like the **WGPU Physics Backend** implemented in `monist`). 
 
 Because Syntactic Monism produces unstratified, saturated datasets, evaluating these networks sequentially is a von Neumann bottleneck. The theoretical boundaries calculated here demonstrate how mathematical truths can be isolated and mapped onto parallel pipelines utilizing:
 

@@ -2,7 +2,7 @@
 
 ## Proof-Theoretic Embedding
 
-The `seq-embed` environment formalizes the structural proof theory required to manage logical derivations securely. By constructing a deep embedding of Gentzen's Sequent Calculus within Lean 4, the architecture gains strict programmatic control over the deductive pathways before dispatching logic to the `untyped-comb` DAG.
+The `seq-embed` environment formalizes the structural proof theory required to manage logical derivations securely. By constructing a deep embedding of Gentzen's Sequent Calculus within Lean, the architecture gains strict programmatic control over the deductive pathways before dispatching logic to the `untyped-comb` DAG.
 
 This module fundamentally restricts classical deductive freedom. The logic engine will not evaluate a set comprehension rule within the sequent tree unless it has been explicitly authorized by a valid algorithmic graph structure.
 
