@@ -8,7 +8,7 @@ While the main `seq-embed` diagnostic tool executes hardcoded, canonical proofs,
 
 ## Features
 
-* **Lexical Scanner & Parser**: Converts raw user input strings into Abstract Syntax Trees (AST). It supports standard first-order logic operators (`~`, `&`, `v`, `->`, `forall`, `exists`) and set-theoretic relations (`=`, `e`).
+* **Lexical Scanner & Parser**: Converts raw user input strings into Abstract Syntax Trees (AST). It supports standard first-order logic operators (`~`, `&`, `v`, `->`, `<->`, `forall`, `exists`) and set-theoretic relations (`=`, `e`, `<`).
 * **Tactical Proof State Management**: Defines rigorous `Context` and `Goal` arrays to track logical hypotheses exactly as they unfold in a classical proof.
 * **Topological Feedback Engine**: Rather than symbolically rewriting infinite paradoxical regress chains, the REPL can dynamically generate Bellman-Ford constraint graphs of the active logical boundaries, returning explicit integer distance maps (Witness Context) or exact algebraic telescoping sum contradictions.
 
@@ -161,6 +161,7 @@ The Bellman-Ford topological engine (`eval` / `step`) is incredibly fast, but it
 * **Function Application (`z = u(v)`)**: Generates a **`+1` weight** constraint. The function `u` must be typed one level higher than the argument `v`.
 * **Lambda Abstraction (`z = \lambda x. t`)**: Generates a **`+1` weight** constraint. The abstracted function body sits one level higher than the variable it binds.
 * **Quine Pairs (`Q(a,b)`)**: Generates **`0` weight** constraints. Unlike standard Kuratowski pairs (which force a `+2` type shift), Quine pairs are geometrically "flat." 
+* **Strict Typestate Offset (`x < y`)**: Generates a **`-1` weight** constraint. The variable `x` must be strictly lower in typestate elevation than `y` ($x \le y - 1$).
 
 ### The Tactical Workflow
 When staring at a high-level mathematical theorem, your goal as the user is to act as the "compiler," using tactics to translate human semantics down into the raw spatial constraints listed above.

@@ -1,0 +1,6 @@
+theorem Burali_Forti_Paradox_Lt ( Omega = TOmega ) & ( TOmega < Omega ) -> ( TOmega < Omega )
+intro H
+destruct H H1 H2
+exact H2
+qed
+exit

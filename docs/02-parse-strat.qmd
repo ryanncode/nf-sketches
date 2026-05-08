@@ -14,6 +14,7 @@ To effectively use this dual-engine architecture, users must understand how tact
 
 * **Equality (`x = y`)** / **Quine Pairs (`Q(a,b)`)**: Generates a **`0` weight** constraint.
 * **Membership (`x e y`)** / **Application (`z = u(v)`)** / **Lambda**: Generates a **`+1` weight** constraint.
+* **Strict Typestate Offset (`x < y`)**: Generates a **`-1` weight** constraint.
 
 ### 1. Interactive Proof Example: Strong Cantorian Preservation
 

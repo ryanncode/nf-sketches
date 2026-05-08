@@ -1,3 +1,6 @@
 # Lake build directory
 **/.lake/
 
+
+/.quarto/
+**/*.quarto_ipynb

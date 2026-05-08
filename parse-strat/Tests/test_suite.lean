@@ -159,3 +159,4 @@ def runReplTest (name : String) (file : String) : IO Unit := do
 #eval! runReplTest "Strict Subset Asymmetry" "Tests/test_strict_subset_asym.txt"
 #eval! runReplTest "Distributivity (L/R)" "Tests/test_distributivity_lr.txt"
 #eval! runReplTest "Subset Transitivity" "Tests/test_subset_transitivity.txt"
+#eval! runReplTest "Burali-Forti (<)" "Tests/test_burali_forti.txt"

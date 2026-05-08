@@ -16,6 +16,7 @@ open ParseStrat.SmtIngest
 
 inductive Token where
   | var : String → Token
+  | lt : Token
   | eq : Token
   | mem : Token
   | neg : Token
@@ -44,6 +45,7 @@ partial def tokenize (s : String) : List Token :=
     | 'v' :: rest => go rest (Token.disj :: acc)
     | '&' :: rest => go rest (Token.conj :: acc)
     | '<' :: '-' :: '>' :: rest => go rest (Token.iff :: acc)
+    | '<' :: rest => go rest (Token.lt :: acc)
     | '-' :: '>' :: rest => go rest (Token.impl :: acc)
     | '=' :: rest => go rest (Token.eq :: acc)
     | 'e' :: rest => go rest (Token.mem :: acc)
@@ -93,6 +95,7 @@ partial def parseArgs (toks : List Token) (acc : List String) : Option (List Str
 
 partial def parseAtomic (toks : List Token) (macros : List (String × List String × Formula)) : Option (Formula × List Token) :=
   match toks with
+  | Token.var x :: Token.lt :: Token.var y :: rest => some (Formula.atom (Atomic.lt (Var.free x) (Var.free y)), rest)
   | Token.var x :: Token.eq :: Token.var y :: rest => some (Formula.atom (Atomic.eq (Var.free x) (Var.free y)), rest)
   | Token.var x :: Token.mem :: Token.var y :: rest => some (Formula.atom (Atomic.mem (Var.free x) (Var.free y)), rest)
   | Token.var f :: Token.lparen :: rest =>

@@ -34,6 +34,7 @@ the constraint generation engine to focus exclusively on the targeted set theory
 that dictate type levels, distinct from the broader boolean logic.
 -/
 inductive Atomic where
+  | lt : Var → Var → Atomic
   | eq : Var → Var → Atomic
   | mem : Var → Var → Atomic
   | qpair : Var → Var → Var → Atomic -- p = <x, y>_Q
@@ -61,6 +62,7 @@ inductive Formula where
   | comp : Nat → String → Formula → Formula
   deriving Repr, DecidableEq, ToJson, FromJson
 
+def Formula.lt (x y : Var) : Formula := Formula.atom (Atomic.lt x y)
 def Formula.eq (x y : Var) : Formula := Formula.atom (Atomic.eq x y)
 def Formula.mem (x y : Var) : Formula := Formula.atom (Atomic.mem x y)
 
@@ -83,6 +85,7 @@ structure Constraint where
   deriving Repr, DecidableEq, ToJson, FromJson
 
 def extractConstraintsAux (scope : Nat) : Formula → List Constraint
+  | Formula.atom (Atomic.lt x y) => [{ v1 := (x, scope), v2 := (y, scope), diff := -1, directed := true }]
   | Formula.atom (Atomic.eq x y) => [{ v1 := (x, scope), v2 := (y, scope), diff := 0 }]
   | Formula.atom (Atomic.mem x y) => [{ v1 := (x, scope), v2 := (y, scope), diff := 1, directed := false }]
   | Formula.atom (Atomic.qpair p x y) =>
@@ -222,6 +225,7 @@ inductive StratificationResult where
   | failure (cycle : List ScopedVar) (edges : List Edge)
 
 def getFormulaVarsAux (scope : Nat) : Formula → List ScopedVar
+  | Formula.atom (Atomic.lt x y) => [(x, scope), (y, scope)]
   | Formula.atom (Atomic.eq x y) => [(x, scope), (y, scope)]
   | Formula.atom (Atomic.mem x y) => [(x, scope), (y, scope)]
   | Formula.atom (Atomic.qpair p x y) => [(p, scope), (x, scope), (y, scope)]
@@ -340,6 +344,7 @@ def evaluateClause (vars : List ScopedVar) (constraints : List Constraint) : Exc
           | none => Except.error ([], edges)
 
 def extractScopeConstraints (targetScope : Nat) (currentScope : Nat) : Formula → List Constraint
+  | Formula.atom (Atomic.lt x y) => if currentScope == targetScope then [{ v1 := (x, currentScope), v2 := (y, currentScope), diff := -1, directed := true }] else []
   | Formula.atom (Atomic.eq x y) => if currentScope == targetScope then [{ v1 := (x, currentScope), v2 := (y, currentScope), diff := 0 }] else []
   | Formula.atom (Atomic.mem x y) => if currentScope == targetScope then [{ v1 := (x, currentScope), v2 := (y, currentScope), diff := 1, directed := false }] else []
   | Formula.atom (Atomic.qpair p x y) => if currentScope == targetScope then [{ v1 := (x, currentScope), v2 := (p, currentScope), diff := 0, directed := true }, { v1 := (y, currentScope), v2 := (p, currentScope), diff := 0, directed := true }] else []
@@ -355,6 +360,7 @@ def extractScopeConstraints (targetScope : Nat) (currentScope : Nat) : Formula �
   | Formula.comp n _ p => extractScopeConstraints targetScope n p
 
 def extractScopeVars (targetScope : Nat) (currentScope : Nat) : Formula → List ScopedVar
+  | Formula.atom (Atomic.lt x y) => if currentScope == targetScope then [(x, currentScope), (y, currentScope)] else []
   | Formula.atom (Atomic.eq x y) => if currentScope == targetScope then [(x, currentScope), (y, currentScope)] else []
   | Formula.atom (Atomic.mem x y) => if currentScope == targetScope then [(x, currentScope), (y, currentScope)] else []
   | Formula.atom (Atomic.qpair p x y) => if currentScope == targetScope then [(p, currentScope), (x, currentScope), (y, currentScope)] else []
@@ -531,6 +537,7 @@ def toDNFForm : Formula → Formula
   | p => p
 
 def extractLiteralsAux (scope : Nat) : Formula → List Constraint
+  | Formula.atom (Atomic.lt x y) => [{ v1 := (x, scope), v2 := (y, scope), diff := -1, directed := true }]
   | Formula.atom (Atomic.eq x y) => [{ v1 := (x, scope), v2 := (y, scope), diff := 0 }]
   | Formula.atom (Atomic.mem x y) => [{ v1 := (x, scope), v2 := (y, scope), diff := 1, directed := false }]
   | Formula.atom (Atomic.qpair p x y) =>
