@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>7&nbsp; untyped-comb and DAG Reduction – NF Sketches: Documentation</title>
+<title>3&nbsp; Writing Executables (ExPrograms) – NF Sketches: Documentation</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -33,8 +33,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./08-transfinite.html" rel="next">
-<link href="./06-seq-embed.html" rel="prev">
+<link href="./04-nf-validate.html" rel="next">
+<link href="./02-comblib.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -114,7 +114,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./07-untyped-comb.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title"><code>untyped-comb</code> and DAG Reduction</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./03-exprograms.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Writing Executables (<code>ExPrograms</code>)</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -145,61 +145,61 @@ window.Quarto = {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction and Setup</span></span></a>
+ <span class="menu-text">Introduction and Setup</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./02-parse-strat.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Interactive Diagnostics with <code>parse-strat</code></span></span></a>
+  <a href="./01-parse-strat.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Interactive Diagnostics with <code>parse-strat</code></span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./03-comblib.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Using and Extending <code>CombLib</code></span></span></a>
+  <a href="./02-comblib.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Using and Extending <code>CombLib</code></span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./04-exprograms.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Writing Executables (<code>ExPrograms</code>)</span></span></a>
+  <a href="./03-exprograms.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Writing Executables (<code>ExPrograms</code>)</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./05-nf-validate.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">The <code>nf-validate</code> Constraint Graph</span></span></a>
+  <a href="./04-nf-validate.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">The <code>nf-validate</code> Constraint Graph</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./06-seq-embed.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">The <code>seq-embed</code> Sequent Calculus</span></span></a>
+  <a href="./05-seq-embed.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">The <code>seq-embed</code> Sequent Calculus</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./07-untyped-comb.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title"><code>untyped-comb</code> and DAG Reduction</span></span></a>
+  <a href="./06-untyped-comb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title"><code>untyped-comb</code> and DAG Reduction</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./08-transfinite.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transfinite Logic &amp; Choice-Free Arithmetic</span></span></a>
+  <a href="./07-transfinite.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Transfinite Logic &amp; Choice-Free Arithmetic</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./09-categorical.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Categorical Semantics &amp; The SPE Architecture</span></span></a>
+  <a href="./08-categorical.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Categorical Semantics &amp; The SPE Architecture</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./10-monism.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Syntactic Monism vs The Hierarchy</span></span></a>
+  <a href="./09-monism.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Syntactic Monism vs The Hierarchy</span></span></a>
   </div>
 </li>
     </ul>
@@ -208,12 +208,13 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#the-combinatory-architecture" id="toc-the-combinatory-architecture" class="nav-link active" data-scroll-target="#the-combinatory-architecture"><span class="header-section-number">7.1</span> The Combinatory Architecture</a></li>
-  <li><a href="#directed-acyclic-translation-flattening" id="toc-directed-acyclic-translation-flattening" class="nav-link" data-scroll-target="#directed-acyclic-translation-flattening"><span class="header-section-number">7.2</span> Directed Acyclic Translation &amp; Flattening</a></li>
-  <li><a href="#topologically-guided-lazy-reduction" id="toc-topologically-guided-lazy-reduction" class="nav-link" data-scroll-target="#topologically-guided-lazy-reduction"><span class="header-section-number">7.3</span> Topologically-Guided Lazy Reduction</a>
+  <li><a href="#assembling-executable-logic" id="toc-assembling-executable-logic" class="nav-link active" data-scroll-target="#assembling-executable-logic"><span class="header-section-number">3.1</span> Assembling Executable Logic</a></li>
+  <li><a href="#executable-diagnostics-physical-proofs" id="toc-executable-diagnostics-physical-proofs" class="nav-link" data-scroll-target="#executable-diagnostics-physical-proofs"><span class="header-section-number">3.2</span> Executable Diagnostics &amp; Physical Proofs</a>
   <ul class="collapse">
-  <li><a href="#dynamic-t-weaking-pipeline" id="toc-dynamic-t-weaking-pipeline" class="nav-link" data-scroll-target="#dynamic-t-weaking-pipeline"><span class="header-section-number">7.3.1</span> Dynamic T-Weaking Pipeline</a></li>
-  <li><a href="#mcm-bounds-and-terminal-states" id="toc-mcm-bounds-and-terminal-states" class="nav-link" data-scroll-target="#mcm-bounds-and-terminal-states"><span class="header-section-number">7.3.2</span> MCM Bounds and Terminal States</a></li>
+  <li><a href="#intercepting-the-russell-paradox" id="toc-intercepting-the-russell-paradox" class="nav-link" data-scroll-target="#intercepting-the-russell-paradox"><span class="header-section-number">3.2.1</span> 1. Intercepting the Russell Paradox</a></li>
+  <li><a href="#quine-atom-stabilization" id="toc-quine-atom-stabilization" class="nav-link" data-scroll-target="#quine-atom-stabilization"><span class="header-section-number">3.2.2</span> 2. Quine Atom Stabilization</a></li>
+  <li><a href="#agentic-workflows-and-sandboxed-loops" id="toc-agentic-workflows-and-sandboxed-loops" class="nav-link" data-scroll-target="#agentic-workflows-and-sandboxed-loops"><span class="header-section-number">3.2.3</span> 3. Agentic Workflows and Sandboxed Loops</a></li>
+  <li><a href="#simulating-causal-graph-irreducibility" id="toc-simulating-causal-graph-irreducibility" class="nav-link" data-scroll-target="#simulating-causal-graph-irreducibility"><span class="header-section-number">3.2.4</span> 4. Simulating Causal Graph Irreducibility</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -227,7 +228,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title"><code>untyped-comb</code> and DAG Reduction</span></h1>
+<h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Writing Executables (<code>ExPrograms</code>)</span></h1>
 </div>
 
 
@@ -244,56 +245,70 @@ window.Quarto = {
 </header>
 
 
-<section id="the-combinatory-architecture" class="level2" data-number="7.1">
-<h2 data-number="7.1" class="anchored" data-anchor-id="the-combinatory-architecture"><span class="header-section-number">7.1</span> The Combinatory Architecture</h2>
-<p>The <code>untyped-comb</code> module handles the transformation of verified logic into an executable format, acting as the critical bridge to the WGPU Physics backend. The system structurally translates the Abstract Syntax Tree (AST) away from dependent types into a flat, variable-free combinatory representation.</p>
-<pre class="lean"><code>#| label: comb-inductive-type
-
-inductive Comb
-  | K : Comb -- Schönfinkel's C (Konstanz) / Erasure
-  | S : Comb -- Fusion / Duplication
-  | I : Comb -- Identity
-  | U : Comb -- Schönfinkel's Unverträglichkeit (NAND logic for SPE integration)
-  | var : String -&gt; Comb
-  | app : Comb -&gt; Comb -&gt; Comb
-  | t_inject : Comb -&gt; Comb -- The geometric type-shifting endofunctor
-  | lazy_thunk : Comb -&gt; Comb -- Explicit Call-by-Need thunk for impredicative boundaries
-  | terminal : String -&gt; Comb -- Stabilized terminal state</code></pre>
-<p>This compilation model replaces hierarchical memory structures with precise routing combinators. Variables and substitution environments are removed from the operational layer, replaced entirely by the structural fusion and duplication rules dictated by the <span class="math inline">\(S\)</span> and <span class="math inline">\(K\)</span> execution nodes.</p>
+<section id="assembling-executable-logic" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="assembling-executable-logic"><span class="header-section-number">3.1</span> Assembling Executable Logic</h2>
+<p>The <code>ExPrograms</code> directory acts as the final deployment target for verified logic within the Lean theoretical laboratory. Programs written here structurally demonstrate the topological bounds functioning in real-time execution space.</p>
+<p>By combining the abstract primitives generated in <code>CombLib</code> and binding them to the <code>UntypedComb</code> constraints, these executables computationally yield physical proofs of Quine’s systemic ambiguity.</p>
 <hr>
 </section>
-<section id="directed-acyclic-translation-flattening" class="level2" data-number="7.2">
-<h2 data-number="7.2" class="anchored" data-anchor-id="directed-acyclic-translation-flattening"><span class="header-section-number">7.2</span> Directed Acyclic Translation &amp; Flattening</h2>
-<p>To safely process highly entangled combinator streams on bare-metal hardware (like Interaction Nets with 32-bit pointers), the execution engine translates operations into a Directed Acyclic Graph (DAG).</p>
-<p>The compiler executes an <span class="math inline">\(O(V+E)\)</span> topological sort utilizing Kosaraju’s algorithm. By identifying 0-weight semantic cycles (Strongly Connected Components), the engine safely projects non-well-founded referential loops natively into flat structures, neutralizing exponential memory blowup prior to execution.</p>
-<hr>
-</section>
-<section id="topologically-guided-lazy-reduction" class="level2" data-number="7.3">
-<h2 data-number="7.3" class="anchored" data-anchor-id="topologically-guided-lazy-reduction"><span class="header-section-number">7.3</span> Topologically-Guided Lazy Reduction</h2>
-<p>Because the <code>nf-sketches</code> architecture evaluates an unstratified universe natively, it utilizes specific mechanical safeguards to manage execution limits structurally:</p>
-<section id="dynamic-t-weaking-pipeline" class="level3" data-number="7.3.1">
-<h3 data-number="7.3.1" class="anchored" data-anchor-id="dynamic-t-weaking-pipeline"><span class="header-section-number">7.3.1</span> Dynamic T-Weaking Pipeline</h3>
-<p>The integer distances generated by the <code>NfValidate</code> static matrix algorithmically inform where structural friction occurs. The engine synthesizes dynamic bounds through the <code>buildDynamicDistanceMap</code>:</p>
-<pre class="lean"><code>#| label: build-dynamic-distance
+<section id="executable-diagnostics-physical-proofs" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="executable-diagnostics-physical-proofs"><span class="header-section-number">3.2</span> Executable Diagnostics &amp; Physical Proofs</h2>
+<p>The directory provides a suite of executables that map the boundaries of unstratified logic natively without encountering standard memory blowouts. Here, we transition from pure syntax (the realm of theorems) into geometric thermodynamics (the realm of physical bounds). When a logic engine evaluates a contradiction, it typically crashes; but by mapping that contradiction to a graph, we can physically isolate it and measure the topological “energy” it takes to resolve.</p>
+<section id="intercepting-the-russell-paradox" class="level3" data-number="3.2.1">
+<h3 data-number="3.2.1" class="anchored" data-anchor-id="intercepting-the-russell-paradox"><span class="header-section-number">3.2.1</span> 1. Intercepting the Russell Paradox</h3>
+<p>Evaluating <span class="math inline">\(R \in R\)</span> (where <span class="math inline">\(R = \{x \mid x \notin x\}\)</span>) normally causes unbounded recursion. The <code>Russell.lean</code> execution mechanically synthesizes the <span class="math inline">\(M\)</span> combinator (<span class="math inline">\(\lambda x. x x\)</span>) inside the absolute complement and tracks the topological cost using Minimum Cycle Mean (MCM) approximation.</p>
+<pre class="lean"><code>#| label: evaluate-russell
 #| eval: false
 
-def buildDynamicDistanceMap (w : StratificationWitness) (scope : Nat) : Comb → Option Int
-  | Comb.var s =&gt;
-      if s.startsWith "_" then
-        let n := (s.drop 1).toNat!
-        some (getWeightFromWitness w scope (Var.bound n))
-      else
-        some (getWeightFromWitness w scope (Var.free s))
-  | Comb.t_inject c =&gt;
-      match buildDynamicDistanceMap w scope c with
-      | some w_c =&gt; some (w_c + 1)
-      | none =&gt; none</code></pre>
-<p>By extracting the verified scope constraints (<code>StratificationWitness</code>), the compiler utilizes <code>algorithmicTWeaking</code> to natively inject <code>Comb.t_inject</code> wrappers into the graph exactly where bounds are violated. This geometric self-regulation ensures that unstratified arrays stabilize natively without an infinite type hierarchy.</p>
+def russellSet : Comb := absoluteComplement M
+
+def evaluateRussell : Comb := app russellSet russellSet
+
+-- Automatically intercepts via MCM and halts cleanly as a `Comb.terminal`
+#eval normalize evaluateRussell</code></pre>
 </section>
-<section id="mcm-bounds-and-terminal-states" class="level3" data-number="7.3.2">
-<h3 data-number="7.3.2" class="anchored" data-anchor-id="mcm-bounds-and-terminal-states"><span class="header-section-number">7.3.2</span> MCM Bounds and Terminal States</h3>
-<p>The Minimum Cycle Mean (MCM) calculates dynamic operational limits across semantic boundaries. When evaluating saturated subsets (e.g.&nbsp;<span class="math inline">\(V \in V\)</span>), the engine tracks the explicit recursion friction via explicit <code>lazy_thunk</code> states. When the distance map reaches a negative convergence limit, the execution is mathematically intercepted and frozen as a <code>Comb.terminal "K_ITERATION_HALT"</code>.</p>
-<p>Once formatted through this pipeline, the AST is perfectly pruned for WGPU parallel reduction loops where atomic Compare-And-Swap (CAS) instructions handle graph rewiring completely lock-free.</p>
+<section id="quine-atom-stabilization" class="level3" data-number="3.2.2">
+<h3 data-number="3.2.2" class="anchored" data-anchor-id="quine-atom-stabilization"><span class="header-section-number">3.2.2</span> 2. Quine Atom Stabilization</h3>
+<p>The Quine Atom (<span class="math inline">\(\Omega = \{\Omega\}\)</span>) models a set containing only an unreduced copy of itself. The <code>QuineAtom.lean</code> script validates that the <span class="math inline">\(Y\)</span> combinator correctly maps the self-referential graph loop using the <span class="math inline">\(U\)</span> combinator before it crashes the stack.</p>
+</section>
+<section id="agentic-workflows-and-sandboxed-loops" class="level3" data-number="3.2.3">
+<h3 data-number="3.2.3" class="anchored" data-anchor-id="agentic-workflows-and-sandboxed-loops"><span class="header-section-number">3.2.3</span> 3. Agentic Workflows and Sandboxed Loops</h3>
+<p>The framework supports simulating autonomous logic via Sandboxes. <code>AgenticReflection.lean</code> demonstrates an autonomous graph entity simulating a future interaction, measuring the algorithmic cost via MCM bounds, and committing the state to an SC memory lattice.</p>
+<pre class="lean"><code>#| label: agentic-reflection
+#| eval: false
+
+def execute_agent_loop : IO Unit := do
+  let agent_core := Comb.I
+  let environmental_action := Comb.app Comb.S Comb.K
+
+  -- The agent constructs the hypothetical future state (A -&gt; TA boundary)
+  let hypothetical_graph := simulate_hypothetical agent_core environmental_action
+
+  -- The engine calculates the precise thermodynamic cost of the decision
+  let _evaluation_result := UntypedComb.DAG.reduce hypothetical_graph
+
+  -- The agent accepts the state and cools it into a Strongly Cantorian memory block
+  let memory_block := commit_to_memory hypothetical_graph</code></pre>
+<p><code>AgenticPlanning.lean</code> expands on this by building a parallel decision matrix, evaluating divergent topologies simultaneously and mechanically selecting the outcome requiring the lowest recursive topological cost.</p>
+</section>
+<section id="simulating-causal-graph-irreducibility" class="level3" data-number="3.2.4">
+<h3 data-number="3.2.4" class="anchored" data-anchor-id="simulating-causal-graph-irreducibility"><span class="header-section-number">3.2.4</span> 4. Simulating Causal Graph Irreducibility</h3>
+<p>The <code>CausalIrreducibility.lean</code> program simulates a local causal state colliding with the saturated world boundary. The engine dynamically computes the algorithmic randomness generated by symmetric nodes.</p>
+<p><em>(Note: In the snippet below, <code>causal_braid</code> and <code>symmetric_node</code> are conceptual combinator structures defined within the script to model physical logic mapping.)</em></p>
+<pre class="lean"><code>#| label: causal-irreducibility
+#| eval: false
+
+def evaluate_causal_friction : IO Unit := do
+  let local_state := Comb.I
+
+  -- Braid the local state into a symmetric node with the saturated boundary
+  let world_graph :=
+    Comb.app (Comb.app causal_braid local_state) (symmetric_node local_state saturated_boundary)
+
+  -- The engine processes the irreducible graph, injecting T-operators 
+  -- dynamically at structural collision points.
+  let result := DAG.reduce world_graph</code></pre>
+<p>This physically proves that tracking dynamic extensional collisions inside a finite graph natively generates calculable syntactic friction.</p>
 
 
 </section>
@@ -702,13 +717,13 @@ def buildDynamicDistanceMap (w : StratificationWitness) (scope : Nat) : Comb →
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./06-seq-embed.html" class="pagination-link" aria-label="The `seq-embed` Sequent Calculus">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">The <code>seq-embed</code> Sequent Calculus</span></span>
+      <a href="./02-comblib.html" class="pagination-link" aria-label="Using and Extending `CombLib`">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Using and Extending <code>CombLib</code></span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./08-transfinite.html" class="pagination-link" aria-label="Transfinite Logic &amp; Choice-Free Arithmetic">
-        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transfinite Logic &amp; Choice-Free Arithmetic</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./04-nf-validate.html" class="pagination-link" aria-label="The `nf-validate` Constraint Graph">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">The <code>nf-validate</code> Constraint Graph</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

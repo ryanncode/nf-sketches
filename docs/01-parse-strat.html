@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>4&nbsp; Writing Executables (ExPrograms) – NF Sketches: Documentation</title>
+<title>1&nbsp; Interactive Diagnostics with parse-strat – NF Sketches: Documentation</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -33,8 +33,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./05-nf-validate.html" rel="next">
-<link href="./03-comblib.html" rel="prev">
+<link href="./02-comblib.html" rel="next">
+<link href="./index.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -114,7 +114,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./04-exprograms.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Writing Executables (<code>ExPrograms</code>)</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./01-parse-strat.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Interactive Diagnostics with <code>parse-strat</code></span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -145,61 +145,61 @@ window.Quarto = {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction and Setup</span></span></a>
+ <span class="menu-text">Introduction and Setup</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./02-parse-strat.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Interactive Diagnostics with <code>parse-strat</code></span></span></a>
+  <a href="./01-parse-strat.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Interactive Diagnostics with <code>parse-strat</code></span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./03-comblib.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Using and Extending <code>CombLib</code></span></span></a>
+  <a href="./02-comblib.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Using and Extending <code>CombLib</code></span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./04-exprograms.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Writing Executables (<code>ExPrograms</code>)</span></span></a>
+  <a href="./03-exprograms.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Writing Executables (<code>ExPrograms</code>)</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./05-nf-validate.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">The <code>nf-validate</code> Constraint Graph</span></span></a>
+  <a href="./04-nf-validate.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">The <code>nf-validate</code> Constraint Graph</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./06-seq-embed.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">The <code>seq-embed</code> Sequent Calculus</span></span></a>
+  <a href="./05-seq-embed.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">The <code>seq-embed</code> Sequent Calculus</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./07-untyped-comb.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title"><code>untyped-comb</code> and DAG Reduction</span></span></a>
+  <a href="./06-untyped-comb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title"><code>untyped-comb</code> and DAG Reduction</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./08-transfinite.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transfinite Logic &amp; Choice-Free Arithmetic</span></span></a>
+  <a href="./07-transfinite.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Transfinite Logic &amp; Choice-Free Arithmetic</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./09-categorical.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Categorical Semantics &amp; The SPE Architecture</span></span></a>
+  <a href="./08-categorical.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Categorical Semantics &amp; The SPE Architecture</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./10-monism.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Syntactic Monism vs The Hierarchy</span></span></a>
+  <a href="./09-monism.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Syntactic Monism vs The Hierarchy</span></span></a>
   </div>
 </li>
     </ul>
@@ -208,13 +208,20 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#assembling-executable-logic" id="toc-assembling-executable-logic" class="nav-link active" data-scroll-target="#assembling-executable-logic"><span class="header-section-number">4.1</span> Assembling Executable Logic</a></li>
-  <li><a href="#executable-diagnostics-physical-proofs" id="toc-executable-diagnostics-physical-proofs" class="nav-link" data-scroll-target="#executable-diagnostics-physical-proofs"><span class="header-section-number">4.2</span> Executable Diagnostics &amp; Physical Proofs</a>
+  <li><a href="#the-diagnostic-sandbox" id="toc-the-diagnostic-sandbox" class="nav-link active" data-scroll-target="#the-diagnostic-sandbox"><span class="header-section-number">1.1</span> The Diagnostic Sandbox</a></li>
+  <li><a href="#tactical-workflow-geometric-feedback" id="toc-tactical-workflow-geometric-feedback" class="nav-link" data-scroll-target="#tactical-workflow-geometric-feedback"><span class="header-section-number">1.2</span> Tactical Workflow &amp; Geometric Feedback</a>
   <ul class="collapse">
-  <li><a href="#intercepting-the-russell-paradox" id="toc-intercepting-the-russell-paradox" class="nav-link" data-scroll-target="#intercepting-the-russell-paradox"><span class="header-section-number">4.2.1</span> 1. Intercepting the Russell Paradox</a></li>
-  <li><a href="#quine-atom-stabilization" id="toc-quine-atom-stabilization" class="nav-link" data-scroll-target="#quine-atom-stabilization"><span class="header-section-number">4.2.2</span> 2. Quine Atom Stabilization</a></li>
-  <li><a href="#agentic-workflows-and-sandboxed-loops" id="toc-agentic-workflows-and-sandboxed-loops" class="nav-link" data-scroll-target="#agentic-workflows-and-sandboxed-loops"><span class="header-section-number">4.2.3</span> 3. Agentic Workflows and Sandboxed Loops</a></li>
-  <li><a href="#simulating-causal-graph-irreducibility" id="toc-simulating-causal-graph-irreducibility" class="nav-link" data-scroll-target="#simulating-causal-graph-irreducibility"><span class="header-section-number">4.2.4</span> 4. Simulating Causal Graph Irreducibility</a></li>
+  <li><a href="#interactive-proof-example-strong-cantorian-preservation" id="toc-interactive-proof-example-strong-cantorian-preservation" class="nav-link" data-scroll-target="#interactive-proof-example-strong-cantorian-preservation"><span class="header-section-number">1.2.1</span> 1. Interactive Proof Example: Strong Cantorian Preservation</a></li>
+  <li><a href="#exploring-extensionality-with-diagnostic-cut" id="toc-exploring-extensionality-with-diagnostic-cut" class="nav-link" data-scroll-target="#exploring-extensionality-with-diagnostic-cut"><span class="header-section-number">1.2.2</span> 2. Exploring Extensionality with Diagnostic Cut</a></li>
+  <li><a href="#subset-transitivity-tactical-completion" id="toc-subset-transitivity-tactical-completion" class="nav-link" data-scroll-target="#subset-transitivity-tactical-completion"><span class="header-section-number">1.2.3</span> 3. Subset Transitivity (Tactical Completion)</a></li>
+  <li><a href="#kuratowski-bounding-tests" id="toc-kuratowski-bounding-tests" class="nav-link" data-scroll-target="#kuratowski-bounding-tests"><span class="header-section-number">1.2.4</span> 4. Kuratowski Bounding Tests</a></li>
+  </ul></li>
+  <li><a href="#core-command-reference" id="toc-core-command-reference" class="nav-link" data-scroll-target="#core-command-reference"><span class="header-section-number">1.3</span> Core Command Reference</a>
+  <ul class="collapse">
+  <li><a href="#axioms-session-management" id="toc-axioms-session-management" class="nav-link" data-scroll-target="#axioms-session-management"><span class="header-section-number">1.3.1</span> Axioms &amp; Session Management</a></li>
+  <li><a href="#interactive-tactics" id="toc-interactive-tactics" class="nav-link" data-scroll-target="#interactive-tactics"><span class="header-section-number">1.3.2</span> Interactive Tactics</a></li>
+  <li><a href="#diagnostics" id="toc-diagnostics" class="nav-link" data-scroll-target="#diagnostics"><span class="header-section-number">1.3.3</span> Diagnostics</a></li>
+  <li><a href="#differential-smt-lib-ingestion" id="toc-differential-smt-lib-ingestion" class="nav-link" data-scroll-target="#differential-smt-lib-ingestion"><span class="header-section-number">1.3.4</span> Differential SMT-LIB Ingestion</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -228,7 +235,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Writing Executables (<code>ExPrograms</code>)</span></h1>
+<h1 class="title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Interactive Diagnostics with <code>parse-strat</code></span></h1>
 </div>
 
 
@@ -245,69 +252,164 @@ window.Quarto = {
 </header>
 
 
-<section id="assembling-executable-logic" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="assembling-executable-logic"><span class="header-section-number">4.1</span> Assembling Executable Logic</h2>
-<p>The <code>ExPrograms</code> directory acts as the final deployment target for verified logic within the Lean theoretical laboratory. Programs written here structurally demonstrate the topological bounds functioning in real-time execution space.</p>
-<p>By combining the abstract primitives generated in <code>CombLib</code> and binding them to the <code>UntypedComb</code> constraints, these executables computationally yield physical proofs of Quine’s systemic ambiguity.</p>
+<section id="the-diagnostic-sandbox" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="the-diagnostic-sandbox"><span class="header-section-number">1.1</span> The Diagnostic Sandbox</h2>
+<p>The <code>parse-strat</code> module provides a tactile, responsive Read-Eval-Print Loop (REPL) environment acting as a full Interactive Theorem Prover (ITP). Before dispatching hardcoded models to the formal Sequent verifier (<code>seq-embed</code>), researchers utilize this sandbox to manually explore the boundaries of <strong>weak stratification constraints</strong> in Quine’s New Foundations using classical Natural Deduction tactics.</p>
+<p>The REPL is supported by a powerful topological graph-flattening backend, giving immediate feedback on Extensionality bounds.</p>
 <hr>
 </section>
-<section id="executable-diagnostics-physical-proofs" class="level2" data-number="4.2">
-<h2 data-number="4.2" class="anchored" data-anchor-id="executable-diagnostics-physical-proofs"><span class="header-section-number">4.2</span> Executable Diagnostics &amp; Physical Proofs</h2>
-<p>The directory provides a suite of executables that map the boundaries of unstratified logic natively without encountering standard memory blowouts.</p>
-<section id="intercepting-the-russell-paradox" class="level3" data-number="4.2.1">
-<h3 data-number="4.2.1" class="anchored" data-anchor-id="intercepting-the-russell-paradox"><span class="header-section-number">4.2.1</span> 1. Intercepting the Russell Paradox</h3>
-<p>Evaluating <span class="math inline">\(R \in R\)</span> (where <span class="math inline">\(R = \{x \mid x \notin x\}\)</span>) normally causes unbounded recursion. The <code>Russell.lean</code> execution mechanically synthesizes the <span class="math inline">\(M\)</span> combinator (<span class="math inline">\(\lambda x. x x\)</span>) inside the absolute complement and tracks the topological cost using Minimum Cycle Mean (MCM) approximation.</p>
-<pre class="lean"><code>#| label: evaluate-russell
-#| eval: false
+<section id="tactical-workflow-geometric-feedback" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="tactical-workflow-geometric-feedback"><span class="header-section-number">1.2</span> Tactical Workflow &amp; Geometric Feedback</h2>
+<p>To effectively use this dual-engine architecture, users must understand how tactical symbolic reasoning maps down into raw spatial constraints. The internal constraint engine translates formulas into a geometric Directed Acyclic Graph (DAG) using specific weight mappings:</p>
+<ul>
+<li><strong>Equality (<code>x = y</code>)</strong> / <strong>Quine Pairs (<code>Q(a,b)</code>)</strong>: Generates a <strong><code>0</code> weight</strong> constraint.</li>
+<li><strong>Membership (<code>x e y</code>)</strong> / <strong>Application (<code>z = u(v)</code>)</strong> / <strong>Lambda</strong> / <strong>Set Comprehension (<code>{x | P(x)}</code>)</strong>: Generates a <strong><code>+1</code> weight</strong> constraint.</li>
+<li><strong>Strict Typestate Offset (<code>x &lt; y</code>)</strong>: Generates a <strong><code>-1</code> weight</strong> constraint.</li>
+</ul>
+<p><em>(Note: For a deep-dive on exactly how these constraints are extracted from the AST and verified mathematically via Bellman-Ford, see <a href="./04-nf-validate.html">Chapter 4: The nf-validate Constraint Graph</a>).</em></p>
+<section id="interactive-proof-example-strong-cantorian-preservation" class="level3" data-number="1.2.1">
+<h3 data-number="1.2.1" class="anchored" data-anchor-id="interactive-proof-example-strong-cantorian-preservation"><span class="header-section-number">1.2.1</span> 1. Interactive Proof Example: Strong Cantorian Preservation</h3>
+<p>To prove that the Quine pair preserves Strongly Cantorian (SC) sets, we first define our theorem and then use natural deduction to break it down.</p>
+<pre class="text"><code>&gt; Starting proof of SC_Preservation
+ITP&gt; 
+a : a = a
+----------------------
+forall b. ((a = Ta /\ b = Tb) -&gt; Qab = TQab)
 
-def russellSet : Comb := absoluteComplement M
+ITP&gt; 
+b : b = b
+a : a = a
+----------------------
+((a = Ta /\ b = Tb) -&gt; Qab = TQab)
 
-def evaluateRussell : Comb := app russellSet russellSet
+ITP&gt; 
+H_SC : (a = Ta /\ b = Tb)
+b : b = b
+a : a = a
+----------------------
+Qab = TQab
 
--- Automatically intercepts via MCM and halts cleanly as a `Comb.terminal`
-#eval normalize evaluateRussell</code></pre>
+ITP&gt; 
+H1 : a = Ta
+H2 : b = Tb
+b : b = b
+a : a = a
+----------------------
+Qab = TQab</code></pre>
+<p>We then feed the equations into the <code>eval</code> command, which bypasses the tactical proof state to extract topological constraints directly from the strings and run Bellman-Ford cycle detection.</p>
+<pre class="text"><code>ITP&gt; Stratification successful. Witness: {a@0 : 0, b@0 : 0, Ta@0 : 0, Tb@0 : 0, QTaTb@0 : 0, Qab@0 : 0, TQab@0 : 0}</code></pre>
+<p>Because no negative-weight cycles were generated, the system confirms mathematical consistency, proving that Quine pairs successfully preserve SC status without collapsing.</p>
 </section>
-<section id="quine-atom-stabilization" class="level3" data-number="4.2.2">
-<h3 data-number="4.2.2" class="anchored" data-anchor-id="quine-atom-stabilization"><span class="header-section-number">4.2.2</span> 2. Quine Atom Stabilization</h3>
-<p>The Quine Atom (<span class="math inline">\(\Omega = \{\Omega\}\)</span>) models a set containing only an unreduced copy of itself. The <code>QuineAtom.lean</code> script validates that the <span class="math inline">\(Y\)</span> combinator correctly maps the self-referential graph loop using the <span class="math inline">\(U\)</span> combinator before it crashes the stack.</p>
+<section id="exploring-extensionality-with-diagnostic-cut" class="level3" data-number="1.2.2">
+<h3 data-number="1.2.2" class="anchored" data-anchor-id="exploring-extensionality-with-diagnostic-cut"><span class="header-section-number">1.2.2</span> 2. Exploring Extensionality with Diagnostic Cut</h3>
+<p>We can manually verify how Extensionality Collisions break typestate bounds using the <code>cut</code> tactic.</p>
+<pre class="text"><code>&gt; Starting proof of Trivial_Identity
+ITP&gt; 
+A : A = A
+----------------------
+A = A
+
+ITP&gt; Extensionality Collision!
+Contradiction Path: x@0 ∈ x@0 (-1)
+  Requires l(x@0) = l(x@0) + -1
+ITP&gt; Proof aborted.</code></pre>
+<p>By intentionally introducing a saturated boundary (<code>x e x</code>), we can use the engine to observe exactly where the unstratifiable loop causes the engine to flag a negative-weight cycle and abort the proof.</p>
 </section>
-<section id="agentic-workflows-and-sandboxed-loops" class="level3" data-number="4.2.3">
-<h3 data-number="4.2.3" class="anchored" data-anchor-id="agentic-workflows-and-sandboxed-loops"><span class="header-section-number">4.2.3</span> 3. Agentic Workflows and Sandboxed Loops</h3>
-<p>The framework supports simulating autonomous logic via Sandboxes. <code>AgenticReflection.lean</code> demonstrates an autonomous graph entity simulating a future interaction, measuring the algorithmic cost via MCM bounds, and committing the state to an SC memory lattice.</p>
-<pre class="lean"><code>#| label: agentic-reflection
-#| eval: false
+<section id="subset-transitivity-tactical-completion" class="level3" data-number="1.2.3">
+<h3 data-number="1.2.3" class="anchored" data-anchor-id="subset-transitivity-tactical-completion"><span class="header-section-number">1.2.3</span> 3. Subset Transitivity (Tactical Completion)</h3>
+<p>We can also execute complete formal derivations directly within the REPL, such as the proof of Subset Transitivity.</p>
+<pre class="text"><code>&gt; Starting proof of Subset_Trans
+ITP&gt; 
+A : A = A
+----------------------
+forall B. forall C. forall z. (((z e A -&gt; z e B) /\ (z e B -&gt; z e C)) -&gt; (z e A -&gt; z e C))
 
-def execute_agent_loop : IO Unit := do
-  let agent_core := Comb.I
-  let environmental_action := Comb.app Comb.S Comb.K
+ITP&gt; 
+H : ((z e A -&gt; z e B) /\ (z e B -&gt; z e C))
+z : z = z
+C : C = C
+B : B = B
+A : A = A
+----------------------
+(z e A -&gt; z e C)
 
-  -- The agent constructs the hypothetical future state (A -&gt; TA boundary)
-  let hypothetical_graph := simulate_hypothetical agent_core environmental_action
+ITP&gt; 
+H1 : (z e A -&gt; z e B)
+H2 : (z e B -&gt; z e C)
+z : z = z
+C : C = C
+B : B = B
+A : A = A
+----------------------
+(z e A -&gt; z e C)
 
-  -- The engine calculates the precise thermodynamic cost of the decision
-  let _evaluation_result := UntypedComb.DAG.reduce hypothetical_graph
+ITP&gt; 
+Hz : z e A
+H1 : (z e A -&gt; z e B)
+H2 : (z e B -&gt; z e C)
+z : z = z
+C : C = C
+B : B = B
+A : A = A
+----------------------
+z e C
 
-  -- The agent accepts the state and cools it into a Strongly Cantorian memory block
-  let memory_block := commit_to_memory hypothetical_graph</code></pre>
-<p><code>AgenticPlanning.lean</code> expands on this by building a parallel decision matrix, evaluating divergent topologies simultaneously and mechanically selecting the outcome requiring the lowest recursive topological cost.</p>
+ITP&gt; No more goals. Proof complete!
+ITP&gt; Proof accepted.</code></pre>
 </section>
-<section id="simulating-causal-graph-irreducibility" class="level3" data-number="4.2.4">
-<h3 data-number="4.2.4" class="anchored" data-anchor-id="simulating-causal-graph-irreducibility"><span class="header-section-number">4.2.4</span> 4. Simulating Causal Graph Irreducibility</h3>
-<p>The <code>CausalIrreducibility.lean</code> program simulates a local causal state colliding with the saturated world boundary. The engine dynamically computes the algorithmic randomness generated by symmetric nodes.</p>
-<pre class="lean"><code>#| label: causal-irreducibility
-#| eval: false
-
-def evaluate_causal_friction : IO Unit := do
-  let local_state := Comb.I
-
-  -- Braid the local state into a symmetric node with the saturated boundary
-  let world_graph :=
-    Comb.app (Comb.app causal_braid local_state) (symmetric_node local_state saturated_boundary)
-
-  -- The engine processes the irreducible graph, injecting T-operators 
-  -- dynamically at structural collision points.
-  let result := DAG.reduce world_graph</code></pre>
-<p>This physically proves that tracking dynamic extensional collisions inside a finite graph natively generates calculable syntactic friction.</p>
+<section id="kuratowski-bounding-tests" class="level3" data-number="1.2.4">
+<h3 data-number="1.2.4" class="anchored" data-anchor-id="kuratowski-bounding-tests"><span class="header-section-number">1.2.4</span> 4. Kuratowski Bounding Tests</h3>
+<p>The REPL natively parses and checks topological bounds instantly using the <code>step</code> command, useful for analyzing multi-level type deviations like the Kuratowski pair (<span class="math inline">\(P = \{\{a\}, \{a, b\}\}\)</span>).</p>
+<pre class="text"><code>&gt; --- Extracting Constraints ---
+{ v1 := (Var.free "x", 0), v2 := (Var.free "K", 0), diff := 1, directed := false }
+{ v1 := (Var.free "x", 0), v2 := (Var.free "a", 0), diff := 0, directed := false }
+{ v1 := (Var.free "y", 0), v2 := (Var.free "K", 0), diff := 1, directed := false }
+{ v1 := (Var.free "y", 0), v2 := (Var.free "a", 0), diff := 0, directed := false }
+{ v1 := (Var.free "y", 0), v2 := (Var.free "b", 0), diff := 0, directed := false }
+--- Graph Edges ---
+{ src := (Var.free "x", 0), dst := (Var.free "K", 0), weight := 1 }
+{ src := (Var.free "K", 0), dst := (Var.free "x", 0), weight := -1 }
+{ src := (Var.free "x", 0), dst := (Var.free "a", 0), weight := 0 }
+...
+--- Running Bellman-Ford ---
+Stratification successful.</code></pre>
+<p>The constraint extraction clearly visualizes how <code>K</code> acts as the set boundary, routing connections symmetrically across <code>x</code> and <code>y</code> while mathematically tracking exactly how <code>K</code> sits above <code>a</code> and <code>b</code>.</p>
+<hr>
+</section>
+</section>
+<section id="core-command-reference" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="core-command-reference"><span class="header-section-number">1.3</span> Core Command Reference</h2>
+<section id="axioms-session-management" class="level3" data-number="1.3.1">
+<h3 data-number="1.3.1" class="anchored" data-anchor-id="axioms-session-management"><span class="header-section-number">1.3.1</span> Axioms &amp; Session Management</h3>
+<ul>
+<li><code>assume &lt;name&gt; &lt;formula&gt;</code>: Register a named axiom globally.</li>
+<li><code>theorem &lt;name&gt; &lt;formula&gt;</code>: Start a new proof with a target goal.</li>
+<li><code>save_session &lt;file&gt;</code> / <code>load_session &lt;file&gt;</code>: Persist proof state JSONs.</li>
+<li><code>deff &lt;name&gt; &lt;args...&gt; := &lt;formula&gt;</code>: Pre-compile an AST Macro.</li>
+</ul>
+</section>
+<section id="interactive-tactics" class="level3" data-number="1.3.2">
+<h3 data-number="1.3.2" class="anchored" data-anchor-id="interactive-tactics"><span class="header-section-number">1.3.2</span> Interactive Tactics</h3>
+<ul>
+<li><code>intro [name]</code>: Introduce a premise.</li>
+<li><code>exact &lt;name&gt;</code>: Close the current goal if it exactly matches the hypothesis.</li>
+<li><code>destruct &lt;name&gt;</code>: Break down conjunctions or disjunctions in context.</li>
+<li><code>rewrite &lt;name&gt;</code>: Substitute variables inside the goal.</li>
+<li><code>cut &lt;formula&gt;</code>: Introduce new hypothesis branches.</li>
+</ul>
+</section>
+<section id="diagnostics" class="level3" data-number="1.3.3">
+<h3 data-number="1.3.3" class="anchored" data-anchor-id="diagnostics"><span class="header-section-number">1.3.3</span> Diagnostics</h3>
+<ul>
+<li><code>eval &lt;formula&gt;</code>: Parse topological shift and halt if structural loops emerge.</li>
+<li><code>step &lt;formula&gt;</code>: Process a logical formula step-by-step, providing immediate feedback on geometric bounds.</li>
+</ul>
+</section>
+<section id="differential-smt-lib-ingestion" class="level3" data-number="1.3.4">
+<h3 data-number="1.3.4" class="anchored" data-anchor-id="differential-smt-lib-ingestion"><span class="header-section-number">1.3.4</span> Differential SMT-LIB Ingestion</h3>
+<ul>
+<li><code>lake exe parse-strat --ingest-smt &lt; out.smt</code>: Directly ingest an exported standard SMT-LIB witness generated by the Rust <code>monist-core</code> engine. The Lean interpreter will parse the boundaries and topological node variables, independently run its native Bellman-Ford matrix evaluator, and perform a 1-to-1 Equivalence Check against the expected <code>success_depths</code> or <code>extensionality-collision-trace</code> defined in the SMT headers.</li>
+</ul>
 
 
 </section>
@@ -716,13 +818,13 @@ def evaluate_causal_friction : IO Unit := do
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./03-comblib.html" class="pagination-link" aria-label="Using and Extending `CombLib`">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Using and Extending <code>CombLib</code></span></span>
+      <a href="./index.html" class="pagination-link" aria-label="Introduction and Setup">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Introduction and Setup</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./05-nf-validate.html" class="pagination-link" aria-label="The `nf-validate` Constraint Graph">
-        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">The <code>nf-validate</code> Constraint Graph</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./02-comblib.html" class="pagination-link" aria-label="Using and Extending `CombLib`">
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Using and Extending <code>CombLib</code></span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

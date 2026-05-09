@@ -1,6 +1,6 @@
 deff SUBSET := forall u , ( u e x -> u e y )
 check_strat ( a e x -> a e y )
-theorem Advanced_Test forall a , forall b , forall c , ( ( a e b & b e c ) -> a e c )
+theorem Advanced_Test forall a , forall b , forall c , ( ( a e b /\ b e c ) -> a e c )
 intro a
 intro b
 intro c
@@ -17,5 +17,5 @@ exact H1
 show_goal
 defer
 show_goal
-eval ( ( a e b & b e c ) -> a e c )
+eval ( ( a e b /\ b e c ) -> a e c )
 exit

@@ -14,6 +14,8 @@
 
 **NF Sketches** provides a bifurcated architecture designed to natively process saturated states, highly entangled sets, and self-referential graph evaluations. By utilizing Lean for $O(V+E)$ topological bounds checking, the engine translates syntax into a Directed Acyclic Graph (DAG). It then algorithmically compiles the verified logic into a flat operational domain of untyped $S$ and $K$ combinators. 
 
+**The Core Motivation:** Traditional set theories and type systems (like Homotopy Type Theory) rely on infinite hierarchical towers of universes (`U0:U1:U2...`) to avoid self-referential paradoxes. This introduces heavy computational friction. **NF Sketches** provides a truly flat alternative based on "Syntactic Monism." The system averts logical collapse by shifting the burden of consistency entirely away from the ontological structure onto the syntax via topological stratification constraints. This allows the logic engine to natively accommodate a Universal Set ($V \in V$) and process reality as a unified, cohesive network without artificial hierarchical scaffolding.
+
 This repository functions as the theoretical **laboratory**—utilizing Lean's trusted kernel to formally prove algorithmic stratification, K-Iteration limits, and topological boundaries. It conducts the rigorous diagnostic work required to secure cryptographic certainty before the concepts are independently forged into the custom bare-metal engine.
 
 ---
@@ -24,12 +26,14 @@ This repository contains multiple interconnected Lean projects.
 
 ### Quick Build
 To execute a fast build of a specific module (e.g. the REPL sandbox), navigate to its directory and run:
+
 ```bash
 lake build
 ```
 
 ### Full Verification Build
 Running the `NfValidate` module performs full verification, compiling the entire library along with all 1000+ line soundness proofs. This takes significantly longer as Lean must mathematically verify every theorem:
+
 ```bash
 lake build NfValidate
 ```
@@ -41,7 +45,25 @@ Because these projects rely heavily on `mathlib`, keeping your compiler and cach
 ```bash
 ./update-lean.sh
 ```
+
 This script syncs the `lean-toolchain`, fetches the latest `mathlib` commit, downloads pre-compiled binaries via `lake exe cache get`, and runs a full build.
+
+### Hello World: Your First Evaluation
+
+Once the project is built, you can immediately test the topological bounds checker using the interactive REPL:
+
+```bash
+cd parse-strat
+lake env lean Tests/test_suite.lean
+```
+
+Alternatively, to explore a topological query interactively:
+
+```bash
+lake exe parse-strat
+> eval { x | x e x }
+```
+*(The engine will natively isolate and analyze the recursive boundaries of this comprehension.)*
 
 ---
 
@@ -70,7 +92,7 @@ Constructs a flat, variable-free combinatory execution environment ($S$, $K$, $I
 This untyped execution environment processes advanced, paradox-heavy operations natively without memory exhaustion or dependency on external well-ordering axioms:
 * **Recursive Self-Models ($V \in V$)**: Uses the Y-combinator to natively evaluate Quine Atoms ($\Omega = \{\Omega\}$), safely relying on MCM halting bounds to intercept infinite topological recursion.
 * **Choice-Free Cardinal Arithmetic**: Implements Transfinite Calculus (e.g., $|A| + |B|$ and $\aleph_0$) entirely via pure $\lambda \to S, K$ bracket abstraction, dynamically triggering $T$-functor injections to track disjoint union topologies across structural boundaries.
-* **Physical Observables**: Extracts Standard Model empirical metrics (Rest Mass, Resonance) directly from measuring the bounded recursion cost of topological particle knots (`electron_knot`).
+* **Physical Observables**: Extracts Standard Model empirical metrics (Rest Mass, Resonance) directly from measuring the bounded recursion cost of topological particle knots (`electron_knot`—see the upcoming Speculative Frontier).
 * **Holographic Data Indexing**: Compiles absolute complement queries ($V \setminus A$) into $O(1)$ exclusion-first search algorithms, isolating unresolvable contradictions across distributed data swarms in strictly linear time.
 
 ### 6. `ExPrograms`: Native Verification
@@ -79,14 +101,6 @@ The repository provides a suite of executable Lean scripts that organically eval
 * **Native Transfinite Arithmetic**: Synthesizes $T$-functor mappings natively on $\aleph_0 + \aleph_0$.
 * **Stratified Yoneda Embedding**: Confirms the categorical self-representation natively bounds to $T(F(V))$ without graph collapse, validating Pseudo-Cartesian closure.
 * **Agentic Workflows & Simulation**: Evaluates autonomous logic routing via Sandboxed Loops (`AgenticReflection`), and physically calculates Resonance magnitude collisions via `ColliderSimulation` to avoid uncomputable infinities.
-
----
-
-## Contrast Against HoTT
-
-While Homotopy Type Theory (HoTT) escapes the micro-level iterative construction of ZFC sets via generative spatial types, it retains an infinite, ascending tower of universes (`U0:U1:U2...`) to prevent self-referential paradoxes. The ontology remains fundamentally layered, introducing heavy computational friction when calculating generative events.
-
-**Syntactic Monism** provides a truly flat alternative. The topology of the NF universe is singular and natively accommodates a Universal Set containing itself. The system averts logical collapse by shifting the burden of consistency entirely away from the ontological structure onto the syntax via stratification constraints. By regulating the grammar of the query rather than compartmentalizing the fabric of the data itself, syntactic monism allows a logic engine to physically process reality as a unified, cohesive network without artificial hierarchical scaffolding.
 
 ---
 

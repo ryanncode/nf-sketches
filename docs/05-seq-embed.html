@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>8&nbsp; Transfinite Logic &amp; Choice-Free Arithmetic – NF Sketches: Documentation</title>
+<title>5&nbsp; The seq-embed Sequent Calculus – NF Sketches: Documentation</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -33,8 +33,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./09-categorical.html" rel="next">
-<link href="./07-untyped-comb.html" rel="prev">
+<link href="./06-untyped-comb.html" rel="next">
+<link href="./04-nf-validate.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -114,7 +114,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./08-transfinite.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transfinite Logic &amp; Choice-Free Arithmetic</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./05-seq-embed.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">The <code>seq-embed</code> Sequent Calculus</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -145,61 +145,61 @@ window.Quarto = {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction and Setup</span></span></a>
+ <span class="menu-text">Introduction and Setup</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./02-parse-strat.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Interactive Diagnostics with <code>parse-strat</code></span></span></a>
+  <a href="./01-parse-strat.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Interactive Diagnostics with <code>parse-strat</code></span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./03-comblib.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Using and Extending <code>CombLib</code></span></span></a>
+  <a href="./02-comblib.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Using and Extending <code>CombLib</code></span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./04-exprograms.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Writing Executables (<code>ExPrograms</code>)</span></span></a>
+  <a href="./03-exprograms.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Writing Executables (<code>ExPrograms</code>)</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./05-nf-validate.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">The <code>nf-validate</code> Constraint Graph</span></span></a>
+  <a href="./04-nf-validate.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">The <code>nf-validate</code> Constraint Graph</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./06-seq-embed.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">The <code>seq-embed</code> Sequent Calculus</span></span></a>
+  <a href="./05-seq-embed.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">The <code>seq-embed</code> Sequent Calculus</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./07-untyped-comb.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title"><code>untyped-comb</code> and DAG Reduction</span></span></a>
+  <a href="./06-untyped-comb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title"><code>untyped-comb</code> and DAG Reduction</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./08-transfinite.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transfinite Logic &amp; Choice-Free Arithmetic</span></span></a>
+  <a href="./07-transfinite.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Transfinite Logic &amp; Choice-Free Arithmetic</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./09-categorical.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Categorical Semantics &amp; The SPE Architecture</span></span></a>
+  <a href="./08-categorical.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Categorical Semantics &amp; The SPE Architecture</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./10-monism.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Syntactic Monism vs The Hierarchy</span></span></a>
+  <a href="./09-monism.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Syntactic Monism vs The Hierarchy</span></span></a>
   </div>
 </li>
     </ul>
@@ -208,12 +208,10 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#expanding-the-axioms" id="toc-expanding-the-axioms" class="nav-link active" data-scroll-target="#expanding-the-axioms"><span class="header-section-number">8.1</span> Expanding the Axioms</a></li>
-  <li><a href="#choice-free-cardinal-arithmetic" id="toc-choice-free-cardinal-arithmetic" class="nav-link" data-scroll-target="#choice-free-cardinal-arithmetic"><span class="header-section-number">8.2</span> Choice-Free Cardinal Arithmetic</a></li>
-  <li><a href="#strongly-cantorian-retractions" id="toc-strongly-cantorian-retractions" class="nav-link" data-scroll-target="#strongly-cantorian-retractions"><span class="header-section-number">8.3</span> Strongly Cantorian Retractions</a>
-  <ul class="collapse">
-  <li><a href="#classical-islands" id="toc-classical-islands" class="nav-link" data-scroll-target="#classical-islands"><span class="header-section-number">8.3.1</span> Classical Islands</a></li>
-  </ul></li>
+  <li><a href="#proof-theoretic-embedding" id="toc-proof-theoretic-embedding" class="nav-link active" data-scroll-target="#proof-theoretic-embedding"><span class="header-section-number">5.1</span> Proof-Theoretic Embedding</a></li>
+  <li><a href="#targeted-cut-reduction-and-substitution" id="toc-targeted-cut-reduction-and-substitution" class="nav-link" data-scroll-target="#targeted-cut-reduction-and-substitution"><span class="header-section-number">5.2</span> Targeted Cut Reduction and Substitution</a></li>
+  <li><a href="#the-extensionality-collision" id="toc-the-extensionality-collision" class="nav-link" data-scroll-target="#the-extensionality-collision"><span class="header-section-number">5.3</span> The Extensionality Collision</a></li>
+  <li><a href="#canonical-failure-diagnostics" id="toc-canonical-failure-diagnostics" class="nav-link" data-scroll-target="#canonical-failure-diagnostics"><span class="header-section-number">5.4</span> Canonical Failure Diagnostics</a></li>
   </ul>
 </nav>
 </nav>
@@ -226,7 +224,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transfinite Logic &amp; Choice-Free Arithmetic</span></h1>
+<h1 class="title"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">The <code>seq-embed</code> Sequent Calculus</span></h1>
 </div>
 
 
@@ -243,70 +241,51 @@ window.Quarto = {
 </header>
 
 
-<section id="expanding-the-axioms" class="level2" data-number="8.1">
-<h2 data-number="8.1" class="anchored" data-anchor-id="expanding-the-axioms"><span class="header-section-number">8.1</span> Expanding the Axioms</h2>
-<p>Standard mathematical frameworks like ZFC handle infinities through the Axiom of Choice and the creation of larger, ascending cardinals. <code>nf-sketches</code> allows the architecture to handle infinity purely geometrically through structural mapping, without relying on the Axiom of Choice or infinite universes.</p>
-</section>
-<section id="choice-free-cardinal-arithmetic" class="level2" data-number="8.2">
-<h2 data-number="8.2" class="anchored" data-anchor-id="choice-free-cardinal-arithmetic"><span class="header-section-number">8.2</span> Choice-Free Cardinal Arithmetic</h2>
-<p>The <code>Cardinals.lean</code> module maps out Transfinite Calculus natively. Cardinal summation (<code>Card_Add</code>) is implemented via pure bracket abstraction over disjoint union topologies (<span class="math inline">\(\lambda \to S, K\)</span>).</p>
-<pre class="lean"><code>#| label: add-aleph
+<section id="proof-theoretic-embedding" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="proof-theoretic-embedding"><span class="header-section-number">5.1</span> Proof-Theoretic Embedding</h2>
+<p>The <code>seq-embed</code> environment formalizes the structural proof theory required to manage logical derivations securely. By constructing a deep embedding of Gentzen’s Sequent Calculus within Lean, the architecture gains strict programmatic control over the deductive pathways before dispatching logic to the <code>untyped-comb</code> DAG.</p>
+<p>This module fundamentally restricts classical deductive freedom. The logic engine will not evaluate a set comprehension rule within the sequent tree unless it has been explicitly authorized by a valid algorithmic graph structure.</p>
+<pre class="lean"><code>#| label: compl-restriction
 #| eval: false
 
-/--
-  Execute Cardinal Addition: |A| + |B| = |A ∪ B|.
-  The engine mechanically synthesizes Thomas Forster's T-operator (x ↦ ι"x) on-the-fly,
-  shifting the relative integer weights of the variables to ensure the S and K
-  reductions remain completely type-safe through self-regulation.
--/
-def addAlephNulls : Comb :=
-  cardAdd aleph0 aleph0
-
-#eval normalize addAlephNulls</code></pre>
-<p>Bounds like <span class="math inline">\(\aleph_0\)</span> are anchored using the infinite <span class="math inline">\(Y\)</span>-combinator stream generator. By synthesizing the <span class="math inline">\(T\)</span>-functor mappings natively on unbound operations (such as <span class="math inline">\(\aleph_0 + \aleph_0\)</span>), the engine mechanically aligns operations without external tracking, permanently bypassing the Axiom of Choice.</p>
+-- The `compL` rule enforces that comprehension is strictly gated
+-- behind the successful Bellman-Ford evaluation (StratificationWitness).
+| compL {Γ Δ : Context} (A : Formula) (w : StratificationWitness) 
+  (d : Derivation ⟨A :: Γ, Δ⟩) : Derivation ⟨Γ, Δ⟩</code></pre>
+<p>By explicitly parameterizing the comprehension rule with the <code>StratificationWitness</code> output from the <code>nf-validate</code> module, the <code>seq-embed</code> framework mechanically locks deductive reasoning down to computable geometric boundaries.</p>
 <hr>
 </section>
-<section id="strongly-cantorian-retractions" class="level2" data-number="8.3">
-<h2 data-number="8.3" class="anchored" data-anchor-id="strongly-cantorian-retractions"><span class="header-section-number">8.3</span> Strongly Cantorian Retractions</h2>
-<p>The architecture restricts classical mathematical reductions within explicit, computationally verified domains. Strongly Cantorian (SC) sets are defined through the correlation function <span class="math inline">\(K_t(t(x)) = K[t(x)]\)</span> and restricted by Buss’s polynomial-time computable boundaries (<span class="math inline">\(\Sigma_1^b\)</span> formulas).</p>
-<section id="classical-islands" class="level3" data-number="8.3.1">
-<h3 data-number="8.3.1" class="anchored" data-anchor-id="classical-islands"><span class="header-section-number">8.3.1</span> Classical Islands</h3>
-<p>By identifying when local graph execution operates completely inside a Strong Connected Component where <span class="math inline">\(T(m) = m\)</span>, the <code>DAG.lean</code> evaluation structure dynamically wraps these retractions in an <code>SC_CUT</code> isolation boundary.</p>
-<p>Before execution is permitted to unwrap and return this data to the volatile exterior, it mechanically triggers Knaster-Tarski least fixpoint calculations (<span class="math inline">\(\text{lfp}(F)\)</span>) via the <code>verifySCStability</code> function.</p>
-<pre class="lean"><code>#| label: verify-sc
+<section id="targeted-cut-reduction-and-substitution" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="targeted-cut-reduction-and-substitution"><span class="header-section-number">5.2</span> Targeted Cut Reduction and Substitution</h2>
+<p>To systematically analyze the behavior of highly entangled graph structures, the diagnostic engine simulates substitutions and evaluates intermediate lemmas via the <code>reduceCut</code> pipeline.</p>
+<pre class="lean"><code>#| label: reduce-cut
 #| eval: false
 
-/--
-  Define a local Strongly Cantorian Lattice representing an isolated classical island.
-  Domain: {0, 1, 2, 3, 4, 5} with standard integer ordering.
--/
-def local_sc_domain : SCLattice := {
-  domain := [0, 1, 2, 3, 4, 5],
-  le := fun x y =&gt; x ≤ y,
-  bottom := 0
-}
-
-/--
-  An inductive step function defined within the isolated domain.
--/
-def F_inductive (x : Int) : Int :=
-  if x &lt; 3 then x + 1 else 3
-
-/--
-  Calculates the Knaster-Tarski least fixpoint lfp(F).
-  This acts as the mathematical lock before allowing the result back into the
-  volatile unstratified global graph.
--/
-def executeSCStabilityCheck : Comb :=
-  match verifySCStability local_sc_domain F_inductive with
-  | some fixpoint =&gt;
-      app (terminal "SC_STABLE_RESULT") (terminal (toString fixpoint))
-  | none =&gt;
-      terminal "SC_UNSTABLE_REJECTION"</code></pre>
-<p>These <strong>“islands of classicality”</strong> allow choice functions and constant-time inductive logic to bypass global cycle detectors natively. It permits standard arithmetic and recursion to operate inside the unstratified graph without generating unverified topological paradoxes, effectively evaluating the Hereditarily Strongly Cantorian Class (<span class="math inline">\(H_{stcan}\)</span>) to internally prove the <strong>Axiom of Counting</strong>.</p>
-
-
+def reduceCut {Γ Δ : Context} (A : Formula) 
+  (d1 : Derivation ⟨Γ, A :: Δ⟩) 
+  (d2 : Derivation ⟨A :: Γ, Δ⟩) : ReduceResult Γ Δ</code></pre>
+<p>The system bypasses standard structural normalization, intentionally forcing logical substitutions dynamically back through the validation matrix. When encountering a <code>cut</code> against the <code>compL</code> rule, it invokes <code>getSimulatedSubstitution</code> to extract canonical targets, substitutes them, and forcefully evaluates the altered structure via <code>evaluateFullFormula</code>.</p>
+<hr>
 </section>
+<section id="the-extensionality-collision" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="the-extensionality-collision"><span class="header-section-number">5.3</span> The Extensionality Collision</h2>
+<p>The primary analytical utility of <code>seq-embed</code> is calculating the operational cost of the Axiom of Extensionality.</p>
+<p>The system utilizes <strong>weak stratification</strong>, which partitions the graph by binding scope, allowing local variables to re-level their integer weights dynamically. This restores grammatical substitution closure.</p>
+<p>However, the Axiom of Extensionality dictates that <span class="math inline">\(x = y\)</span> mandates total structural equivalence. When dynamically re-leveled scopes collide with this rigid structural mandate, the compiler is forced to equate items with conflicting topological weights. <code>reduceCut</code> actively logs this exact event as an <strong>Extensionality Collision</strong>, tracking the mathematically rigorous generation of a negative-weight cycle.</p>
+<hr>
+</section>
+<section id="canonical-failure-diagnostics" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="canonical-failure-diagnostics"><span class="header-section-number">5.4</span> Canonical Failure Diagnostics</h2>
+<p>The <code>main</code> executable bypasses manual REPL interaction to automatically run hardcoded, canonical derivation trees, proving the mathematical trace outputs of classical failure structures:</p>
+<ol type="1">
+<li><strong>The Identity Collapse (<code>idCollapse_A</code>)</strong>: Asserts <span class="math inline">\(z = A\)</span> where <span class="math inline">\(\forall y(y \in A \leftrightarrow y = z)\)</span>, immediately collapsing the <span class="math inline">\(+1\)</span> level difference.</li>
+<li><strong>The Impredicative Singleton (<code>singCollapse_A</code>)</strong>: Models the Russell variant <span class="math inline">\(\forall x(x \in S \leftrightarrow x \notin w)\)</span>. Substituting <span class="math inline">\(w = S\)</span> catches the breakdown when Extensionality attempts to globally unify the disparate levels.</li>
+<li><strong>The Transitive Membership Collapse</strong>: Cuts a transitive chain (<span class="math inline">\(y \in A \land A \in B \land B \in C\)</span>) against the assertion <span class="math inline">\(A = C\)</span>, proving the engine can isolate multi-tiered negative cycles across expanded geometric intervals.</li>
+<li><strong>Russell-Prawitz Normalization Breakdown</strong>: Computationally intercepts the proof-theoretic infinite regress of <span class="math inline">\(R \in R\)</span>, proving the geometric self-loop halts.</li>
+<li><strong>Kuratowski Ordered Pair Type-Shift</strong>: Asserts an ordered pair <span class="math inline">\(P\)</span> is identical to its foundational element (<span class="math inline">\(P = A\)</span>), detecting the unstratifiable topological collapse across multiple hierarchical boundaries.</li>
+</ol>
+
+
 </section>
 
 </main> <!-- /main -->
@@ -712,13 +691,13 @@ def executeSCStabilityCheck : Comb :=
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./07-untyped-comb.html" class="pagination-link" aria-label="`untyped-comb` and DAG Reduction">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title"><code>untyped-comb</code> and DAG Reduction</span></span>
+      <a href="./04-nf-validate.html" class="pagination-link" aria-label="The `nf-validate` Constraint Graph">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">The <code>nf-validate</code> Constraint Graph</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./09-categorical.html" class="pagination-link" aria-label="Categorical Semantics &amp; The SPE Architecture">
-        <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Categorical Semantics &amp; The SPE Architecture</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./06-untyped-comb.html" class="pagination-link" aria-label="`untyped-comb` and DAG Reduction">
+        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title"><code>untyped-comb</code> and DAG Reduction</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

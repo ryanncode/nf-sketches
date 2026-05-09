@@ -68,7 +68,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./02-parse-strat.html" rel="next">
+<link href="./01-parse-strat.html" rel="next">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -107,6 +107,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -119,7 +148,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction and Setup</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Introduction and Setup</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -150,61 +179,61 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./index.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction and Setup</span></span></a>
+ <span class="menu-text">Introduction and Setup</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./02-parse-strat.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Interactive Diagnostics with <code>parse-strat</code></span></span></a>
+  <a href="./01-parse-strat.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Interactive Diagnostics with <code>parse-strat</code></span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./03-comblib.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Using and Extending <code>CombLib</code></span></span></a>
+  <a href="./02-comblib.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Using and Extending <code>CombLib</code></span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./04-exprograms.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Writing Executables (<code>ExPrograms</code>)</span></span></a>
+  <a href="./03-exprograms.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Writing Executables (<code>ExPrograms</code>)</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./05-nf-validate.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">The <code>nf-validate</code> Constraint Graph</span></span></a>
+  <a href="./04-nf-validate.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">The <code>nf-validate</code> Constraint Graph</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./06-seq-embed.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">The <code>seq-embed</code> Sequent Calculus</span></span></a>
+  <a href="./05-seq-embed.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">The <code>seq-embed</code> Sequent Calculus</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./07-untyped-comb.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title"><code>untyped-comb</code> and DAG Reduction</span></span></a>
+  <a href="./06-untyped-comb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title"><code>untyped-comb</code> and DAG Reduction</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./08-transfinite.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transfinite Logic &amp; Choice-Free Arithmetic</span></span></a>
+  <a href="./07-transfinite.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Transfinite Logic &amp; Choice-Free Arithmetic</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./09-categorical.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Categorical Semantics &amp; The SPE Architecture</span></span></a>
+  <a href="./08-categorical.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Categorical Semantics &amp; The SPE Architecture</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./10-monism.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Syntactic Monism vs The Hierarchy</span></span></a>
+  <a href="./09-monism.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Syntactic Monism vs The Hierarchy</span></span></a>
   </div>
 </li>
     </ul>
@@ -213,11 +242,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#introduction-and-setup" id="toc-introduction-and-setup" class="nav-link active" data-scroll-target="#introduction-and-setup"><span class="header-section-number">1</span> Introduction and Setup</a>
+  <li><a href="#introduction-and-setup" id="toc-introduction-and-setup" class="nav-link active" data-scroll-target="#introduction-and-setup">Introduction and Setup</a>
   <ul class="collapse">
-  <li><a href="#the-acyclic-lean-architecture" id="toc-the-acyclic-lean-architecture" class="nav-link" data-scroll-target="#the-acyclic-lean-architecture"><span class="header-section-number">1.1</span> The Acyclic Lean Architecture</a></li>
-  <li><a href="#practical-setup" id="toc-practical-setup" class="nav-link" data-scroll-target="#practical-setup"><span class="header-section-number">1.2</span> Practical Setup</a></li>
-  <li><a href="#the-workflow-paradigm" id="toc-the-workflow-paradigm" class="nav-link" data-scroll-target="#the-workflow-paradigm"><span class="header-section-number">1.3</span> The Workflow Paradigm</a></li>
+  <li><a href="#the-acyclic-lean-architecture" id="toc-the-acyclic-lean-architecture" class="nav-link" data-scroll-target="#the-acyclic-lean-architecture">The Acyclic Lean Architecture</a>
+  <ul class="collapse">
+  <li><a href="#a-multidisciplinary-convergence" id="toc-a-multidisciplinary-convergence" class="nav-link" data-scroll-target="#a-multidisciplinary-convergence">A Multidisciplinary Convergence</a></li>
+  </ul></li>
+  <li><a href="#practical-setup" id="toc-practical-setup" class="nav-link" data-scroll-target="#practical-setup">Practical Setup</a></li>
+  <li><a href="#the-workflow-paradigm" id="toc-the-workflow-paradigm" class="nav-link" data-scroll-target="#the-workflow-paradigm">The Workflow Paradigm</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -248,17 +280,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="introduction-and-setup" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> Introduction and Setup</h1>
-<section id="the-acyclic-lean-architecture" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="the-acyclic-lean-architecture"><span class="header-section-number">1.1</span> The Acyclic Lean Architecture</h2>
+<section id="introduction-and-setup" class="level1 unnumbered">
+<h1 class="unnumbered">Introduction and Setup</h1>
+<section id="the-acyclic-lean-architecture" class="level2">
+<h2 class="anchored" data-anchor-id="the-acyclic-lean-architecture">The Acyclic Lean Architecture</h2>
 <p>The <code>nf-sketches</code> repository provides a computationally verifiable, topologically-bound combinatory logic engine. This documentation guides engineers and researchers through the ecosystem’s theoretical validation matrix.</p>
-<p>The primary objective of this architecture is to resolve cyclical logic constraints without relying on external garbage collection, hierarchical universes (like HoTT or ZFC), or global substitution environments. By formalizing Quine’s systemic ambiguity into geometric routing rules, the logic engine natively processes highly entangled variables by extracting topological paths directly from the Abstract Syntax Tree (AST).</p>
+<p>The primary objective of this architecture is to resolve cyclical logic constraints without relying on external garbage collection, hierarchical universes (like HoTT or ZFC), or global substitution environments. By formalizing Quine’s systemic ambiguity (the idea that sets can shift their typestate dynamically without strict ontological boundaries) into geometric routing rules, the logic engine natively processes highly entangled variables by extracting topological paths directly from the Abstract Syntax Tree (AST).</p>
+<section id="a-multidisciplinary-convergence" class="level3">
+<h3 class="anchored" data-anchor-id="a-multidisciplinary-convergence">A Multidisciplinary Convergence</h3>
+<p>At first glance, this repository may seem to jump between disparate fields. This is intentional. The engine synthesizes four distinct domains into a single computational pipeline:</p>
+<ol type="1">
+<li><strong>Proof Theory (Sequents, Natural Deduction):</strong> Provides the syntax and logical rules (Quine’s NF) ensuring the math is rigorously sound.</li>
+<li><strong>Graph Theory (Bellman-Ford, DAGs):</strong> Translates those logical rules into geometric constraints, converting paradoxes into detectable “negative-weight cycles.”</li>
+<li><strong>Combinatory Logic (<span class="math inline">\(S\)</span>, <span class="math inline">\(K\)</span>, <span class="math inline">\(Y\)</span>):</strong> Flattens the verified graph into an untyped, variable-free state, perfectly suited for bare-metal and parallel GPU execution.</li>
+<li><strong>Theoretical Physics (Observables, Resonance):</strong> Acts as the ultimate stress test. By treating unstratified combinatorial loops as thermodynamic systems, we measure the “friction” of logic itself, producing computational analogs to physical knots.</li>
+</ol>
 <p>This repository functions as the theoretical <strong>laboratory</strong>—utilizing Lean’s trusted kernel to formally prove algorithmic stratification, K-Iteration limits, and topological boundaries. It conducts the rigorous diagnostic work required to secure cryptographic certainty before the mathematical concepts are independently forged into custom bare-metal engines (like the Rust-based <code>monist</code> engine).</p>
 <hr>
 </section>
-<section id="practical-setup" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="practical-setup"><span class="header-section-number">1.2</span> Practical Setup</h2>
+</section>
+<section id="practical-setup" class="level2">
+<h2 class="anchored" data-anchor-id="practical-setup">Practical Setup</h2>
 <p>The environment is built utilizing Lean 4, which acts as the static verification oracle.</p>
 <p>To initialize the operational environment across all sub-modules (<code>nf-validate</code>, <code>parse-strat</code>, <code>seq-embed</code>, and <code>untyped-comb</code>), execute the provided build scripts:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: build-script</span></span>
@@ -269,8 +311,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>These commands synchronize the mathematical verification matrices with the exact <code>mathlib</code> cache required for the topological algorithms.</p>
 <hr>
 </section>
-<section id="the-workflow-paradigm" class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="the-workflow-paradigm"><span class="header-section-number">1.3</span> The Workflow Paradigm</h2>
+<section id="the-workflow-paradigm" class="level2">
+<h2 class="anchored" data-anchor-id="the-workflow-paradigm">The Workflow Paradigm</h2>
 <p>The development lifecycle within <code>nf-sketches</code> follows a distinct progression from string parsing to combinatory execution limits:</p>
 <ol type="1">
 <li><strong>Interactive Sandbox (<code>parse-strat</code>):</strong> Users first define logical constraints using standard ASCII syntax to test stratification boundaries and manually trace Extensionality Collisions.</li>
@@ -689,8 +731,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <div class="nav-page nav-page-previous">
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./02-parse-strat.html" class="pagination-link" aria-label="Interactive Diagnostics with `parse-strat`">
-        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Interactive Diagnostics with <code>parse-strat</code></span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./01-parse-strat.html" class="pagination-link" aria-label="Interactive Diagnostics with `parse-strat`">
+        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Interactive Diagnostics with <code>parse-strat</code></span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

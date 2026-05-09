@@ -15,7 +15,7 @@ Building upon the Topologically-Guided boundaries established in `untyped-comb`,
 * **Core Operators:** Node-collision `Booleans` (`and`, `or`, `not`), B-combinator-based `Numerals` (`succ`, `add`, `mult`), and inductive `Lists` geometries via raw bracket abstraction.
 * **Recursive Self-Models ($V \in V$):** The `SelfModels.lean` primitive constructs a mathematically robust Quine atom ($\Omega = \{\Omega\}$) natively inside the engine utilizing the Y-combinator. The architecture evaluates a structure containing an unreduced copy of itself, relying directly on K-Iteration bounds to safely halt the resulting paradox.
 * **Choice-Free Cardinal Arithmetic:** Implements Transfinite Calculus (e.g., Cardinal Addition $|A| + |B|$) via pure bracket abstraction over disjoint union topologies. Operations are bounded structurally across stratification hierarchies using `t_inject` topological friction markers, completely bypassing the Axiom of Choice.
-* **Physical Observables & Particles:** Explicitly extracts theoretical physics metrics (Rest Mass, Coupling Constant) from structured particle knots (`electron_knot`) by measuring bounded topological recursion costs.
+* **Physical Observables & Particles:** By treating graph complexity as thermodynamic friction, we can model physical observables mathematically. Explicitly extracts theoretical physics metrics (Rest Mass, Coupling Constant) from structured particle knots (`electron_knot`) by measuring bounded topological recursion costs.
 
 ---
 

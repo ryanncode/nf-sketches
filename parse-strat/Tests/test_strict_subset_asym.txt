@@ -1,4 +1,4 @@
-theorem Strict_Sub_Asym forall A , forall B , ( ( forall x , x e A -> x e B ) & ~ ( forall y , y e B -> y e A ) ) -> ~ ( A = B )
+theorem Strict_Sub_Asym forall A , forall B , ( ( forall x , x e A -> x e B ) /\ ~ ( forall y , y e B -> y e A ) ) -> ~ ( A = B )
 intro A
 intro B
 intro H

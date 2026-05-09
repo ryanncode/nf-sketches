@@ -182,6 +182,10 @@ def wrapProj (scope : Nat) (seed : Nat) (v : Var) (ev : Option Var) : (Var × Na
 -/
 def flattenGraphAux (sccs : List (List ScopedVar)) : Nat → Nat → Formula → Formula × Nat
 
+  | scope, seed, Formula.atom (Atomic.lt x y) =>
+      let (rx, s1, wx) := wrapProj scope seed x (expandVar sccs x scope)
+      let (ry, s2, wy) := wrapProj scope s1 y (expandVar sccs y scope)
+      (wx (wy (Formula.atom (Atomic.lt rx ry))), s2)
   | scope, seed, Formula.atom (Atomic.eq x y) =>
       let (rx, s1, wx) := wrapProj scope seed x (expandVar sccs x scope)
       let (ry, s2, wy) := wrapProj scope s1 y (expandVar sccs y scope)

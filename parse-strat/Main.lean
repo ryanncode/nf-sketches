@@ -26,6 +26,9 @@ inductive Token where
   | iff : Token
   | lparen : Token
   | rparen : Token
+  | lbrace : Token
+  | rbrace : Token
+  | bar : Token
   | forall_tok : Token
   | exists_tok : Token
   | comma : Token
@@ -39,11 +42,14 @@ partial def tokenize (s : String) : List Token :=
     | '\t' :: rest => go rest acc
     | '\n' :: rest => go rest acc
     | '\r' :: rest => go rest acc
+    | '{' :: rest => go rest (Token.lbrace :: acc)
+    | '}' :: rest => go rest (Token.rbrace :: acc)
+    | '|' :: rest => go rest (Token.bar :: acc)
     | '(' :: rest => go rest (Token.lparen :: acc)
     | ')' :: rest => go rest (Token.rparen :: acc)
     | '~' :: rest => go rest (Token.neg :: acc)
-    | 'v' :: rest => go rest (Token.disj :: acc)
-    | '&' :: rest => go rest (Token.conj :: acc)
+    | '\\' :: '/' :: rest => go rest (Token.disj :: acc)
+    | '/' :: '\\' :: rest => go rest (Token.conj :: acc)
     | '<' :: '-' :: '>' :: rest => go rest (Token.iff :: acc)
     | '<' :: rest => go rest (Token.lt :: acc)
     | '-' :: '>' :: rest => go rest (Token.impl :: acc)
@@ -130,6 +136,10 @@ partial def parsePrimary (toks : List Token) (macros : List (String × List Stri
   | Token.lparen :: rest =>
       match parseIff rest macros with
       | some (f, Token.rparen :: rest') => some (f, rest')
+      | _ => none
+  | Token.lbrace :: Token.var x :: Token.bar :: rest =>
+      match parseIff rest macros with
+      | some (f, Token.rbrace :: rest') => some (Formula.comp 0 x f, rest')
       | _ => none
   | _ => parseAtomic toks macros
 

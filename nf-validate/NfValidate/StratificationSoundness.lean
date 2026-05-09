@@ -38,6 +38,8 @@ Key requirements:
 -/
 inductive IsStratifiedAux : Nat → Formula → (ScopedVar → Int) → Prop where
 
+  | lt (s : Nat) (x y : Var) (ctx : ScopedVar → Int)
+      (h : ctx (y, s) ≤ ctx (x, s) - 1) : IsStratifiedAux s (Formula.atom (Atomic.lt x y)) ctx
   | eq (s : Nat) (x y : Var) (ctx : ScopedVar → Int)
       (h : ctx (x, s) = ctx (y, s)) : IsStratifiedAux s (Formula.atom (Atomic.eq x y)) ctx
   | mem (s : Nat) (x y : Var) (ctx : ScopedVar → Int)
@@ -128,6 +130,17 @@ theorem satisfies_append_right {d : ScopedVar → Int} {E1 E2 : List Edge}
   apply h
   simp [he]
 
+theorem stratified_lt_of_bounds (x y : Var) (s : Nat) (ctx : ScopedVar → Int)
+  (edges : List Edge)
+  (h_sat : SatisfiesGraph ctx edges)
+  (h_fwd : { src := (x, s), dst := (y, s), weight := -1 } ∈ edges) :
+  IsStratifiedAux s (Formula.atom (Atomic.lt x y)) ctx := by
+  have h1 := h_sat _ h_fwd
+  unfold SatisfiesEdge at h1
+  dsimp at h1
+  apply IsStratifiedAux.lt
+  omega
+
 theorem stratified_eq_of_bounds (x y : Var) (s : Nat) (ctx : ScopedVar → Int)
   (edges : List Edge)
   (h_sat : SatisfiesGraph ctx edges)
@@ -172,6 +185,10 @@ theorem stratified_of_satisfies (s : Nat) (f : Formula) (d : ScopedVar → Int)
   induction f generalizing s d with
   | atom a =>
     cases a with
+    | lt x y =>
+      apply stratified_lt_of_bounds x y s d (buildEdges (extractConstraintsAux s (Formula.atom (Atomic.lt x y))))
+      · exact h_sat
+      · simp [extractConstraintsAux, buildEdges]
     | eq x y =>
       apply stratified_eq_of_bounds x y s d (buildEdges (extractConstraintsAux s (Formula.atom (Atomic.eq x y))))
       · exact h_sat
@@ -355,8 +372,9 @@ theorem extractConstraintsAux_scope_parity (s : Nat) (f : Formula) (c : Constrai
   induction f generalizing s with
   | atom a =>
     cases a <;> simp [extractConstraintsAux] at h_in
-    · (rcases h_in with rfl | rfl; rfl)
-    · (rcases h_in with rfl | rfl; rfl)
+    · (rcases h_in with rfl; rfl)
+    · (rcases h_in with rfl; rfl)
+    · (rcases h_in with rfl; rfl)
     · rcases h_in with rfl | rfl <;> rfl
     · (rcases h_in with rfl; rfl)
     · (rcases h_in with rfl; rfl)
@@ -994,8 +1012,9 @@ theorem extractConstraintsAux_v1_mem (s : Nat) (f : Formula) (c : Constraint)
   induction f generalizing s with
   | atom a =>
     cases a <;> simp [extractConstraintsAux, getFormulaVarsAux] at h_in ⊢
-    · (rcases h_in with rfl | rfl; simp)
-    · (rcases h_in with rfl | rfl; simp)
+    · (rcases h_in with rfl; simp)
+    · (rcases h_in with rfl; simp)
+    · (rcases h_in with rfl; simp)
     · rcases h_in with rfl | rfl <;> simp
     · (rcases h_in with rfl; simp)
     · (rcases h_in with rfl; simp)

@@ -15,12 +15,12 @@ book:
   repo-url: https://github.com/ryanncode/nf-sketches
   chapters:
     - index.qmd
-    - 02-parse-strat.qmd
-    - 03-comblib.qmd
-    - 04-exprograms.qmd
-    - 05-nf-validate.qmd
-    - 06-seq-embed.qmd
-    - 07-untyped-comb.qmd
-    - 08-transfinite.qmd
-    - 09-categorical.qmd
-    - 10-monism.qmd
+    - 01-parse-strat.qmd
+    - 02-comblib.qmd
+    - 03-exprograms.qmd
+    - 04-nf-validate.qmd
+    - 05-seq-embed.qmd
+    - 06-untyped-comb.qmd
+    - 07-transfinite.qmd
+    - 08-categorical.qmd
+    - 09-monism.qmd

@@ -2,7 +2,7 @@
 
 ## Algorithmic Syntax Verification
 
-The `nf-validate` module serves as the primary verification matrix for the logic engine. Rather than utilizing external axioms to prevent logical loops, this module parses syntax to ensure operations conform to strict algorithmic bounds.
+The `nf-validate` module serves as the primary verification matrix for the logic engine. This is the crucial bridge where **Proof Theory** (logic and syntax) maps directly into **Graph Theory** (geometry and routing). Rather than utilizing external axioms to prevent logical loops, this module parses syntax to ensure operations conform to strict algorithmic bounds.
 
 It utilizes the principles of Quine's systemic ambiguity. The logic is computationally converted into a relative constraint graph. An operation is deemed stratifiable, and thus structurally safe, if the graph flattens without generating any negative-weight cycles. By translating syntax into graph distance semantics, contradictions natively manifest as purely geometric failures.
 

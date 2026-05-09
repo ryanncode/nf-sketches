@@ -1,4 +1,4 @@
-theorem Distributivity_LR forall x , forall A , forall B , forall C , ( x e A & ( x e B v x e C ) ) -> ( ( x e A & x e B ) v ( x e A & x e C ) )
+theorem Distributivity_LR forall x , forall A , forall B , forall C , ( x e A /\ ( x e B \/ x e C ) ) -> ( ( x e A /\ x e B ) \/ ( x e A /\ x e C ) )
 intro x
 intro A
 intro B

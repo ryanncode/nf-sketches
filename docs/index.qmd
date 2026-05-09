@@ -1,10 +1,19 @@
-# Introduction and Setup
+# Introduction and Setup {.unnumbered}
 
 ## The Acyclic Lean Architecture
 
 The `nf-sketches` repository provides a computationally verifiable, topologically-bound combinatory logic engine. This documentation guides engineers and researchers through the ecosystem's theoretical validation matrix.
 
-The primary objective of this architecture is to resolve cyclical logic constraints without relying on external garbage collection, hierarchical universes (like HoTT or ZFC), or global substitution environments. By formalizing Quine's systemic ambiguity into geometric routing rules, the logic engine natively processes highly entangled variables by extracting topological paths directly from the Abstract Syntax Tree (AST). 
+The primary objective of this architecture is to resolve cyclical logic constraints without relying on external garbage collection, hierarchical universes (like HoTT or ZFC), or global substitution environments. By formalizing Quine's systemic ambiguity (the idea that sets can shift their typestate dynamically without strict ontological boundaries) into geometric routing rules, the logic engine natively processes highly entangled variables by extracting topological paths directly from the Abstract Syntax Tree (AST). 
+
+### A Multidisciplinary Convergence
+
+At first glance, this repository may seem to jump between disparate fields. This is intentional. The engine synthesizes four distinct domains into a single computational pipeline:
+
+1. **Proof Theory (Sequents, Natural Deduction):** Provides the syntax and logical rules (Quine's NF) ensuring the math is rigorously sound.
+2. **Graph Theory (Bellman-Ford, DAGs):** Translates those logical rules into geometric constraints, converting paradoxes into detectable "negative-weight cycles."
+3. **Combinatory Logic ($S$, $K$, $Y$):** Flattens the verified graph into an untyped, variable-free state, perfectly suited for bare-metal and parallel GPU execution.
+4. **Theoretical Physics (Observables, Resonance):** Acts as the ultimate stress test. By treating unstratified combinatorial loops as thermodynamic systems, we measure the "friction" of logic itself, producing computational analogs to physical knots.
 
 This repository functions as the theoretical **laboratory**—utilizing Lean's trusted kernel to formally prove algorithmic stratification, K-Iteration limits, and topological boundaries. It conducts the rigorous diagnostic work required to secure cryptographic certainty before the mathematical concepts are independently forged into custom bare-metal engines (like the Rust-based `monist` engine).
 

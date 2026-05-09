@@ -4,359 +4,359 @@
     "href": "index.html",
     "title": "NF Sketches: Documentation",
     "section": "",
-    "text": "1 Introduction and Setup",
+    "text": "Introduction and Setup",
     "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction and Setup</span>"
+      "Introduction and Setup"
     ]
   },
   {
     "objectID": "index.html#the-acyclic-lean-architecture",
     "href": "index.html#the-acyclic-lean-architecture",
     "title": "NF Sketches: Documentation",
-    "section": "1.1 The Acyclic Lean Architecture",
-    "text": "1.1 The Acyclic Lean Architecture\nThe nf-sketches repository provides a computationally verifiable, topologically-bound combinatory logic engine. This documentation guides engineers and researchers through the ecosystem’s theoretical validation matrix.\nThe primary objective of this architecture is to resolve cyclical logic constraints without relying on external garbage collection, hierarchical universes (like HoTT or ZFC), or global substitution environments. By formalizing Quine’s systemic ambiguity into geometric routing rules, the logic engine natively processes highly entangled variables by extracting topological paths directly from the Abstract Syntax Tree (AST).\nThis repository functions as the theoretical laboratory—utilizing Lean’s trusted kernel to formally prove algorithmic stratification, K-Iteration limits, and topological boundaries. It conducts the rigorous diagnostic work required to secure cryptographic certainty before the mathematical concepts are independently forged into custom bare-metal engines (like the Rust-based monist engine).",
+    "section": "The Acyclic Lean Architecture",
+    "text": "The Acyclic Lean Architecture\nThe nf-sketches repository provides a computationally verifiable, topologically-bound combinatory logic engine. This documentation guides engineers and researchers through the ecosystem’s theoretical validation matrix.\nThe primary objective of this architecture is to resolve cyclical logic constraints without relying on external garbage collection, hierarchical universes (like HoTT or ZFC), or global substitution environments. By formalizing Quine’s systemic ambiguity (the idea that sets can shift their typestate dynamically without strict ontological boundaries) into geometric routing rules, the logic engine natively processes highly entangled variables by extracting topological paths directly from the Abstract Syntax Tree (AST).\n\nA Multidisciplinary Convergence\nAt first glance, this repository may seem to jump between disparate fields. This is intentional. The engine synthesizes four distinct domains into a single computational pipeline:\n\nProof Theory (Sequents, Natural Deduction): Provides the syntax and logical rules (Quine’s NF) ensuring the math is rigorously sound.\nGraph Theory (Bellman-Ford, DAGs): Translates those logical rules into geometric constraints, converting paradoxes into detectable “negative-weight cycles.”\nCombinatory Logic (\\(S\\), \\(K\\), \\(Y\\)): Flattens the verified graph into an untyped, variable-free state, perfectly suited for bare-metal and parallel GPU execution.\nTheoretical Physics (Observables, Resonance): Acts as the ultimate stress test. By treating unstratified combinatorial loops as thermodynamic systems, we measure the “friction” of logic itself, producing computational analogs to physical knots.\n\nThis repository functions as the theoretical laboratory—utilizing Lean’s trusted kernel to formally prove algorithmic stratification, K-Iteration limits, and topological boundaries. It conducts the rigorous diagnostic work required to secure cryptographic certainty before the mathematical concepts are independently forged into custom bare-metal engines (like the Rust-based monist engine).",
     "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction and Setup</span>"
+      "Introduction and Setup"
     ]
   },
   {
     "objectID": "index.html#practical-setup",
     "href": "index.html#practical-setup",
     "title": "NF Sketches: Documentation",
-    "section": "1.2 Practical Setup",
-    "text": "1.2 Practical Setup\nThe environment is built utilizing Lean 4, which acts as the static verification oracle.\nTo initialize the operational environment across all sub-modules (nf-validate, parse-strat, seq-embed, and untyped-comb), execute the provided build scripts:\n#| label: build-script\n#| eval: false\n\n./update-lean.sh\nlake build\nThese commands synchronize the mathematical verification matrices with the exact mathlib cache required for the topological algorithms.",
+    "section": "Practical Setup",
+    "text": "Practical Setup\nThe environment is built utilizing Lean 4, which acts as the static verification oracle.\nTo initialize the operational environment across all sub-modules (nf-validate, parse-strat, seq-embed, and untyped-comb), execute the provided build scripts:\n#| label: build-script\n#| eval: false\n\n./update-lean.sh\nlake build\nThese commands synchronize the mathematical verification matrices with the exact mathlib cache required for the topological algorithms.",
     "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction and Setup</span>"
+      "Introduction and Setup"
     ]
   },
   {
     "objectID": "index.html#the-workflow-paradigm",
     "href": "index.html#the-workflow-paradigm",
     "title": "NF Sketches: Documentation",
-    "section": "1.3 The Workflow Paradigm",
-    "text": "1.3 The Workflow Paradigm\nThe development lifecycle within nf-sketches follows a distinct progression from string parsing to combinatory execution limits:\n\nInteractive Sandbox (parse-strat): Users first define logical constraints using standard ASCII syntax to test stratification boundaries and manually trace Extensionality Collisions.\nStatic Validation (nf-validate): The logic is converted into constraint algebra, running Bellman-Ford evaluation to intercept topological paradoxes as negative-weight cycles.\nFormal Diagnostics (seq-embed): Deep embedding of Sequent Calculus simulating cut-reduction dynamically against comprehension axioms.\nPrimitive Assembly (CombLib & untyped-comb): Mathematical concepts are assembled via variable-free combinators, bypassing dependent types entirely.\nExecutable Deployment (ExPrograms): Verified logic structures are deployed as functional scripts that map natively onto Interaction Nets, setting the physical proofs for combinatorial execution algorithms.",
+    "section": "The Workflow Paradigm",
+    "text": "The Workflow Paradigm\nThe development lifecycle within nf-sketches follows a distinct progression from string parsing to combinatory execution limits:\n\nInteractive Sandbox (parse-strat): Users first define logical constraints using standard ASCII syntax to test stratification boundaries and manually trace Extensionality Collisions.\nStatic Validation (nf-validate): The logic is converted into constraint algebra, running Bellman-Ford evaluation to intercept topological paradoxes as negative-weight cycles.\nFormal Diagnostics (seq-embed): Deep embedding of Sequent Calculus simulating cut-reduction dynamically against comprehension axioms.\nPrimitive Assembly (CombLib & untyped-comb): Mathematical concepts are assembled via variable-free combinators, bypassing dependent types entirely.\nExecutable Deployment (ExPrograms): Verified logic structures are deployed as functional scripts that map natively onto Interaction Nets, setting the physical proofs for combinatorial execution algorithms.",
     "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction and Setup</span>"
+      "Introduction and Setup"
     ]
   },
   {
-    "objectID": "02-parse-strat.html",
-    "href": "02-parse-strat.html",
-    "title": "2  Interactive Diagnostics with parse-strat",
+    "objectID": "01-parse-strat.html",
+    "href": "01-parse-strat.html",
+    "title": "1  Interactive Diagnostics with parse-strat",
     "section": "",
-    "text": "2.1 The Diagnostic Sandbox\nThe parse-strat module provides a tactile, responsive Read-Eval-Print Loop (REPL) environment acting as a full Interactive Theorem Prover (ITP). Before dispatching hardcoded models to the formal Sequent verifier (seq-embed), researchers utilize this sandbox to manually explore the boundaries of weak stratification constraints in Quine’s New Foundations using classical Natural Deduction tactics.\nThe REPL is supported by a powerful topological graph-flattening backend, giving immediate feedback on Extensionality bounds.",
+    "text": "1.1 The Diagnostic Sandbox\nThe parse-strat module provides a tactile, responsive Read-Eval-Print Loop (REPL) environment acting as a full Interactive Theorem Prover (ITP). Before dispatching hardcoded models to the formal Sequent verifier (seq-embed), researchers utilize this sandbox to manually explore the boundaries of weak stratification constraints in Quine’s New Foundations using classical Natural Deduction tactics.\nThe REPL is supported by a powerful topological graph-flattening backend, giving immediate feedback on Extensionality bounds.",
     "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Interactive Diagnostics with `parse-strat`</span>"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Interactive Diagnostics with `parse-strat`</span>"
     ]
   },
   {
-    "objectID": "02-parse-strat.html#tactical-workflow-geometric-feedback",
-    "href": "02-parse-strat.html#tactical-workflow-geometric-feedback",
-    "title": "2  Interactive Diagnostics with parse-strat",
-    "section": "2.2 Tactical Workflow & Geometric Feedback",
-    "text": "2.2 Tactical Workflow & Geometric Feedback\nTo effectively use this dual-engine architecture, users must understand how tactical symbolic reasoning maps down into raw spatial constraints. The internal constraint engine translates formulas into a geometric Directed Acyclic Graph (DAG) using specific weight mappings:\n\nEquality (x = y) / Quine Pairs (Q(a,b)): Generates a 0 weight constraint.\nMembership (x e y) / Application (z = u(v)) / Lambda: Generates a +1 weight constraint.\nStrict Typestate Offset (x &lt; y): Generates a -1 weight constraint.\n\n\n2.2.1 1. Interactive Proof Example: Strong Cantorian Preservation\nTo prove that the Quine pair preserves Strongly Cantorian (SC) sets, we first define our theorem and then use natural deduction to break it down.\n&gt; Starting proof of SC_Preservation\nITP&gt; \na : a = a\n----------------------\nforall b. ((a = Ta /\\ b = Tb) -&gt; Qab = TQab)\n\nITP&gt; \nb : b = b\na : a = a\n----------------------\n((a = Ta /\\ b = Tb) -&gt; Qab = TQab)\n\nITP&gt; \nH_SC : (a = Ta /\\ b = Tb)\nb : b = b\na : a = a\n----------------------\nQab = TQab\n\nITP&gt; \nH1 : a = Ta\nH2 : b = Tb\nb : b = b\na : a = a\n----------------------\nQab = TQab\nWe then feed the equations into the eval command, which bypasses the tactical proof state to extract topological constraints directly from the strings and run Bellman-Ford cycle detection.\nITP&gt; Stratification successful. Witness: {a@0 : 0, b@0 : 0, Ta@0 : 0, Tb@0 : 0, QTaTb@0 : 0, Qab@0 : 0, TQab@0 : 0}\nBecause no negative-weight cycles were generated, the system confirms mathematical consistency, proving that Quine pairs successfully preserve SC status without collapsing.\n\n\n2.2.2 2. Exploring Extensionality with Diagnostic Cut\nWe can manually verify how Extensionality Collisions break typestate bounds using the cut tactic.\n&gt; Starting proof of Trivial_Identity\nITP&gt; \nA : A = A\n----------------------\nA = A\n\nITP&gt; Extensionality Collision!\nContradiction Path: x@0 ∈ x@0 (-1)\n  Requires l(x@0) = l(x@0) + -1\nITP&gt; Proof aborted.\nBy intentionally introducing a saturated boundary (x e x), we can use the engine to observe exactly where the unstratifiable loop causes the engine to flag a negative-weight cycle and abort the proof.\n\n\n2.2.3 3. Subset Transitivity (Tactical Completion)\nWe can also execute complete formal derivations directly within the REPL, such as the proof of Subset Transitivity.\n&gt; Starting proof of Subset_Trans\nITP&gt; \nA : A = A\n----------------------\nforall B. forall C. forall z. (((z e A -&gt; z e B) /\\ (z e B -&gt; z e C)) -&gt; (z e A -&gt; z e C))\n\nITP&gt; \nH : ((z e A -&gt; z e B) /\\ (z e B -&gt; z e C))\nz : z = z\nC : C = C\nB : B = B\nA : A = A\n----------------------\n(z e A -&gt; z e C)\n\nITP&gt; \nH1 : (z e A -&gt; z e B)\nH2 : (z e B -&gt; z e C)\nz : z = z\nC : C = C\nB : B = B\nA : A = A\n----------------------\n(z e A -&gt; z e C)\n\nITP&gt; \nHz : z e A\nH1 : (z e A -&gt; z e B)\nH2 : (z e B -&gt; z e C)\nz : z = z\nC : C = C\nB : B = B\nA : A = A\n----------------------\nz e C\n\nITP&gt; No more goals. Proof complete!\nITP&gt; Proof accepted.\n\n\n2.2.4 4. Kuratowski Bounding Tests\nThe REPL natively parses and checks topological bounds instantly using the step command, useful for analyzing multi-level type deviations like the Kuratowski pair (\\(P = \\{\\{a\\}, \\{a, b\\}\\}\\)).\n&gt; --- Extracting Constraints ---\n{ v1 := (Var.free \"x\", 0), v2 := (Var.free \"K\", 0), diff := 1, directed := false }\n{ v1 := (Var.free \"x\", 0), v2 := (Var.free \"a\", 0), diff := 0, directed := false }\n{ v1 := (Var.free \"y\", 0), v2 := (Var.free \"K\", 0), diff := 1, directed := false }\n{ v1 := (Var.free \"y\", 0), v2 := (Var.free \"a\", 0), diff := 0, directed := false }\n{ v1 := (Var.free \"y\", 0), v2 := (Var.free \"b\", 0), diff := 0, directed := false }\n--- Graph Edges ---\n{ src := (Var.free \"x\", 0), dst := (Var.free \"K\", 0), weight := 1 }\n{ src := (Var.free \"K\", 0), dst := (Var.free \"x\", 0), weight := -1 }\n{ src := (Var.free \"x\", 0), dst := (Var.free \"a\", 0), weight := 0 }\n...\n--- Running Bellman-Ford ---\nStratification successful.\nThe constraint extraction clearly visualizes how K acts as the set boundary, routing connections symmetrically across x and y while mathematically tracking exactly how K sits above a and b.",
+    "objectID": "01-parse-strat.html#tactical-workflow-geometric-feedback",
+    "href": "01-parse-strat.html#tactical-workflow-geometric-feedback",
+    "title": "1  Interactive Diagnostics with parse-strat",
+    "section": "1.2 Tactical Workflow & Geometric Feedback",
+    "text": "1.2 Tactical Workflow & Geometric Feedback\nTo effectively use this dual-engine architecture, users must understand how tactical symbolic reasoning maps down into raw spatial constraints. The internal constraint engine translates formulas into a geometric Directed Acyclic Graph (DAG) using specific weight mappings:\n\nEquality (x = y) / Quine Pairs (Q(a,b)): Generates a 0 weight constraint.\nMembership (x e y) / Application (z = u(v)) / Lambda / Set Comprehension ({x | P(x)}): Generates a +1 weight constraint.\nStrict Typestate Offset (x &lt; y): Generates a -1 weight constraint.\n\n(Note: For a deep-dive on exactly how these constraints are extracted from the AST and verified mathematically via Bellman-Ford, see Chapter 4: The nf-validate Constraint Graph).\n\n1.2.1 1. Interactive Proof Example: Strong Cantorian Preservation\nTo prove that the Quine pair preserves Strongly Cantorian (SC) sets, we first define our theorem and then use natural deduction to break it down.\n&gt; Starting proof of SC_Preservation\nITP&gt; \na : a = a\n----------------------\nforall b. ((a = Ta /\\ b = Tb) -&gt; Qab = TQab)\n\nITP&gt; \nb : b = b\na : a = a\n----------------------\n((a = Ta /\\ b = Tb) -&gt; Qab = TQab)\n\nITP&gt; \nH_SC : (a = Ta /\\ b = Tb)\nb : b = b\na : a = a\n----------------------\nQab = TQab\n\nITP&gt; \nH1 : a = Ta\nH2 : b = Tb\nb : b = b\na : a = a\n----------------------\nQab = TQab\nWe then feed the equations into the eval command, which bypasses the tactical proof state to extract topological constraints directly from the strings and run Bellman-Ford cycle detection.\nITP&gt; Stratification successful. Witness: {a@0 : 0, b@0 : 0, Ta@0 : 0, Tb@0 : 0, QTaTb@0 : 0, Qab@0 : 0, TQab@0 : 0}\nBecause no negative-weight cycles were generated, the system confirms mathematical consistency, proving that Quine pairs successfully preserve SC status without collapsing.\n\n\n1.2.2 2. Exploring Extensionality with Diagnostic Cut\nWe can manually verify how Extensionality Collisions break typestate bounds using the cut tactic.\n&gt; Starting proof of Trivial_Identity\nITP&gt; \nA : A = A\n----------------------\nA = A\n\nITP&gt; Extensionality Collision!\nContradiction Path: x@0 ∈ x@0 (-1)\n  Requires l(x@0) = l(x@0) + -1\nITP&gt; Proof aborted.\nBy intentionally introducing a saturated boundary (x e x), we can use the engine to observe exactly where the unstratifiable loop causes the engine to flag a negative-weight cycle and abort the proof.\n\n\n1.2.3 3. Subset Transitivity (Tactical Completion)\nWe can also execute complete formal derivations directly within the REPL, such as the proof of Subset Transitivity.\n&gt; Starting proof of Subset_Trans\nITP&gt; \nA : A = A\n----------------------\nforall B. forall C. forall z. (((z e A -&gt; z e B) /\\ (z e B -&gt; z e C)) -&gt; (z e A -&gt; z e C))\n\nITP&gt; \nH : ((z e A -&gt; z e B) /\\ (z e B -&gt; z e C))\nz : z = z\nC : C = C\nB : B = B\nA : A = A\n----------------------\n(z e A -&gt; z e C)\n\nITP&gt; \nH1 : (z e A -&gt; z e B)\nH2 : (z e B -&gt; z e C)\nz : z = z\nC : C = C\nB : B = B\nA : A = A\n----------------------\n(z e A -&gt; z e C)\n\nITP&gt; \nHz : z e A\nH1 : (z e A -&gt; z e B)\nH2 : (z e B -&gt; z e C)\nz : z = z\nC : C = C\nB : B = B\nA : A = A\n----------------------\nz e C\n\nITP&gt; No more goals. Proof complete!\nITP&gt; Proof accepted.\n\n\n1.2.4 4. Kuratowski Bounding Tests\nThe REPL natively parses and checks topological bounds instantly using the step command, useful for analyzing multi-level type deviations like the Kuratowski pair (\\(P = \\{\\{a\\}, \\{a, b\\}\\}\\)).\n&gt; --- Extracting Constraints ---\n{ v1 := (Var.free \"x\", 0), v2 := (Var.free \"K\", 0), diff := 1, directed := false }\n{ v1 := (Var.free \"x\", 0), v2 := (Var.free \"a\", 0), diff := 0, directed := false }\n{ v1 := (Var.free \"y\", 0), v2 := (Var.free \"K\", 0), diff := 1, directed := false }\n{ v1 := (Var.free \"y\", 0), v2 := (Var.free \"a\", 0), diff := 0, directed := false }\n{ v1 := (Var.free \"y\", 0), v2 := (Var.free \"b\", 0), diff := 0, directed := false }\n--- Graph Edges ---\n{ src := (Var.free \"x\", 0), dst := (Var.free \"K\", 0), weight := 1 }\n{ src := (Var.free \"K\", 0), dst := (Var.free \"x\", 0), weight := -1 }\n{ src := (Var.free \"x\", 0), dst := (Var.free \"a\", 0), weight := 0 }\n...\n--- Running Bellman-Ford ---\nStratification successful.\nThe constraint extraction clearly visualizes how K acts as the set boundary, routing connections symmetrically across x and y while mathematically tracking exactly how K sits above a and b.",
     "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Interactive Diagnostics with `parse-strat`</span>"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Interactive Diagnostics with `parse-strat`</span>"
     ]
   },
   {
-    "objectID": "02-parse-strat.html#core-command-reference",
-    "href": "02-parse-strat.html#core-command-reference",
-    "title": "2  Interactive Diagnostics with parse-strat",
-    "section": "2.3 Core Command Reference",
-    "text": "2.3 Core Command Reference\n\n2.3.1 Axioms & Session Management\n\nassume &lt;name&gt; &lt;formula&gt;: Register a named axiom globally.\ntheorem &lt;name&gt; &lt;formula&gt;: Start a new proof with a target goal.\nsave_session &lt;file&gt; / load_session &lt;file&gt;: Persist proof state JSONs.\ndeff &lt;name&gt; &lt;args...&gt; := &lt;formula&gt;: Pre-compile an AST Macro.\n\n\n\n2.3.2 Interactive Tactics\n\nintro [name]: Introduce a premise.\nexact &lt;name&gt;: Close the current goal if it exactly matches the hypothesis.\ndestruct &lt;name&gt;: Break down conjunctions or disjunctions in context.\nrewrite &lt;name&gt;: Substitute variables inside the goal.\ncut &lt;formula&gt;: Introduce new hypothesis branches.\n\n\n\n2.3.3 Diagnostics\n\neval &lt;formula&gt;: Parse topological shift and halt if structural loops emerge.\nstep &lt;formula&gt;: Process a logical formula step-by-step, providing immediate feedback on geometric bounds.\n\n\n\n2.3.4 Differential SMT-LIB Ingestion\n\nlake exe parse-strat --ingest-smt &lt; out.smt: Directly ingest an exported standard SMT-LIB v2 witness generated by the Rust monist-core engine. The Lean interpreter will parse the boundaries and topological node variables, independently run its native Bellman-Ford matrix evaluator, and perform a 1-to-1 Equivalence Check against the expected success_depths or extensionality-collision-trace defined in the SMT headers.",
+    "objectID": "01-parse-strat.html#core-command-reference",
+    "href": "01-parse-strat.html#core-command-reference",
+    "title": "1  Interactive Diagnostics with parse-strat",
+    "section": "1.3 Core Command Reference",
+    "text": "1.3 Core Command Reference\n\n1.3.1 Axioms & Session Management\n\nassume &lt;name&gt; &lt;formula&gt;: Register a named axiom globally.\ntheorem &lt;name&gt; &lt;formula&gt;: Start a new proof with a target goal.\nsave_session &lt;file&gt; / load_session &lt;file&gt;: Persist proof state JSONs.\ndeff &lt;name&gt; &lt;args...&gt; := &lt;formula&gt;: Pre-compile an AST Macro.\n\n\n\n1.3.2 Interactive Tactics\n\nintro [name]: Introduce a premise.\nexact &lt;name&gt;: Close the current goal if it exactly matches the hypothesis.\ndestruct &lt;name&gt;: Break down conjunctions or disjunctions in context.\nrewrite &lt;name&gt;: Substitute variables inside the goal.\ncut &lt;formula&gt;: Introduce new hypothesis branches.\n\n\n\n1.3.3 Diagnostics\n\neval &lt;formula&gt;: Parse topological shift and halt if structural loops emerge.\nstep &lt;formula&gt;: Process a logical formula step-by-step, providing immediate feedback on geometric bounds.\n\n\n\n1.3.4 Differential SMT-LIB Ingestion\n\nlake exe parse-strat --ingest-smt &lt; out.smt: Directly ingest an exported standard SMT-LIB witness generated by the Rust monist-core engine. The Lean interpreter will parse the boundaries and topological node variables, independently run its native Bellman-Ford matrix evaluator, and perform a 1-to-1 Equivalence Check against the expected success_depths or extensionality-collision-trace defined in the SMT headers.",
     "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Interactive Diagnostics with `parse-strat`</span>"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Interactive Diagnostics with `parse-strat`</span>"
     ]
   },
   {
-    "objectID": "03-comblib.html",
-    "href": "03-comblib.html",
-    "title": "3  Using and Extending CombLib",
+    "objectID": "02-comblib.html",
+    "href": "02-comblib.html",
+    "title": "2  Using and Extending CombLib",
     "section": "",
-    "text": "3.1 The Combinatory Library\nThe CombLib module provides the native mathematical primitives for the nf-sketches logic engine. Rather than relying on the Calculus of Inductive Constructions, this library implements all mathematical logic entirely via point-free bracket abstraction using the core Comb AST.\nBy eliminating named variables during execution, the memory architecture avoids the overhead of managing substitution scopes and maps efficiently to parallel GPU evaluation pipelines (e.g. Interaction Nets).",
+    "text": "2.1 The Combinatory Library\nThe CombLib module provides the native mathematical primitives for the nf-sketches logic engine. Rather than relying on the Calculus of Inductive Constructions, this library implements all mathematical logic entirely via point-free bracket abstraction using the core Comb AST.\nBy eliminating named variables during execution, the memory architecture avoids the overhead of managing substitution scopes and maps efficiently to parallel GPU evaluation pipelines (e.g. Interaction Nets).",
     "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Using and Extending `CombLib`</span>"
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Using and Extending `CombLib`</span>"
     ]
   },
   {
-    "objectID": "03-comblib.html#transfinite-macro-primitives",
-    "href": "03-comblib.html#transfinite-macro-primitives",
-    "title": "3  Using and Extending CombLib",
-    "section": "3.2 Transfinite Macro-Primitives",
-    "text": "3.2 Transfinite Macro-Primitives\nBuilding upon the Topologically-Guided boundaries established in untyped-comb, the framework implements highly saturated configurations natively via Church Encodings:\n\nCore Operators: Node-collision Booleans (and, or, not), B-combinator-based Numerals (succ, add, mult), and inductive Lists geometries via raw bracket abstraction.\nRecursive Self-Models (\\(V \\in V\\)): The SelfModels.lean primitive constructs a mathematically robust Quine atom (\\(\\Omega = \\{\\Omega\\}\\)) natively inside the engine utilizing the Y-combinator. The architecture evaluates a structure containing an unreduced copy of itself, relying directly on K-Iteration bounds to safely halt the resulting paradox.\nChoice-Free Cardinal Arithmetic: Implements Transfinite Calculus (e.g., Cardinal Addition \\(|A| + |B|\\)) via pure bracket abstraction over disjoint union topologies. Operations are bounded structurally across stratification hierarchies using t_inject topological friction markers, completely bypassing the Axiom of Choice.\nPhysical Observables & Particles: Explicitly extracts theoretical physics metrics (Rest Mass, Coupling Constant) from structured particle knots (electron_knot) by measuring bounded topological recursion costs.",
+    "objectID": "02-comblib.html#transfinite-macro-primitives",
+    "href": "02-comblib.html#transfinite-macro-primitives",
+    "title": "2  Using and Extending CombLib",
+    "section": "2.2 Transfinite Macro-Primitives",
+    "text": "2.2 Transfinite Macro-Primitives\nBuilding upon the Topologically-Guided boundaries established in untyped-comb, the framework implements highly saturated configurations natively via Church Encodings:\n\nCore Operators: Node-collision Booleans (and, or, not), B-combinator-based Numerals (succ, add, mult), and inductive Lists geometries via raw bracket abstraction.\nRecursive Self-Models (\\(V \\in V\\)): The SelfModels.lean primitive constructs a mathematically robust Quine atom (\\(\\Omega = \\{\\Omega\\}\\)) natively inside the engine utilizing the Y-combinator. The architecture evaluates a structure containing an unreduced copy of itself, relying directly on K-Iteration bounds to safely halt the resulting paradox.\nChoice-Free Cardinal Arithmetic: Implements Transfinite Calculus (e.g., Cardinal Addition \\(|A| + |B|\\)) via pure bracket abstraction over disjoint union topologies. Operations are bounded structurally across stratification hierarchies using t_inject topological friction markers, completely bypassing the Axiom of Choice.\nPhysical Observables & Particles: By treating graph complexity as thermodynamic friction, we can model physical observables mathematically. Explicitly extracts theoretical physics metrics (Rest Mass, Coupling Constant) from structured particle knots (electron_knot) by measuring bounded topological recursion costs.",
     "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Using and Extending `CombLib`</span>"
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Using and Extending `CombLib`</span>"
     ]
   },
   {
-    "objectID": "03-comblib.html#holographic-data-search-isolation",
-    "href": "03-comblib.html#holographic-data-search-isolation",
-    "title": "3  Using and Extending CombLib",
-    "section": "3.3 Holographic Data & Search Isolation",
-    "text": "3.3 Holographic Data & Search Isolation\nBecause the engine processes a closed, saturated universe governed by Syntactic Monism, it natively supports operations based on the absolute complement (\\(\\{x \\mid x \\notin A\\}\\)), a construct strictly forbidden in standard ZFC.\nThe Holographic.lean module operationalizes this complement space. Instead of iterating through data via traditional \\(O(N)\\) list sweeps, the compiler constructs “exclusion-first” logic gate wrappers. By compiling the query to the complement mapping of the target identity, the framework evaluates a localized topological sweep that filters out non-matching paths in \\(O(1)\\) time.\nFurthermore, by passing distributed data swarms through the \\(O(V+E)\\) DAG topological sort, the pipeline actively isolates unresolvable contradictions across the entire network in linear time.",
+    "objectID": "02-comblib.html#holographic-data-search-isolation",
+    "href": "02-comblib.html#holographic-data-search-isolation",
+    "title": "2  Using and Extending CombLib",
+    "section": "2.3 Holographic Data & Search Isolation",
+    "text": "2.3 Holographic Data & Search Isolation\nBecause the engine processes a closed, saturated universe governed by Syntactic Monism, it natively supports operations based on the absolute complement (\\(\\{x \\mid x \\notin A\\}\\)), a construct strictly forbidden in standard ZFC.\nThe Holographic.lean module operationalizes this complement space. Instead of iterating through data via traditional \\(O(N)\\) list sweeps, the compiler constructs “exclusion-first” logic gate wrappers. By compiling the query to the complement mapping of the target identity, the framework evaluates a localized topological sweep that filters out non-matching paths in \\(O(1)\\) time.\nFurthermore, by passing distributed data swarms through the \\(O(V+E)\\) DAG topological sort, the pipeline actively isolates unresolvable contradictions across the entire network in linear time.",
     "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Using and Extending `CombLib`</span>"
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Using and Extending `CombLib`</span>"
     ]
   },
   {
-    "objectID": "03-comblib.html#extending-the-library",
-    "href": "03-comblib.html#extending-the-library",
-    "title": "3  Using and Extending CombLib",
-    "section": "3.4 Extending the Library",
-    "text": "3.4 Extending the Library\nDevelopers can contribute to CombLib by defining new Church-encoded structures. When extending the library, algorithms must be written strictly as combinatorial compositions.\nBecause the engine processes an unstratified universe, developers must account for structural loops natively.\n#| label: extending-comblib\n#| eval: false\n\n-- Example structure utilizing Schönfinkel primitives\ndef customCombinator : Comb :=\n  app Comb.S (app Comb.K Comb.I)\nIf an algorithm requires unbounded iteration, the developer must utilize the \\(T\\)-operator injection (Comb.t_inject) to explicitly mark the recursive topological cost, allowing the underlying geometry constraint solvers to trace the mathematical limits without infinite regress.",
+    "objectID": "02-comblib.html#extending-the-library",
+    "href": "02-comblib.html#extending-the-library",
+    "title": "2  Using and Extending CombLib",
+    "section": "2.4 Extending the Library",
+    "text": "2.4 Extending the Library\nDevelopers can contribute to CombLib by defining new Church-encoded structures. When extending the library, algorithms must be written strictly as combinatorial compositions.\nBecause the engine processes an unstratified universe, developers must account for structural loops natively.\n#| label: extending-comblib\n#| eval: false\n\n-- Example structure utilizing Schönfinkel primitives\ndef customCombinator : Comb :=\n  app Comb.S (app Comb.K Comb.I)\nIf an algorithm requires unbounded iteration, the developer must utilize the \\(T\\)-operator injection (Comb.t_inject) to explicitly mark the recursive topological cost, allowing the underlying geometry constraint solvers to trace the mathematical limits without infinite regress.",
     "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Using and Extending `CombLib`</span>"
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Using and Extending `CombLib`</span>"
     ]
   },
   {
-    "objectID": "04-exprograms.html",
-    "href": "04-exprograms.html",
-    "title": "4  Writing Executables (ExPrograms)",
+    "objectID": "03-exprograms.html",
+    "href": "03-exprograms.html",
+    "title": "3  Writing Executables (ExPrograms)",
     "section": "",
-    "text": "4.1 Assembling Executable Logic\nThe ExPrograms directory acts as the final deployment target for verified logic within the Lean theoretical laboratory. Programs written here structurally demonstrate the topological bounds functioning in real-time execution space.\nBy combining the abstract primitives generated in CombLib and binding them to the UntypedComb constraints, these executables computationally yield physical proofs of Quine’s systemic ambiguity.",
+    "text": "3.1 Assembling Executable Logic\nThe ExPrograms directory acts as the final deployment target for verified logic within the Lean theoretical laboratory. Programs written here structurally demonstrate the topological bounds functioning in real-time execution space.\nBy combining the abstract primitives generated in CombLib and binding them to the UntypedComb constraints, these executables computationally yield physical proofs of Quine’s systemic ambiguity.",
     "crumbs": [
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Writing Executables (`ExPrograms`)</span>"
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Writing Executables (`ExPrograms`)</span>"
     ]
   },
   {
-    "objectID": "04-exprograms.html#executable-diagnostics-physical-proofs",
-    "href": "04-exprograms.html#executable-diagnostics-physical-proofs",
-    "title": "4  Writing Executables (ExPrograms)",
-    "section": "4.2 Executable Diagnostics & Physical Proofs",
-    "text": "4.2 Executable Diagnostics & Physical Proofs\nThe directory provides a suite of executables that map the boundaries of unstratified logic natively without encountering standard memory blowouts.\n\n4.2.1 1. Intercepting the Russell Paradox\nEvaluating \\(R \\in R\\) (where \\(R = \\{x \\mid x \\notin x\\}\\)) normally causes unbounded recursion. The Russell.lean execution mechanically synthesizes the \\(M\\) combinator (\\(\\lambda x. x x\\)) inside the absolute complement and tracks the topological cost using Minimum Cycle Mean (MCM) approximation.\n#| label: evaluate-russell\n#| eval: false\n\ndef russellSet : Comb := absoluteComplement M\n\ndef evaluateRussell : Comb := app russellSet russellSet\n\n-- Automatically intercepts via MCM and halts cleanly as a `Comb.terminal`\n#eval normalize evaluateRussell\n\n\n4.2.2 2. Quine Atom Stabilization\nThe Quine Atom (\\(\\Omega = \\{\\Omega\\}\\)) models a set containing only an unreduced copy of itself. The QuineAtom.lean script validates that the \\(Y\\) combinator correctly maps the self-referential graph loop using the \\(U\\) combinator before it crashes the stack.\n\n\n4.2.3 3. Agentic Workflows and Sandboxed Loops\nThe framework supports simulating autonomous logic via Sandboxes. AgenticReflection.lean demonstrates an autonomous graph entity simulating a future interaction, measuring the algorithmic cost via MCM bounds, and committing the state to an SC memory lattice.\n#| label: agentic-reflection\n#| eval: false\n\ndef execute_agent_loop : IO Unit := do\n  let agent_core := Comb.I\n  let environmental_action := Comb.app Comb.S Comb.K\n\n  -- The agent constructs the hypothetical future state (A -&gt; TA boundary)\n  let hypothetical_graph := simulate_hypothetical agent_core environmental_action\n\n  -- The engine calculates the precise thermodynamic cost of the decision\n  let _evaluation_result := UntypedComb.DAG.reduce hypothetical_graph\n\n  -- The agent accepts the state and cools it into a Strongly Cantorian memory block\n  let memory_block := commit_to_memory hypothetical_graph\nAgenticPlanning.lean expands on this by building a parallel decision matrix, evaluating divergent topologies simultaneously and mechanically selecting the outcome requiring the lowest recursive topological cost.\n\n\n4.2.4 4. Simulating Causal Graph Irreducibility\nThe CausalIrreducibility.lean program simulates a local causal state colliding with the saturated world boundary. The engine dynamically computes the algorithmic randomness generated by symmetric nodes.\n#| label: causal-irreducibility\n#| eval: false\n\ndef evaluate_causal_friction : IO Unit := do\n  let local_state := Comb.I\n\n  -- Braid the local state into a symmetric node with the saturated boundary\n  let world_graph :=\n    Comb.app (Comb.app causal_braid local_state) (symmetric_node local_state saturated_boundary)\n\n  -- The engine processes the irreducible graph, injecting T-operators \n  -- dynamically at structural collision points.\n  let result := DAG.reduce world_graph\nThis physically proves that tracking dynamic extensional collisions inside a finite graph natively generates calculable syntactic friction.",
+    "objectID": "03-exprograms.html#executable-diagnostics-physical-proofs",
+    "href": "03-exprograms.html#executable-diagnostics-physical-proofs",
+    "title": "3  Writing Executables (ExPrograms)",
+    "section": "3.2 Executable Diagnostics & Physical Proofs",
+    "text": "3.2 Executable Diagnostics & Physical Proofs\nThe directory provides a suite of executables that map the boundaries of unstratified logic natively without encountering standard memory blowouts. Here, we transition from pure syntax (the realm of theorems) into geometric thermodynamics (the realm of physical bounds). When a logic engine evaluates a contradiction, it typically crashes; but by mapping that contradiction to a graph, we can physically isolate it and measure the topological “energy” it takes to resolve.\n\n3.2.1 1. Intercepting the Russell Paradox\nEvaluating \\(R \\in R\\) (where \\(R = \\{x \\mid x \\notin x\\}\\)) normally causes unbounded recursion. The Russell.lean execution mechanically synthesizes the \\(M\\) combinator (\\(\\lambda x. x x\\)) inside the absolute complement and tracks the topological cost using Minimum Cycle Mean (MCM) approximation.\n#| label: evaluate-russell\n#| eval: false\n\ndef russellSet : Comb := absoluteComplement M\n\ndef evaluateRussell : Comb := app russellSet russellSet\n\n-- Automatically intercepts via MCM and halts cleanly as a `Comb.terminal`\n#eval normalize evaluateRussell\n\n\n3.2.2 2. Quine Atom Stabilization\nThe Quine Atom (\\(\\Omega = \\{\\Omega\\}\\)) models a set containing only an unreduced copy of itself. The QuineAtom.lean script validates that the \\(Y\\) combinator correctly maps the self-referential graph loop using the \\(U\\) combinator before it crashes the stack.\n\n\n3.2.3 3. Agentic Workflows and Sandboxed Loops\nThe framework supports simulating autonomous logic via Sandboxes. AgenticReflection.lean demonstrates an autonomous graph entity simulating a future interaction, measuring the algorithmic cost via MCM bounds, and committing the state to an SC memory lattice.\n#| label: agentic-reflection\n#| eval: false\n\ndef execute_agent_loop : IO Unit := do\n  let agent_core := Comb.I\n  let environmental_action := Comb.app Comb.S Comb.K\n\n  -- The agent constructs the hypothetical future state (A -&gt; TA boundary)\n  let hypothetical_graph := simulate_hypothetical agent_core environmental_action\n\n  -- The engine calculates the precise thermodynamic cost of the decision\n  let _evaluation_result := UntypedComb.DAG.reduce hypothetical_graph\n\n  -- The agent accepts the state and cools it into a Strongly Cantorian memory block\n  let memory_block := commit_to_memory hypothetical_graph\nAgenticPlanning.lean expands on this by building a parallel decision matrix, evaluating divergent topologies simultaneously and mechanically selecting the outcome requiring the lowest recursive topological cost.\n\n\n3.2.4 4. Simulating Causal Graph Irreducibility\nThe CausalIrreducibility.lean program simulates a local causal state colliding with the saturated world boundary. The engine dynamically computes the algorithmic randomness generated by symmetric nodes.\n(Note: In the snippet below, causal_braid and symmetric_node are conceptual combinator structures defined within the script to model physical logic mapping.)\n#| label: causal-irreducibility\n#| eval: false\n\ndef evaluate_causal_friction : IO Unit := do\n  let local_state := Comb.I\n\n  -- Braid the local state into a symmetric node with the saturated boundary\n  let world_graph :=\n    Comb.app (Comb.app causal_braid local_state) (symmetric_node local_state saturated_boundary)\n\n  -- The engine processes the irreducible graph, injecting T-operators \n  -- dynamically at structural collision points.\n  let result := DAG.reduce world_graph\nThis physically proves that tracking dynamic extensional collisions inside a finite graph natively generates calculable syntactic friction.",
     "crumbs": [
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Writing Executables (`ExPrograms`)</span>"
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Writing Executables (`ExPrograms`)</span>"
     ]
   },
   {
-    "objectID": "05-nf-validate.html",
-    "href": "05-nf-validate.html",
-    "title": "5  The nf-validate Constraint Graph",
+    "objectID": "04-nf-validate.html",
+    "href": "04-nf-validate.html",
+    "title": "4  The nf-validate Constraint Graph",
     "section": "",
-    "text": "5.1 Algorithmic Syntax Verification\nThe nf-validate module serves as the primary verification matrix for the logic engine. Rather than utilizing external axioms to prevent logical loops, this module parses syntax to ensure operations conform to strict algorithmic bounds.\nIt utilizes the principles of Quine’s systemic ambiguity. The logic is computationally converted into a relative constraint graph. An operation is deemed stratifiable, and thus structurally safe, if the graph flattens without generating any negative-weight cycles. By translating syntax into graph distance semantics, contradictions natively manifest as purely geometric failures.",
+    "text": "4.1 Algorithmic Syntax Verification\nThe nf-validate module serves as the primary verification matrix for the logic engine. This is the crucial bridge where Proof Theory (logic and syntax) maps directly into Graph Theory (geometry and routing). Rather than utilizing external axioms to prevent logical loops, this module parses syntax to ensure operations conform to strict algorithmic bounds.\nIt utilizes the principles of Quine’s systemic ambiguity. The logic is computationally converted into a relative constraint graph. An operation is deemed stratifiable, and thus structurally safe, if the graph flattens without generating any negative-weight cycles. By translating syntax into graph distance semantics, contradictions natively manifest as purely geometric failures.",
     "crumbs": [
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>The `nf-validate` Constraint Graph</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>The `nf-validate` Constraint Graph</span>"
     ]
   },
   {
-    "objectID": "05-nf-validate.html#extracting-constraints",
-    "href": "05-nf-validate.html#extracting-constraints",
-    "title": "5  The nf-validate Constraint Graph",
-    "section": "5.2 Extracting Constraints",
-    "text": "5.2 Extracting Constraints\nThe compiler parses the Abstract Syntax Tree (AST) and generates a system of directed and bidirectional weights based on set-theoretic relations.\nVariables are strictly partitioned into Atomic definitions (eq, mem, qpair) and higher-order Formula wrappers.\n#| label: extract-constraints-ast\n#| eval: false\n\ndef extractConstraintsAux (scope : Nat) : Formula → List Constraint\n  | Formula.atom (Atomic.eq x y) =&gt; \n      [{ v1 := (x, scope), v2 := (y, scope), diff := 0 }]\n  | Formula.atom (Atomic.mem x y) =&gt; \n      [{ v1 := (x, scope), v2 := (y, scope), diff := 1, directed := false }]\nAs demonstrated in the extraction pipeline, structural equivalence (\\(x = y\\)) maps to a stable 0-weight constraint, while logical membership (\\(x \\in y\\)) maps to a precise topological depth shift of 1. Variables are also strictly tagged with their lexical binding depth (scope), preventing scope interference during the traversal.",
+    "objectID": "04-nf-validate.html#extracting-constraints",
+    "href": "04-nf-validate.html#extracting-constraints",
+    "title": "4  The nf-validate Constraint Graph",
+    "section": "4.2 Extracting Constraints",
+    "text": "4.2 Extracting Constraints\nThe compiler parses the Abstract Syntax Tree (AST) and generates a system of directed and bidirectional weights based on set-theoretic relations.\nVariables are strictly partitioned into Atomic definitions (eq, mem, qpair) and higher-order Formula wrappers.\n#| label: extract-constraints-ast\n#| eval: false\n\ndef extractConstraintsAux (scope : Nat) : Formula → List Constraint\n  | Formula.atom (Atomic.eq x y) =&gt; \n      [{ v1 := (x, scope), v2 := (y, scope), diff := 0 }]\n  | Formula.atom (Atomic.mem x y) =&gt; \n      [{ v1 := (x, scope), v2 := (y, scope), diff := 1, directed := false }]\nAs demonstrated in the extraction pipeline, structural equivalence (\\(x = y\\)) maps to a stable 0-weight constraint, while logical membership (\\(x \\in y\\)) maps to a precise topological depth shift of 1. Variables are also strictly tagged with their lexical binding depth (scope), preventing scope interference during the traversal.",
     "crumbs": [
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>The `nf-validate` Constraint Graph</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>The `nf-validate` Constraint Graph</span>"
     ]
   },
   {
-    "objectID": "05-nf-validate.html#graph-semantics-and-path-definitions",
-    "href": "05-nf-validate.html#graph-semantics-and-path-definitions",
-    "title": "5  The nf-validate Constraint Graph",
-    "section": "5.3 Graph Semantics and Path Definitions",
-    "text": "5.3 Graph Semantics and Path Definitions\nOnce edges are mapped, we calculate structural weight sums through geometric recursion. NfValidate.GraphSemantics natively bounds this structural execution:\n#| label: graph-path\n#| eval: false\n\ninductive Path (edges : List Edge) : ScopedVar → ScopedVar → Type where\n  | nil (u : ScopedVar) : Path edges u u\n  | cons {w : ScopedVar} (e : Edge) (h_in : e ∈ edges) (p : Path edges e.dst w) : Path edges e.src w\n\ndef pathWeight {edges : List Edge} {u v : ScopedVar} : Path edges u v → Int\n  | Path.nil _ =&gt; 0\n  | Path.cons e _ p =&gt; e.weight + pathWeight p",
+    "objectID": "04-nf-validate.html#graph-semantics-and-path-definitions",
+    "href": "04-nf-validate.html#graph-semantics-and-path-definitions",
+    "title": "4  The nf-validate Constraint Graph",
+    "section": "4.3 Graph Semantics and Path Definitions",
+    "text": "4.3 Graph Semantics and Path Definitions\nOnce edges are mapped, we calculate structural weight sums through geometric recursion. NfValidate.GraphSemantics natively bounds this structural execution:\n#| label: graph-path\n#| eval: false\n\ninductive Path (edges : List Edge) : ScopedVar → ScopedVar → Type where\n  | nil (u : ScopedVar) : Path edges u u\n  | cons {w : ScopedVar} (e : Edge) (h_in : e ∈ edges) (p : Path edges e.dst w) : Path edges e.src w\n\ndef pathWeight {edges : List Edge} {u v : ScopedVar} : Path edges u v → Int\n  | Path.nil _ =&gt; 0\n  | Path.cons e _ p =&gt; e.weight + pathWeight p",
     "crumbs": [
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>The `nf-validate` Constraint Graph</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>The `nf-validate` Constraint Graph</span>"
     ]
   },
   {
-    "objectID": "05-nf-validate.html#the-bellman-ford-matrix-soundness",
-    "href": "05-nf-validate.html#the-bellman-ford-matrix-soundness",
-    "title": "5  The nf-validate Constraint Graph",
-    "section": "5.4 The Bellman-Ford Matrix & Soundness",
-    "text": "5.4 The Bellman-Ford Matrix & Soundness\nThe graph is processed through a modified Bellman-Ford shortest-path evaluator.\n\nTopological Limits: The module mathematically restricts the depth of evaluations strictly to the number of variables present in the execution path (k_iteration_bound). This K-Iteration limit guarantees the engine halts.\nNegative Cycles: If a variable is topologically shifted in a manner that creates an unresolvable structural paradox, the algorithm surfaces it as a negative integer constraint path (NegativeCycle).\n\nTo prove this algorithmically guarantees mathematical soundness, the system maps constraint satisfiability to strict inequality theorems:\n#| label: graph-satisfiability\n#| eval: false\n\ndef SatisfiesEdge (d : ScopedVar → Int) (e : Edge) : Prop :=\n  d e.dst - d e.src ≤ e.weight\n\ntheorem no_valid_context_for_negative_cycle {edges : List Edge}\n  (nc : NegativeCycle edges) (d : ScopedVar → Int) :\n  ¬ SatisfiesGraph d edges := by\n  intro h_sat\n  have h_path := path_inequality d h_sat nc.cycle\n  have h_neg := nc.is_negative\n  omega\nThis rigid bound mathematically proves that a closed loop with a strictly negative weight precludes any valid semantic interpretation. This geometric foundation allows the engine to analyze self-referential graph reductions securely before deploying them to the untyped combinatory backend.",
+    "objectID": "04-nf-validate.html#the-bellman-ford-matrix-soundness",
+    "href": "04-nf-validate.html#the-bellman-ford-matrix-soundness",
+    "title": "4  The nf-validate Constraint Graph",
+    "section": "4.4 The Bellman-Ford Matrix & Soundness",
+    "text": "4.4 The Bellman-Ford Matrix & Soundness\nThe graph is processed through a modified Bellman-Ford shortest-path evaluator.\n\nTopological Limits: The module mathematically restricts the depth of evaluations strictly to the number of variables present in the execution path (k_iteration_bound). This K-Iteration limit guarantees the engine halts.\nNegative Cycles: If a variable is topologically shifted in a manner that creates an unresolvable structural paradox, the algorithm surfaces it as a negative integer constraint path (NegativeCycle).\n\nTo prove this algorithmically guarantees mathematical soundness, the system maps constraint satisfiability to strict inequality theorems:\n#| label: graph-satisfiability\n#| eval: false\n\ndef SatisfiesEdge (d : ScopedVar → Int) (e : Edge) : Prop :=\n  d e.dst - d e.src ≤ e.weight\n\ntheorem no_valid_context_for_negative_cycle {edges : List Edge}\n  (nc : NegativeCycle edges) (d : ScopedVar → Int) :\n  ¬ SatisfiesGraph d edges := by\n  intro h_sat\n  have h_path := path_inequality d h_sat nc.cycle\n  have h_neg := nc.is_negative\n  omega\nThis rigid bound mathematically proves that a closed loop with a strictly negative weight precludes any valid semantic interpretation. This geometric foundation allows the engine to analyze self-referential graph reductions securely before deploying them to the untyped combinatory backend.",
     "crumbs": [
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>The `nf-validate` Constraint Graph</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>The `nf-validate` Constraint Graph</span>"
     ]
   },
   {
-    "objectID": "06-seq-embed.html",
-    "href": "06-seq-embed.html",
-    "title": "6  The seq-embed Sequent Calculus",
+    "objectID": "05-seq-embed.html",
+    "href": "05-seq-embed.html",
+    "title": "5  The seq-embed Sequent Calculus",
     "section": "",
-    "text": "6.1 Proof-Theoretic Embedding\nThe seq-embed environment formalizes the structural proof theory required to manage logical derivations securely. By constructing a deep embedding of Gentzen’s Sequent Calculus within Lean, the architecture gains strict programmatic control over the deductive pathways before dispatching logic to the untyped-comb DAG.\nThis module fundamentally restricts classical deductive freedom. The logic engine will not evaluate a set comprehension rule within the sequent tree unless it has been explicitly authorized by a valid algorithmic graph structure.\nBy explicitly parameterizing the comprehension rule with the StratificationWitness output from the nf-validate module, the seq-embed framework mechanically locks deductive reasoning down to computable geometric boundaries.",
+    "text": "5.1 Proof-Theoretic Embedding\nThe seq-embed environment formalizes the structural proof theory required to manage logical derivations securely. By constructing a deep embedding of Gentzen’s Sequent Calculus within Lean, the architecture gains strict programmatic control over the deductive pathways before dispatching logic to the untyped-comb DAG.\nThis module fundamentally restricts classical deductive freedom. The logic engine will not evaluate a set comprehension rule within the sequent tree unless it has been explicitly authorized by a valid algorithmic graph structure.\nBy explicitly parameterizing the comprehension rule with the StratificationWitness output from the nf-validate module, the seq-embed framework mechanically locks deductive reasoning down to computable geometric boundaries.",
     "crumbs": [
-      "<span class='chapter-number'>6</span>  <span class='chapter-title'>The `seq-embed` Sequent Calculus</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>The `seq-embed` Sequent Calculus</span>"
     ]
   },
   {
-    "objectID": "06-seq-embed.html#proof-theoretic-embedding",
-    "href": "06-seq-embed.html#proof-theoretic-embedding",
-    "title": "6  The seq-embed Sequent Calculus",
+    "objectID": "05-seq-embed.html#proof-theoretic-embedding",
+    "href": "05-seq-embed.html#proof-theoretic-embedding",
+    "title": "5  The seq-embed Sequent Calculus",
     "section": "",
     "text": "#| label: compl-restriction\n#| eval: false\n\n-- The `compL` rule enforces that comprehension is strictly gated\n-- behind the successful Bellman-Ford evaluation (StratificationWitness).\n| compL {Γ Δ : Context} (A : Formula) (w : StratificationWitness) \n  (d : Derivation ⟨A :: Γ, Δ⟩) : Derivation ⟨Γ, Δ⟩",
     "crumbs": [
-      "<span class='chapter-number'>6</span>  <span class='chapter-title'>The `seq-embed` Sequent Calculus</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>The `seq-embed` Sequent Calculus</span>"
     ]
   },
   {
-    "objectID": "06-seq-embed.html#targeted-cut-reduction-and-substitution",
-    "href": "06-seq-embed.html#targeted-cut-reduction-and-substitution",
-    "title": "6  The seq-embed Sequent Calculus",
-    "section": "6.2 Targeted Cut Reduction and Substitution",
-    "text": "6.2 Targeted Cut Reduction and Substitution\nTo systematically analyze the behavior of highly entangled graph structures, the diagnostic engine simulates substitutions and evaluates intermediate lemmas via the reduceCut pipeline.\n#| label: reduce-cut\n#| eval: false\n\ndef reduceCut {Γ Δ : Context} (A : Formula) \n  (d1 : Derivation ⟨Γ, A :: Δ⟩) \n  (d2 : Derivation ⟨A :: Γ, Δ⟩) : ReduceResult Γ Δ\nThe system bypasses standard structural normalization, intentionally forcing logical substitutions dynamically back through the validation matrix. When encountering a cut against the compL rule, it invokes getSimulatedSubstitution to extract canonical targets, substitutes them, and forcefully evaluates the altered structure via evaluateFullFormula.",
+    "objectID": "05-seq-embed.html#targeted-cut-reduction-and-substitution",
+    "href": "05-seq-embed.html#targeted-cut-reduction-and-substitution",
+    "title": "5  The seq-embed Sequent Calculus",
+    "section": "5.2 Targeted Cut Reduction and Substitution",
+    "text": "5.2 Targeted Cut Reduction and Substitution\nTo systematically analyze the behavior of highly entangled graph structures, the diagnostic engine simulates substitutions and evaluates intermediate lemmas via the reduceCut pipeline.\n#| label: reduce-cut\n#| eval: false\n\ndef reduceCut {Γ Δ : Context} (A : Formula) \n  (d1 : Derivation ⟨Γ, A :: Δ⟩) \n  (d2 : Derivation ⟨A :: Γ, Δ⟩) : ReduceResult Γ Δ\nThe system bypasses standard structural normalization, intentionally forcing logical substitutions dynamically back through the validation matrix. When encountering a cut against the compL rule, it invokes getSimulatedSubstitution to extract canonical targets, substitutes them, and forcefully evaluates the altered structure via evaluateFullFormula.",
     "crumbs": [
-      "<span class='chapter-number'>6</span>  <span class='chapter-title'>The `seq-embed` Sequent Calculus</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>The `seq-embed` Sequent Calculus</span>"
     ]
   },
   {
-    "objectID": "06-seq-embed.html#the-extensionality-collision",
-    "href": "06-seq-embed.html#the-extensionality-collision",
-    "title": "6  The seq-embed Sequent Calculus",
-    "section": "6.3 The Extensionality Collision",
-    "text": "6.3 The Extensionality Collision\nThe primary analytical utility of seq-embed is calculating the operational cost of the Axiom of Extensionality.\nThe system utilizes weak stratification, which partitions the graph by binding scope, allowing local variables to re-level their integer weights dynamically. This restores grammatical substitution closure.\nHowever, the Axiom of Extensionality dictates that \\(x = y\\) mandates total structural equivalence. When dynamically re-leveled scopes collide with this rigid structural mandate, the compiler is forced to equate items with conflicting topological weights. reduceCut actively logs this exact event as an Extensionality Collision, tracking the mathematically rigorous generation of a negative-weight cycle.",
+    "objectID": "05-seq-embed.html#the-extensionality-collision",
+    "href": "05-seq-embed.html#the-extensionality-collision",
+    "title": "5  The seq-embed Sequent Calculus",
+    "section": "5.3 The Extensionality Collision",
+    "text": "5.3 The Extensionality Collision\nThe primary analytical utility of seq-embed is calculating the operational cost of the Axiom of Extensionality.\nThe system utilizes weak stratification, which partitions the graph by binding scope, allowing local variables to re-level their integer weights dynamically. This restores grammatical substitution closure.\nHowever, the Axiom of Extensionality dictates that \\(x = y\\) mandates total structural equivalence. When dynamically re-leveled scopes collide with this rigid structural mandate, the compiler is forced to equate items with conflicting topological weights. reduceCut actively logs this exact event as an Extensionality Collision, tracking the mathematically rigorous generation of a negative-weight cycle.",
     "crumbs": [
-      "<span class='chapter-number'>6</span>  <span class='chapter-title'>The `seq-embed` Sequent Calculus</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>The `seq-embed` Sequent Calculus</span>"
     ]
   },
   {
-    "objectID": "06-seq-embed.html#canonical-failure-diagnostics",
-    "href": "06-seq-embed.html#canonical-failure-diagnostics",
-    "title": "6  The seq-embed Sequent Calculus",
-    "section": "6.4 Canonical Failure Diagnostics",
-    "text": "6.4 Canonical Failure Diagnostics\nThe main executable bypasses manual REPL interaction to automatically run hardcoded, canonical derivation trees, proving the mathematical trace outputs of classical failure structures:\n\nThe Identity Collapse (idCollapse_A): Asserts \\(z = A\\) where \\(\\forall y(y \\in A \\leftrightarrow y = z)\\), immediately collapsing the \\(+1\\) level difference.\nThe Impredicative Singleton (singCollapse_A): Models the Russell variant \\(\\forall x(x \\in S \\leftrightarrow x \\notin w)\\). Substituting \\(w = S\\) catches the breakdown when Extensionality attempts to globally unify the disparate levels.\nThe Transitive Membership Collapse: Cuts a transitive chain (\\(y \\in A \\land A \\in B \\land B \\in C\\)) against the assertion \\(A = C\\), proving the engine can isolate multi-tiered negative cycles across expanded geometric intervals.\nRussell-Prawitz Normalization Breakdown: Computationally intercepts the proof-theoretic infinite regress of \\(R \\in R\\), proving the geometric self-loop halts.\nKuratowski Ordered Pair Type-Shift: Asserts an ordered pair \\(P\\) is identical to its foundational element (\\(P = A\\)), detecting the unstratifiable topological collapse across multiple hierarchical boundaries.",
+    "objectID": "05-seq-embed.html#canonical-failure-diagnostics",
+    "href": "05-seq-embed.html#canonical-failure-diagnostics",
+    "title": "5  The seq-embed Sequent Calculus",
+    "section": "5.4 Canonical Failure Diagnostics",
+    "text": "5.4 Canonical Failure Diagnostics\nThe main executable bypasses manual REPL interaction to automatically run hardcoded, canonical derivation trees, proving the mathematical trace outputs of classical failure structures:\n\nThe Identity Collapse (idCollapse_A): Asserts \\(z = A\\) where \\(\\forall y(y \\in A \\leftrightarrow y = z)\\), immediately collapsing the \\(+1\\) level difference.\nThe Impredicative Singleton (singCollapse_A): Models the Russell variant \\(\\forall x(x \\in S \\leftrightarrow x \\notin w)\\). Substituting \\(w = S\\) catches the breakdown when Extensionality attempts to globally unify the disparate levels.\nThe Transitive Membership Collapse: Cuts a transitive chain (\\(y \\in A \\land A \\in B \\land B \\in C\\)) against the assertion \\(A = C\\), proving the engine can isolate multi-tiered negative cycles across expanded geometric intervals.\nRussell-Prawitz Normalization Breakdown: Computationally intercepts the proof-theoretic infinite regress of \\(R \\in R\\), proving the geometric self-loop halts.\nKuratowski Ordered Pair Type-Shift: Asserts an ordered pair \\(P\\) is identical to its foundational element (\\(P = A\\)), detecting the unstratifiable topological collapse across multiple hierarchical boundaries.",
     "crumbs": [
-      "<span class='chapter-number'>6</span>  <span class='chapter-title'>The `seq-embed` Sequent Calculus</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>The `seq-embed` Sequent Calculus</span>"
     ]
   },
   {
-    "objectID": "07-untyped-comb.html",
-    "href": "07-untyped-comb.html",
-    "title": "7  untyped-comb and DAG Reduction",
+    "objectID": "06-untyped-comb.html",
+    "href": "06-untyped-comb.html",
+    "title": "6  untyped-comb and DAG Reduction",
     "section": "",
-    "text": "7.1 The Combinatory Architecture\nThe untyped-comb module handles the transformation of verified logic into an executable format, acting as the critical bridge to the WGPU Physics backend. The system structurally translates the Abstract Syntax Tree (AST) away from dependent types into a flat, variable-free combinatory representation.\nThis compilation model replaces hierarchical memory structures with precise routing combinators. Variables and substitution environments are removed from the operational layer, replaced entirely by the structural fusion and duplication rules dictated by the \\(S\\) and \\(K\\) execution nodes.",
+    "text": "6.1 The Combinatory Architecture\nThe untyped-comb module handles the transformation of verified logic into an executable format, acting as the critical bridge to the WGPU Physics backend. The system structurally translates the Abstract Syntax Tree (AST) away from dependent types into a flat, variable-free combinatory representation.\nThis compilation model replaces hierarchical memory structures with precise routing combinators. Variables and substitution environments are removed from the operational layer, replaced entirely by the structural fusion and duplication rules dictated by the \\(S\\) and \\(K\\) execution nodes.",
     "crumbs": [
-      "<span class='chapter-number'>7</span>  <span class='chapter-title'>`untyped-comb` and DAG Reduction</span>"
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>`untyped-comb` and DAG Reduction</span>"
     ]
   },
   {
-    "objectID": "07-untyped-comb.html#the-combinatory-architecture",
-    "href": "07-untyped-comb.html#the-combinatory-architecture",
-    "title": "7  untyped-comb and DAG Reduction",
+    "objectID": "06-untyped-comb.html#the-combinatory-architecture",
+    "href": "06-untyped-comb.html#the-combinatory-architecture",
+    "title": "6  untyped-comb and DAG Reduction",
     "section": "",
     "text": "#| label: comb-inductive-type\n\ninductive Comb\n  | K : Comb -- Schönfinkel's C (Konstanz) / Erasure\n  | S : Comb -- Fusion / Duplication\n  | I : Comb -- Identity\n  | U : Comb -- Schönfinkel's Unverträglichkeit (NAND logic for SPE integration)\n  | var : String -&gt; Comb\n  | app : Comb -&gt; Comb -&gt; Comb\n  | t_inject : Comb -&gt; Comb -- The geometric type-shifting endofunctor\n  | lazy_thunk : Comb -&gt; Comb -- Explicit Call-by-Need thunk for impredicative boundaries\n  | terminal : String -&gt; Comb -- Stabilized terminal state",
     "crumbs": [
-      "<span class='chapter-number'>7</span>  <span class='chapter-title'>`untyped-comb` and DAG Reduction</span>"
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>`untyped-comb` and DAG Reduction</span>"
     ]
   },
   {
-    "objectID": "07-untyped-comb.html#directed-acyclic-translation-flattening",
-    "href": "07-untyped-comb.html#directed-acyclic-translation-flattening",
-    "title": "7  untyped-comb and DAG Reduction",
-    "section": "7.2 Directed Acyclic Translation & Flattening",
-    "text": "7.2 Directed Acyclic Translation & Flattening\nTo safely process highly entangled combinator streams on bare-metal hardware (like Interaction Nets with 32-bit pointers), the execution engine translates operations into a Directed Acyclic Graph (DAG).\nThe compiler executes an \\(O(V+E)\\) topological sort utilizing Kosaraju’s algorithm. By identifying 0-weight semantic cycles (Strongly Connected Components), the engine safely projects non-well-founded referential loops natively into flat structures, neutralizing exponential memory blowup prior to execution.",
+    "objectID": "06-untyped-comb.html#directed-acyclic-translation-flattening",
+    "href": "06-untyped-comb.html#directed-acyclic-translation-flattening",
+    "title": "6  untyped-comb and DAG Reduction",
+    "section": "6.2 Directed Acyclic Translation & Flattening",
+    "text": "6.2 Directed Acyclic Translation & Flattening\nTo safely process highly entangled combinator streams on bare-metal hardware (like Interaction Nets with 32-bit pointers), the execution engine translates operations into a Directed Acyclic Graph (DAG).\nThe compiler executes an \\(O(V+E)\\) topological sort utilizing Kosaraju’s algorithm. By identifying 0-weight semantic cycles (Strongly Connected Components), the engine safely projects non-well-founded referential loops natively into flat structures, neutralizing exponential memory blowup prior to execution.",
     "crumbs": [
-      "<span class='chapter-number'>7</span>  <span class='chapter-title'>`untyped-comb` and DAG Reduction</span>"
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>`untyped-comb` and DAG Reduction</span>"
     ]
   },
   {
-    "objectID": "07-untyped-comb.html#topologically-guided-lazy-reduction",
-    "href": "07-untyped-comb.html#topologically-guided-lazy-reduction",
-    "title": "7  untyped-comb and DAG Reduction",
-    "section": "7.3 Topologically-Guided Lazy Reduction",
-    "text": "7.3 Topologically-Guided Lazy Reduction\nBecause the nf-sketches architecture evaluates an unstratified universe natively, it utilizes specific mechanical safeguards to manage execution limits structurally:\n\n7.3.1 Dynamic T-Weaking Pipeline\nThe integer distances generated by the NfValidate static matrix algorithmically inform where structural friction occurs. The engine synthesizes dynamic bounds through the buildDynamicDistanceMap:\n#| label: build-dynamic-distance\n#| eval: false\n\ndef buildDynamicDistanceMap (w : StratificationWitness) (scope : Nat) : Comb → Option Int\n  | Comb.var s =&gt;\n      if s.startsWith \"_\" then\n        let n := (s.drop 1).toNat!\n        some (getWeightFromWitness w scope (Var.bound n))\n      else\n        some (getWeightFromWitness w scope (Var.free s))\n  | Comb.t_inject c =&gt;\n      match buildDynamicDistanceMap w scope c with\n      | some w_c =&gt; some (w_c + 1)\n      | none =&gt; none\nBy extracting the verified scope constraints (StratificationWitness), the compiler utilizes algorithmicTWeaking to natively inject Comb.t_inject wrappers into the graph exactly where bounds are violated. This geometric self-regulation ensures that unstratified arrays stabilize natively without an infinite type hierarchy.\n\n\n7.3.2 MCM Bounds and Terminal States\nThe Minimum Cycle Mean (MCM) calculates dynamic operational limits across semantic boundaries. When evaluating saturated subsets (e.g. \\(V \\in V\\)), the engine tracks the explicit recursion friction via explicit lazy_thunk states. When the distance map reaches a negative convergence limit, the execution is mathematically intercepted and frozen as a Comb.terminal \"K_ITERATION_HALT\".\nOnce formatted through this pipeline, the AST is perfectly pruned for WGPU parallel reduction loops where atomic Compare-And-Swap (CAS) instructions handle graph rewiring completely lock-free.",
+    "objectID": "06-untyped-comb.html#topologically-guided-lazy-reduction",
+    "href": "06-untyped-comb.html#topologically-guided-lazy-reduction",
+    "title": "6  untyped-comb and DAG Reduction",
+    "section": "6.3 Topologically-Guided Lazy Reduction",
+    "text": "6.3 Topologically-Guided Lazy Reduction\nBecause the nf-sketches architecture evaluates an unstratified universe natively, it utilizes specific mechanical safeguards to manage execution limits structurally:\n\n6.3.1 Dynamic T-Weaking Pipeline\nThe integer distances generated by the NfValidate static matrix algorithmically inform where structural friction occurs. The engine synthesizes dynamic bounds through the buildDynamicDistanceMap:\n#| label: build-dynamic-distance\n#| eval: false\n\ndef buildDynamicDistanceMap (w : StratificationWitness) (scope : Nat) : Comb → Option Int\n  | Comb.var s =&gt;\n      if s.startsWith \"_\" then\n        let n := (s.drop 1).toNat!\n        some (getWeightFromWitness w scope (Var.bound n))\n      else\n        some (getWeightFromWitness w scope (Var.free s))\n  | Comb.t_inject c =&gt;\n      match buildDynamicDistanceMap w scope c with\n      | some w_c =&gt; some (w_c + 1)\n      | none =&gt; none\nBy extracting the verified scope constraints (StratificationWitness), the compiler utilizes algorithmicTWeaking to natively inject Comb.t_inject wrappers into the graph exactly where bounds are violated. This geometric self-regulation ensures that unstratified arrays stabilize natively without an infinite type hierarchy.\n\n\n6.3.2 MCM Bounds and Terminal States\nThe Minimum Cycle Mean (MCM) calculates dynamic operational limits across semantic boundaries. When evaluating saturated subsets (e.g. \\(V \\in V\\)), the engine tracks the explicit recursion friction via explicit lazy_thunk states. When the distance map reaches a negative convergence limit, the execution is mathematically intercepted and frozen as a Comb.terminal \"K_ITERATION_HALT\".\nOnce formatted through this pipeline, the AST is perfectly pruned for WGPU parallel reduction loops where atomic Compare-And-Swap (CAS) instructions handle graph rewiring completely lock-free.",
     "crumbs": [
-      "<span class='chapter-number'>7</span>  <span class='chapter-title'>`untyped-comb` and DAG Reduction</span>"
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>`untyped-comb` and DAG Reduction</span>"
     ]
   },
   {
-    "objectID": "08-transfinite.html",
-    "href": "08-transfinite.html",
-    "title": "8  Transfinite Logic & Choice-Free Arithmetic",
+    "objectID": "07-transfinite.html",
+    "href": "07-transfinite.html",
+    "title": "7  Transfinite Logic & Choice-Free Arithmetic",
     "section": "",
-    "text": "8.1 Expanding the Axioms\nStandard mathematical frameworks like ZFC handle infinities through the Axiom of Choice and the creation of larger, ascending cardinals. nf-sketches allows the architecture to handle infinity purely geometrically through structural mapping, without relying on the Axiom of Choice or infinite universes.",
+    "text": "7.1 Expanding the Axioms\nStandard mathematical frameworks like ZFC handle infinities through the Axiom of Choice and the creation of larger, ascending cardinals. nf-sketches allows the architecture to handle infinity purely geometrically through structural mapping, without relying on the Axiom of Choice or infinite universes.",
     "crumbs": [
-      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Transfinite Logic & Choice-Free Arithmetic</span>"
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Transfinite Logic & Choice-Free Arithmetic</span>"
     ]
   },
   {
-    "objectID": "08-transfinite.html#choice-free-cardinal-arithmetic",
-    "href": "08-transfinite.html#choice-free-cardinal-arithmetic",
-    "title": "8  Transfinite Logic & Choice-Free Arithmetic",
-    "section": "8.2 Choice-Free Cardinal Arithmetic",
-    "text": "8.2 Choice-Free Cardinal Arithmetic\nThe Cardinals.lean module maps out Transfinite Calculus natively. Cardinal summation (Card_Add) is implemented via pure bracket abstraction over disjoint union topologies (\\(\\lambda \\to S, K\\)).\n#| label: add-aleph\n#| eval: false\n\n/--\n  Execute Cardinal Addition: |A| + |B| = |A ∪ B|.\n  The engine mechanically synthesizes Thomas Forster's T-operator (x ↦ ι\"x) on-the-fly,\n  shifting the relative integer weights of the variables to ensure the S and K\n  reductions remain completely type-safe through self-regulation.\n-/\ndef addAlephNulls : Comb :=\n  cardAdd aleph0 aleph0\n\n#eval normalize addAlephNulls\nBounds like \\(\\aleph_0\\) are anchored using the infinite \\(Y\\)-combinator stream generator. By synthesizing the \\(T\\)-functor mappings natively on unbound operations (such as \\(\\aleph_0 + \\aleph_0\\)), the engine mechanically aligns operations without external tracking, permanently bypassing the Axiom of Choice.",
+    "objectID": "07-transfinite.html#choice-free-cardinal-arithmetic",
+    "href": "07-transfinite.html#choice-free-cardinal-arithmetic",
+    "title": "7  Transfinite Logic & Choice-Free Arithmetic",
+    "section": "7.2 Choice-Free Cardinal Arithmetic",
+    "text": "7.2 Choice-Free Cardinal Arithmetic\nThe Cardinals.lean module maps out Transfinite Calculus natively. Cardinal summation (Card_Add) is implemented via pure bracket abstraction over disjoint union topologies (\\(\\lambda \\to S, K\\)).\n#| label: add-aleph\n#| eval: false\n\n/--\n  Execute Cardinal Addition: |A| + |B| = |A ∪ B|.\n  The engine mechanically synthesizes Thomas Forster's T-operator (x ↦ ι\"x) on-the-fly,\n  shifting the relative integer weights of the variables to ensure the S and K\n  reductions remain completely type-safe through self-regulation.\n-/\ndef addAlephNulls : Comb :=\n  cardAdd aleph0 aleph0\n\n#eval normalize addAlephNulls\nBounds like \\(\\aleph_0\\) are anchored using the infinite \\(Y\\)-combinator stream generator. By synthesizing the \\(T\\)-functor mappings natively on unbound operations (such as \\(\\aleph_0 + \\aleph_0\\)), the engine mechanically aligns operations without external tracking, permanently bypassing the Axiom of Choice.",
     "crumbs": [
-      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Transfinite Logic & Choice-Free Arithmetic</span>"
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Transfinite Logic & Choice-Free Arithmetic</span>"
     ]
   },
   {
-    "objectID": "08-transfinite.html#strongly-cantorian-retractions",
-    "href": "08-transfinite.html#strongly-cantorian-retractions",
-    "title": "8  Transfinite Logic & Choice-Free Arithmetic",
-    "section": "8.3 Strongly Cantorian Retractions",
-    "text": "8.3 Strongly Cantorian Retractions\nThe architecture restricts classical mathematical reductions within explicit, computationally verified domains. Strongly Cantorian (SC) sets are defined through the correlation function \\(K_t(t(x)) = K[t(x)]\\) and restricted by Buss’s polynomial-time computable boundaries (\\(\\Sigma_1^b\\) formulas).\n\n8.3.1 Classical Islands\nBy identifying when local graph execution operates completely inside a Strong Connected Component where \\(T(m) = m\\), the DAG.lean evaluation structure dynamically wraps these retractions in an SC_CUT isolation boundary.\nBefore execution is permitted to unwrap and return this data to the volatile exterior, it mechanically triggers Knaster-Tarski least fixpoint calculations (\\(\\text{lfp}(F)\\)) via the verifySCStability function.\n#| label: verify-sc\n#| eval: false\n\n/--\n  Define a local Strongly Cantorian Lattice representing an isolated classical island.\n  Domain: {0, 1, 2, 3, 4, 5} with standard integer ordering.\n-/\ndef local_sc_domain : SCLattice := {\n  domain := [0, 1, 2, 3, 4, 5],\n  le := fun x y =&gt; x ≤ y,\n  bottom := 0\n}\n\n/--\n  An inductive step function defined within the isolated domain.\n-/\ndef F_inductive (x : Int) : Int :=\n  if x &lt; 3 then x + 1 else 3\n\n/--\n  Calculates the Knaster-Tarski least fixpoint lfp(F).\n  This acts as the mathematical lock before allowing the result back into the\n  volatile unstratified global graph.\n-/\ndef executeSCStabilityCheck : Comb :=\n  match verifySCStability local_sc_domain F_inductive with\n  | some fixpoint =&gt;\n      app (terminal \"SC_STABLE_RESULT\") (terminal (toString fixpoint))\n  | none =&gt;\n      terminal \"SC_UNSTABLE_REJECTION\"\nThese “islands of classicality” allow choice functions and constant-time inductive logic to bypass global cycle detectors natively. It permits standard arithmetic and recursion to operate inside the unstratified graph without generating unverified topological paradoxes, effectively evaluating the Hereditarily Strongly Cantorian Class (\\(H_{stcan}\\)) to internally prove the Axiom of Counting.",
+    "objectID": "07-transfinite.html#strongly-cantorian-retractions",
+    "href": "07-transfinite.html#strongly-cantorian-retractions",
+    "title": "7  Transfinite Logic & Choice-Free Arithmetic",
+    "section": "7.3 Strongly Cantorian Retractions",
+    "text": "7.3 Strongly Cantorian Retractions\nThe architecture restricts classical mathematical reductions within explicit, computationally verified domains. Strongly Cantorian (SC) sets are defined through the correlation function \\(K_t(t(x)) = K[t(x)]\\) and restricted by Buss’s polynomial-time computable boundaries (\\(\\Sigma_1^b\\) formulas).\n\n7.3.1 Classical Islands\nBy identifying when local graph execution operates completely inside a Strong Connected Component where \\(T(m) = m\\), the DAG.lean evaluation structure dynamically wraps these retractions in an SC_CUT isolation boundary.\nBefore execution is permitted to unwrap and return this data to the volatile exterior, it mechanically triggers Knaster-Tarski least fixpoint calculations (\\(\\text{lfp}(F)\\)) via the verifySCStability function.\n#| label: verify-sc\n#| eval: false\n\n/--\n  Define a local Strongly Cantorian Lattice representing an isolated classical island.\n  Domain: {0, 1, 2, 3, 4, 5} with standard integer ordering.\n-/\ndef local_sc_domain : SCLattice := {\n  domain := [0, 1, 2, 3, 4, 5],\n  le := fun x y =&gt; x ≤ y,\n  bottom := 0\n}\n\n/--\n  An inductive step function defined within the isolated domain.\n-/\ndef F_inductive (x : Int) : Int :=\n  if x &lt; 3 then x + 1 else 3\n\n/--\n  Calculates the Knaster-Tarski least fixpoint lfp(F).\n  This acts as the mathematical lock before allowing the result back into the\n  volatile unstratified global graph.\n-/\ndef executeSCStabilityCheck : Comb :=\n  match verifySCStability local_sc_domain F_inductive with\n  | some fixpoint =&gt;\n      app (terminal \"SC_STABLE_RESULT\") (terminal (toString fixpoint))\n  | none =&gt;\n      terminal \"SC_UNSTABLE_REJECTION\"\nThese “islands of classicality” allow choice functions and constant-time inductive logic to bypass global cycle detectors natively. It permits standard arithmetic and recursion to operate inside the unstratified graph without generating unverified topological paradoxes, effectively evaluating the Hereditarily Strongly Cantorian Class (\\(H_{stcan}\\)) to internally prove the Axiom of Counting.",
     "crumbs": [
-      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Transfinite Logic & Choice-Free Arithmetic</span>"
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Transfinite Logic & Choice-Free Arithmetic</span>"
     ]
   },
   {
-    "objectID": "09-categorical.html",
-    "href": "09-categorical.html",
-    "title": "9  Categorical Semantics & The SPE Architecture",
+    "objectID": "08-categorical.html",
+    "href": "08-categorical.html",
+    "title": "8  Categorical Semantics & The SPE Architecture",
     "section": "",
-    "text": "9.1 Category Theory in a Flat Universe\nThe final phase of the nf-sketches architecture elevates the evaluated logic into applied category theory through the formal construction of the Stratified Pseudo Elephant (SPE).\nBecause standard Cartesian closure fails in a universe governed by syntactic monism, the engine shifts its topological map into categorical boundaries that allow a non-well-founded universe to safely evaluate its own internal subcategories.",
+    "text": "8.1 Category Theory in a Flat Universe\nThe final phase of the nf-sketches architecture elevates the evaluated logic into applied category theory through the formal construction of the Stratified Pseudo Elephant (SPE).\nBecause standard Cartesian closure fails in a universe governed by syntactic monism, the engine shifts its topological map into categorical boundaries that allow a non-well-founded universe to safely evaluate its own internal subcategories.",
     "crumbs": [
-      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Categorical Semantics & The SPE Architecture</span>"
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Categorical Semantics & The SPE Architecture</span>"
     ]
   },
   {
-    "objectID": "09-categorical.html#t-relative-adjunctions-pseudo-cartesian-closure",
-    "href": "09-categorical.html#t-relative-adjunctions-pseudo-cartesian-closure",
-    "title": "9  Categorical Semantics & The SPE Architecture",
-    "section": "9.2 T-Relative Adjunctions & Pseudo-Cartesian Closure",
-    "text": "9.2 T-Relative Adjunctions & Pseudo-Cartesian Closure\nClassical type theories assume the existence of an evaluation map \\(ev_{A,B}: A \\times (A \\Rightarrow B) \\to B\\). Under NF, compiling this function directly triggers an Extensionality Collision.\nThe UntypedComb/Categorical.lean module explicitly formalizes pseudo-Cartesian closure, substituting standard adjunctions with \\(T\\)-relative adjunctions. The engine algorithmically constructs a modified evaluation map:\n\\[ev'_{A,B}: TA \\times (A \\Rightarrow B) \\to TB\\]\nThis utilizes the integer bounds calculated by Bellman-Ford to ensure the \\(T\\)-functor mapping correctly shifts types across the domain interface. The framework securely formalizes the representability of the functor \\(Sub(TA \\times -)\\), successfully modeling pseudo-powerobjects alongside a subobject classifier structurally anchored by \\(T2 \\cong 2\\).",
+    "objectID": "08-categorical.html#t-relative-adjunctions-pseudo-cartesian-closure",
+    "href": "08-categorical.html#t-relative-adjunctions-pseudo-cartesian-closure",
+    "title": "8  Categorical Semantics & The SPE Architecture",
+    "section": "8.2 T-Relative Adjunctions & Pseudo-Cartesian Closure",
+    "text": "8.2 T-Relative Adjunctions & Pseudo-Cartesian Closure\nClassical type theories assume the existence of an evaluation map \\(ev_{A,B}: A \\times (A \\Rightarrow B) \\to B\\). Under NF, compiling this function directly triggers an Extensionality Collision.\nThe UntypedComb/Categorical.lean module explicitly formalizes pseudo-Cartesian closure, substituting standard adjunctions with \\(T\\)-relative adjunctions. The engine algorithmically constructs a modified evaluation map:\n\\[ev'_{A,B}: TA \\times (A \\Rightarrow B) \\to TB\\]\nThis utilizes the integer bounds calculated by Bellman-Ford to ensure the \\(T\\)-functor mapping correctly shifts types across the domain interface. The framework securely formalizes the representability of the functor \\(Sub(TA \\times -)\\), successfully modeling pseudo-powerobjects alongside a subobject classifier structurally anchored by \\(T2 \\cong 2\\).",
     "crumbs": [
-      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Categorical Semantics & The SPE Architecture</span>"
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Categorical Semantics & The SPE Architecture</span>"
     ]
   },
   {
-    "objectID": "09-categorical.html#the-scu-axiom-stratified-yoneda-execution",
-    "href": "09-categorical.html#the-scu-axiom-stratified-yoneda-execution",
-    "title": "9  Categorical Semantics & The SPE Architecture",
-    "section": "9.3 The SCU Axiom & Stratified Yoneda Execution",
-    "text": "9.3 The SCU Axiom & Stratified Yoneda Execution\nTo permit the category of NF sets to encode itself without relying on infinite Grothendieck universes, the system formalized the Strongly Cantorian Universe (SCU) axiom, computationally validating that fibrewise small map compositions maintain \\(T\\)-invariant stability.\nThe ultimate capstone of this architecture is the native combinatorial execution of the Stratified Yoneda Lemma:\n\\[Nat(C(U,-), F) \\cong T(F(U))\\]\nThrough UntypedComb/ExPrograms/YonedaTest.lean, the system directly queries the set of natural transformations from the hom-functor of the Universal Set (\\(V\\)) to a covariant presheaf \\(F\\).\n#| label: yoneda-test\n#| eval: false\n\n/--\n  Execute the Stratified Yoneda Embedding Litmus Test.\n  This queries the natural transformations from the hom-functor of the Universal Set V\n  to the covariant presheaf F natively on the untyped combinatory engine.\n-/\ndef executeYonedaEmbedding : Comb :=\n  -- eval_yoneda_V is the simulated execution wrap\n  eval_yoneda_V\n\n-- A quick boolean test proving SC bounds and returning expected isomorphic graph\n#eval! check_SC_stability_and_isomorphic_return\nThe operational litmus test confirms the structural robustness of the entire compiler stack: rather than shattering the unstratified graph into a fatal loop across \\(V\\), the engine correctly isolates the evaluation inside an SC boundary, forces the \\(T\\)-relative adjunctions, and successfully resolves the query in polynomial time. The engine structurally evaluates the universe containing itself and correctly returns the isomorphic bounds \\(T(F(V))\\).",
+    "objectID": "08-categorical.html#the-scu-axiom-stratified-yoneda-execution",
+    "href": "08-categorical.html#the-scu-axiom-stratified-yoneda-execution",
+    "title": "8  Categorical Semantics & The SPE Architecture",
+    "section": "8.3 The SCU Axiom & Stratified Yoneda Execution",
+    "text": "8.3 The SCU Axiom & Stratified Yoneda Execution\nTo permit the category of NF sets to encode itself without relying on infinite Grothendieck universes, the system formalized the Strongly Cantorian Universe (SCU) axiom, computationally validating that fibrewise small map compositions maintain \\(T\\)-invariant stability.\nThe ultimate capstone of this architecture is the native combinatorial execution of the Stratified Yoneda Lemma:\n\\[Nat(C(U,-), F) \\cong T(F(U))\\]\nThrough UntypedComb/ExPrograms/YonedaTest.lean, the system directly queries the set of natural transformations from the hom-functor of the Universal Set (\\(V\\)) to a covariant presheaf \\(F\\).\n#| label: yoneda-test\n#| eval: false\n\n/--\n  Execute the Stratified Yoneda Embedding Litmus Test.\n  This queries the natural transformations from the hom-functor of the Universal Set V\n  to the covariant presheaf F natively on the untyped combinatory engine.\n-/\ndef executeYonedaEmbedding : Comb :=\n  -- eval_yoneda_V is the simulated execution wrap\n  eval_yoneda_V\n\n-- A quick boolean test proving SC bounds and returning expected isomorphic graph\n#eval! check_SC_stability_and_isomorphic_return\nThe operational litmus test confirms the structural robustness of the entire compiler stack: rather than shattering the unstratified graph into a fatal loop across \\(V\\), the engine correctly isolates the evaluation inside an SC boundary, forces the \\(T\\)-relative adjunctions, and successfully resolves the query in polynomial time. The engine structurally evaluates the universe containing itself and correctly returns the isomorphic bounds \\(T(F(V))\\).",
     "crumbs": [
-      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Categorical Semantics & The SPE Architecture</span>"
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Categorical Semantics & The SPE Architecture</span>"
     ]
   },
   {
-    "objectID": "10-monism.html",
-    "href": "10-monism.html",
-    "title": "10  Syntactic Monism vs The Hierarchy",
+    "objectID": "09-monism.html",
+    "href": "09-monism.html",
+    "title": "9  Syntactic Monism vs The Hierarchy",
     "section": "",
-    "text": "10.1 Escaping the Universe Tower\nHomotopy Type Theory (HoTT) rewrites the foundational rules of mathematics by discarding the static, extensional sets of ZFC in favor of dynamic, intensional spaces. By defining equality as a continuous path between points, HoTT natively captures structural equivalence.\nDespite these advancements, HoTT and New Foundations (NF) propose radically different solutions to the problem of hierarchical modeling. HoTT successfully escapes the iterative construction of sets, yet retains an infinite tower of universes (U0:U1:U2…) to prevent self-referential paradoxes. The ontology remains layered.",
+    "text": "9.1 Escaping the Universe Tower\nHomotopy Type Theory (HoTT) rewrites the foundational rules of mathematics by discarding the static, extensional sets of ZFC in favor of dynamic, intensional spaces. By defining equality as a continuous path between points, HoTT natively captures structural equivalence.\nDespite these advancements, HoTT and New Foundations (NF) propose radically different solutions to the problem of hierarchical modeling. HoTT successfully escapes the iterative construction of sets, yet retains an infinite tower of universes (U0:U1:U2…) to prevent self-referential paradoxes. The ontology remains layered.",
     "crumbs": [
-      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Syntactic Monism vs The Hierarchy</span>"
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Syntactic Monism vs The Hierarchy</span>"
     ]
   },
   {
-    "objectID": "10-monism.html#escaping-the-universe-tower",
-    "href": "10-monism.html#escaping-the-universe-tower",
-    "title": "10  Syntactic Monism vs The Hierarchy",
+    "objectID": "09-monism.html#escaping-the-universe-tower",
+    "href": "09-monism.html#escaping-the-universe-tower",
+    "title": "9  Syntactic Monism vs The Hierarchy",
     "section": "",
-    "text": "10.1.1 The Syntactic Monist Contrast\nNew Foundations provides a truly flat alternative, governed by Syntactic Monism. The topology of the NF universe is singular and natively accommodates a Universal Set (\\(V\\)) containing itself. The system averts logical collapse by shifting the burden of consistency away from the ontology and onto the syntax. The restriction applies strictly to the compiler reading the code (via algorithmic stratification), shielding the physical topology from artificial layering.\n\n\n\n\n\n\n\n\n\nFeature\nZFC\nHoTT\nNF (nf-sketches)\n\n\n\n\nOntology\nIterative sets.\nSpatial types.\nSingular universal set.\n\n\nParadox Prevention\nLimitation of size.\nUniverse hierarchy.\nSyntactic stratification.\n\n\nEquivalence\nExtensional equality.\nUnivalence (paths).\nExtensionality within syntax.",
+    "text": "9.1.1 The Syntactic Monist Contrast\nNew Foundations provides a truly flat alternative, governed by Syntactic Monism. The topology of the NF universe is singular and natively accommodates a Universal Set (\\(V\\)) containing itself. The system averts logical collapse by shifting the burden of consistency away from the ontology and onto the syntax. The restriction applies strictly to the compiler reading the code (via algorithmic stratification), shielding the physical topology from artificial layering.\n\n\n\n\n\n\n\n\n\nFeature\nZFC\nHoTT\nNF (nf-sketches)\n\n\n\n\nOntology\nIterative sets.\nSpatial types.\nSingular universal set.\n\n\nParadox Prevention\nLimitation of size.\nUniverse hierarchy.\nSyntactic stratification.\n\n\nEquivalence\nExtensional equality.\nUnivalence (paths).\nExtensionality within syntax.",
     "crumbs": [
-      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Syntactic Monism vs The Hierarchy</span>"
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Syntactic Monism vs The Hierarchy</span>"
     ]
   },
   {
-    "objectID": "10-monism.html#expanding-to-dynamic-homotopy-type-theory-dhott",
-    "href": "10-monism.html#expanding-to-dynamic-homotopy-type-theory-dhott",
-    "title": "10  Syntactic Monism vs The Hierarchy",
-    "section": "10.2 Expanding to Dynamic Homotopy Type Theory (DHoTT)",
-    "text": "10.2 Expanding to Dynamic Homotopy Type Theory (DHoTT)\nLooking toward the integration with the Monist Engine, the framework explores Dynamic Homotopy Type Theory (DHoTT). By implementing drift paths and rupture types natively within an unstratified topology, the engine can formally model semantic polysemy. This directly verifies “semantic drift” within conversational AI and LLMs, intercepting contextual hallucination.",
+    "objectID": "09-monism.html#expanding-to-dynamic-homotopy-type-theory-dhott",
+    "href": "09-monism.html#expanding-to-dynamic-homotopy-type-theory-dhott",
+    "title": "9  Syntactic Monism vs The Hierarchy",
+    "section": "9.2 Expanding to Dynamic Homotopy Type Theory (DHoTT)",
+    "text": "9.2 Expanding to Dynamic Homotopy Type Theory (DHoTT)\nLooking toward the integration with the Monist Engine, the framework explores Dynamic Homotopy Type Theory (DHoTT). By implementing drift paths and rupture types natively within an unstratified topology, the engine can formally model semantic polysemy. This directly verifies “semantic drift” within conversational AI and LLMs, intercepting contextual hallucination.",
     "crumbs": [
-      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Syntactic Monism vs The Hierarchy</span>"
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Syntactic Monism vs The Hierarchy</span>"
     ]
   },
   {
-    "objectID": "10-monism.html#the-wgpu-interaction-net-horizon",
-    "href": "10-monism.html#the-wgpu-interaction-net-horizon",
-    "title": "10  Syntactic Monism vs The Hierarchy",
-    "section": "10.3 The WGPU Interaction Net Horizon",
-    "text": "10.3 The WGPU Interaction Net Horizon\nThe theoretical proofs established in the nf-sketches Lean laboratory directly inform the architecture of advanced hardware backends (like the WGPU Physics Backend implemented in monist).\nBecause Syntactic Monism produces unstratified, saturated datasets, evaluating these networks sequentially is a von Neumann bottleneck. The theoretical boundaries calculated here demonstrate how mathematical truths can be isolated and mapped onto parallel pipelines utilizing:\n\n32-Bit Tagged Pointers: Bypassing 64-bit atomic limitations across Vulkan/Metal/WebGPU.\nAutonomous GPU Dispatch: Graph rewiring and geometric evaluation executing continuously in VRAM until logical convergence.\n2-Symmetric Interaction Combinators (2-SIC): Transitioning from standard combinators to 2-Symmetric rewriting paths to guarantee absolute evaluation optimality.\nProgram Hypergraphs (PHG): Expanding Directed Acyclic Graphs to full Program Hypergraphs to natively capture multi-way relational logic, suitable for NPU Tile Mapping Algorithms.\n\nBy regulating the grammar of the query rather than compartmentalizing the fabric of the data itself, syntactic monism provides the exact blueprints required for a machine to physically evaluate reality as a unified, cohesive network.",
+    "objectID": "09-monism.html#the-wgpu-interaction-net-horizon",
+    "href": "09-monism.html#the-wgpu-interaction-net-horizon",
+    "title": "9  Syntactic Monism vs The Hierarchy",
+    "section": "9.3 The WGPU Interaction Net Horizon",
+    "text": "9.3 The WGPU Interaction Net Horizon\nThe theoretical proofs established in the nf-sketches Lean laboratory directly inform the architecture of advanced hardware backends (like the WGPU Physics Backend implemented in monist).\nBecause Syntactic Monism produces unstratified, saturated datasets, evaluating these networks sequentially is a von Neumann bottleneck. The theoretical boundaries calculated here demonstrate how mathematical truths can be isolated and mapped onto parallel pipelines utilizing:\n\n32-Bit Tagged Pointers: Bypassing 64-bit atomic limitations across Vulkan/Metal/WebGPU.\nAutonomous GPU Dispatch: Graph rewiring and geometric evaluation executing continuously in VRAM until logical convergence.\n2-Symmetric Interaction Combinators (2-SIC): Transitioning from standard combinators to 2-Symmetric rewriting paths to guarantee absolute evaluation optimality.\nProgram Hypergraphs (PHG): Expanding Directed Acyclic Graphs to full Program Hypergraphs to natively capture multi-way relational logic, suitable for NPU Tile Mapping Algorithms.\n\nBy regulating the grammar of the query rather than compartmentalizing the fabric of the data itself, syntactic monism provides the exact blueprints required for a machine to physically evaluate reality as a unified, cohesive network.",
     "crumbs": [
-      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Syntactic Monism vs The Hierarchy</span>"
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Syntactic Monism vs The Hierarchy</span>"
     ]
   }
 ]

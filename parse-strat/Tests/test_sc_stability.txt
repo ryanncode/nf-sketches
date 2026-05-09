@@ -1,8 +1,8 @@
-theorem SC_Preservation forall a , forall b , ( a = Ta & b = Tb ) -> Qab = TQab
+theorem SC_Preservation forall a , forall b , ( a = Ta /\ b = Tb ) -> Qab = TQab
 intro a
 intro b
 intro H_SC
 destruct H_SC H1 H2
 show_goal
-eval ( ( ( ( ( ( a = Ta & b = Tb ) & Qab = a ) & Qab = b ) & QTaTb = Ta ) & QTaTb = Tb ) & QTaTb = TQab ) & Qab = TQab
+eval ( ( ( ( ( ( a = Ta /\ b = Tb ) /\ Qab = a ) /\ Qab = b ) /\ QTaTb = Ta ) /\ QTaTb = Tb ) /\ QTaTb = TQab ) /\ Qab = TQab
 exit
