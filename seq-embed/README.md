@@ -33,9 +33,11 @@ The engine surfaces the resulting negative-weight cycles, which represent the gr
 
 ## Usage
 
-To run the automated diagnostic tool and view the mathematical trace outputs:
-
-```Bash
-lake build
+Execute the embedded sequent calculus and trigger the paradox trace:
+```bash
 lake exe seq-embed
 ```
+
+## Navigation
+- ⬅️ **Previous in Pipeline:** [`nf-validate`](../nf-validate/README.md)
+- 🏠 **Companion Hardware Engine:** [Monist (Rust/WGSL)](https://github.com/ryanncode/monist)

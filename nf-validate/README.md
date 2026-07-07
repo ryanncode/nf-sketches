@@ -80,3 +80,7 @@ To run the profiler:
 lake build profile-acyclic
 ./.lake/build/bin/profile-acyclic
 ```
+
+## Navigation
+- ➡️ **Next in Pipeline:** [`seq-embed`](../seq-embed/README.md)
+- 🏠 **Companion Hardware Engine:** [Monist (Rust/WGSL)](https://github.com/ryanncode/monist)
