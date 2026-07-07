@@ -6,6 +6,8 @@
   <br>
   <a href="https://ryanncode.github.io/nf-sketches/"><strong>📚 Read the Docs</strong></a>
   &nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://firstsynth.dev/"><strong>🌐 First Synth</strong></a>
+  &nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;&nbsp;
   <a href="https://thing.rodeo/monism/"><strong>🌐 Visit the Blog</strong></a>
   <br><br>
 </div>
