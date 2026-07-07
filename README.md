@@ -16,7 +16,7 @@
 
 **The Core Motivation:** Traditional set theories and type systems (like Homotopy Type Theory) rely on infinite hierarchical towers of universes (`U0:U1:U2...`) to avoid self-referential paradoxes. This introduces heavy computational friction. **NF Sketches** provides a truly flat alternative based on "Syntactic Monism." The system averts logical collapse by shifting the burden of consistency entirely away from the ontological structure onto the syntax via topological stratification constraints. This allows the logic engine to natively accommodate a Universal Set ($V \in V$) and process reality as a unified, cohesive network without artificial hierarchical scaffolding.
 
-This repository functions as the theoretical **laboratory**—utilizing Lean's trusted kernel to formally prove algorithmic stratification, K-Iteration limits, and topological boundaries. It conducts the rigorous diagnostic work required to secure cryptographic certainty before the concepts are independently forged into the custom bare-metal engine.
+This repository functions as the theoretical **laboratory**—utilizing Lean's trusted kernel to formally prove algorithmic stratification, K-Iteration limits, and topological boundaries. It conducts the rigorous diagnostic work required to secure cryptographic certainty before the concepts are independently forged into the custom bare-metal engine, [Monist](https://github.com/ryanncode/monist).
 
 ---
 

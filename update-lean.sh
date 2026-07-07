@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-PROJECTS=("nf-validate" "parse-strat" "seq-embed")
+PROJECTS=("nf-validate" "parse-strat" "seq-embed" "untyped-comb")
 
 echo "Starting Lean & Mathlib update process for all projects..."
 

@@ -74,6 +74,7 @@ def freeVarsVar : Var → List Var
 def freeVars : Formula → List Var
   | Formula.atom (Atomic.eq y z) => freeVarsVar y ++ freeVarsVar z
   | Formula.atom (Atomic.mem y z) => freeVarsVar y ++ freeVarsVar z
+  | Formula.atom (Atomic.lt y z) => freeVarsVar y ++ freeVarsVar z
   | Formula.atom (Atomic.qpair p x y) => freeVarsVar p ++ freeVarsVar x ++ freeVarsVar y
   | Formula.atom (Atomic.qproj1 z p) => freeVarsVar z ++ freeVarsVar p
   | Formula.atom (Atomic.qproj2 z p) => freeVarsVar z ++ freeVarsVar p
@@ -96,6 +97,7 @@ def openVar (k : Nat) (t : Var) (v : Var) : Var :=
 def openFormula (k : Nat) (t : Var) : Formula → Formula
   | Formula.atom (Atomic.eq y z) => Formula.atom (Atomic.eq (openVar k t y) (openVar k t z))
   | Formula.atom (Atomic.mem y z) => Formula.atom (Atomic.mem (openVar k t y) (openVar k t z))
+  | Formula.atom (Atomic.lt y z) => Formula.atom (Atomic.lt (openVar k t y) (openVar k t z))
   | Formula.atom (Atomic.qpair p x y) => Formula.atom (Atomic.qpair (openVar k t p) (openVar k t x) (openVar k t y))
   | Formula.atom (Atomic.qproj1 z p) => Formula.atom (Atomic.qproj1 (openVar k t z) (openVar k t p))
   | Formula.atom (Atomic.qproj2 z p) => Formula.atom (Atomic.qproj2 (openVar k t z) (openVar k t p))
@@ -121,6 +123,7 @@ def shiftScopeVar (_s : Nat) : Var → Var
 def shiftScope : Nat → Formula → Formula
   | s, Formula.atom (Atomic.eq y z) => Formula.atom (Atomic.eq (shiftScopeVar s y) (shiftScopeVar s z))
   | s, Formula.atom (Atomic.mem y z) => Formula.atom (Atomic.mem (shiftScopeVar s y) (shiftScopeVar s z))
+  | s, Formula.atom (Atomic.lt y z) => Formula.atom (Atomic.lt (shiftScopeVar s y) (shiftScopeVar s z))
   | s, Formula.atom (Atomic.qpair p y z) => Formula.atom (Atomic.qpair (shiftScopeVar s p) (shiftScopeVar s y) (shiftScopeVar s z))
   | s, Formula.atom (Atomic.qproj1 z p) => Formula.atom (Atomic.qproj1 (shiftScopeVar s z) (shiftScopeVar s p))
   | s, Formula.atom (Atomic.qproj2 z p) => Formula.atom (Atomic.qproj2 (shiftScopeVar s z) (shiftScopeVar s p))
@@ -143,6 +146,7 @@ def shiftScope : Nat → Formula → Formula
 def substitute (x : String) (t : Var) : Formula → Formula
   | Formula.atom (Atomic.eq y z) => Formula.atom (Atomic.eq (substituteVar x t y) (substituteVar x t z))
   | Formula.atom (Atomic.mem y z) => Formula.atom (Atomic.mem (substituteVar x t y) (substituteVar x t z))
+  | Formula.atom (Atomic.lt y z) => Formula.atom (Atomic.lt (substituteVar x t y) (substituteVar x t z))
   | Formula.atom (Atomic.qpair p y z) => Formula.atom (Atomic.qpair (substituteVar x t p) (substituteVar x t y) (substituteVar x t z))
   | Formula.atom (Atomic.qproj1 z p) => Formula.atom (Atomic.qproj1 (substituteVar x t z) (substituteVar x t p))
   | Formula.atom (Atomic.qproj2 z p) => Formula.atom (Atomic.qproj2 (substituteVar x t z) (substituteVar x t p))

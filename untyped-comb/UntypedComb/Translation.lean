@@ -21,6 +21,7 @@ def orComb : Comb := Booleans.or
 -- Missing combinators: eq, mem, forall, etc. For now we use abstract vars.
 def eqComb : Comb := Comb.var "EQ"
 def memComb : Comb := Comb.var "MEM"
+def ltComb : Comb := Comb.var "LT"
 def qpairComb : Comb := Comb.var "QPAIR"
 def qproj1Comb : Comb := Comb.var "QPROJ1"
 def qproj2Comb : Comb := Comb.var "QPROJ2"
@@ -28,6 +29,7 @@ def qproj2Comb : Comb := Comb.var "QPROJ2"
 def translateAtomic : Atomic → Comb
   | Atomic.eq x y => Comb.app (Comb.app eqComb (translateVar x)) (translateVar y)
   | Atomic.mem x y => Comb.app (Comb.app memComb (translateVar x)) (translateVar y)
+  | Atomic.lt x y => Comb.app (Comb.app ltComb (translateVar x)) (translateVar y)
   | Atomic.qpair p x y => Comb.app (Comb.app (Comb.app qpairComb (translateVar p)) (translateVar x)) (translateVar y)
   | Atomic.qproj1 z p => Comb.app (Comb.app qproj1Comb (translateVar z)) (translateVar p)
   | Atomic.qproj2 z p => Comb.app (Comb.app qproj2Comb (translateVar z)) (translateVar p)
