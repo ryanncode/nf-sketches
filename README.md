@@ -14,11 +14,13 @@ _A proof-theoretic engine utilizing Lean 4 for_ $O(V+E)$ _topological bounds che
 
 ---
 
-**NF Sketches** provides a bifurcated architecture designed to natively process saturated states, highly entangled sets, and self-referential graph evaluations. By utilizing Lean for $O(V+E)$ topological bounds checking, the engine translates syntax into a Directed Acyclic Graph (DAG). It then algorithmically compiles the verified logic into a flat operational domain of untyped $S$ and $K$ combinators.
+## The Dual-Verification Pipeline
+
+Structural certainty requires mathematical rigor. This repository serves as the formal half of our fully synchronized **Differential Equivalence Testing** pipeline. It links the high-speed Rust evaluator ([The Monist Engine](https://github.com/ryanncode/monist)) to a machine-checked mathematical embedding in Lean 4.
+
+When a geometric compilation occurs in Monist, the core engine exports an SMT-LIB witness explicitly capturing the graph's evaluation limits. This Lean interpreter ingests that block via an independent Bellman-Ford implementation to trace the identical constraints. By doing so, **NF Sketches** mathematically proves that the bare-metal GPU execution matches machine-checked logical soundness.
 
 **The Core Motivation:** Traditional set theories and type systems (like Homotopy Type Theory) rely on infinite hierarchical towers of universes (`U0:U1:U2...`) to avoid self-referential paradoxes. This introduces heavy computational friction. **NF Sketches** provides a truly flat alternative based on "Syntactic Monism." The system averts logical collapse by shifting the burden of consistency entirely away from the ontological structure onto the syntax via topological stratification constraints. This allows the logic engine to natively accommodate a Universal Set ($V \in V$) and process reality as a unified, cohesive network without artificial hierarchical scaffolding.
-
-This repository functions as the theoretical **laboratory**—utilizing Lean's trusted kernel to formally prove algorithmic stratification, K-Iteration limits, and topological boundaries. It conducts the rigorous diagnostic work required to secure cryptographic certainty before the concepts are independently forged into the custom bare-metal engine, [Monist](https://github.com/ryanncode/monist).
 
 ---
 
