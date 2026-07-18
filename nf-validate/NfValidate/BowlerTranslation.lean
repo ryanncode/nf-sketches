@@ -85,56 +85,74 @@ def acyclicUnion (scope : Nat) (x a b : Var) : Formula :=
 def getNeighbors (edges : List Edge) (u : ScopedVar) : List ScopedVar :=
   edges.filter (fun e => e.src == u && e.weight == 0) |>.map (fun e => e.dst)
 
-/--
-  Retrieves the backward (reversed) neighbors of a vertex `u` by filtering edges where `u` is the destination
-  and the edge weight is exactly 0. Used for the second pass of Kosaraju's algorithm.
--/
-def getReverseNeighbors (edges : List Edge) (u : ScopedVar) : List ScopedVar :=
-  edges.filter (fun e => e.dst == u && e.weight == 0) |>.map (fun e => e.src)
+structure TarjanState where
+  index : Nat := 1
+  indices : List (ScopedVar × Nat) := []
+  lowlinks : List (ScopedVar × Nat) := []
+  onStack : List ScopedVar := []
+  stack : List ScopedVar := []
+  sccs : List (List ScopedVar) := []
 
-/--
-  Performs the first pass (forward DFS) of Kosaraju's algorithm to compute the finish times of vertices.
-  Returns a tuple containing the updated `visited` list and the `stack` of vertices ordered by finish time.
--/
-partial def dfsForward (edges : List Edge) (u : ScopedVar) (visited : List ScopedVar) (stack : List ScopedVar) : List ScopedVar × List ScopedVar :=
-  if visited.contains u then (visited, stack)
+def lookupIdx (k : ScopedVar) (l : List (ScopedVar × Nat)) : Nat :=
+  match l.find? (fun (id, _) => id == k) with
+  | some (_, v) => v
+  | none => 0
+
+def insertIdx (k : ScopedVar) (v : Nat) (l : List (ScopedVar × Nat)) : List (ScopedVar × Nat) :=
+  (k, v) :: l.filter (fun (id, _) => id != k)
+
+partial def tarjanSCC (edges : List Edge) (v : ScopedVar) (state : TarjanState) : TarjanState :=
+  let idx := state.index
+  let s1 := { state with 
+    indices := insertIdx v idx state.indices,
+    lowlinks := insertIdx v idx state.lowlinks,
+    index := idx + 1,
+    onStack := v :: state.onStack,
+    stack := v :: state.stack
+  }
+  
+  let neighbors := getNeighbors edges v
+  let s2 := neighbors.foldl (fun s w =>
+    if lookupIdx w s.indices == 0 then
+      let s_after := tarjanSCC edges w s
+      let low_v := lookupIdx v s_after.lowlinks
+      let low_w := lookupIdx w s_after.lowlinks
+      { s_after with lowlinks := insertIdx v (min low_v low_w) s_after.lowlinks }
+    else if s.onStack.contains w then
+      let low_v := lookupIdx v s.lowlinks
+      let index_w := lookupIdx w s.indices
+      { s with lowlinks := insertIdx v (min low_v index_w) s.lowlinks }
+    else
+      s
+  ) s1
+
+  if lookupIdx v s2.lowlinks == lookupIdx v s2.indices then
+    let rec popSCC (stack : List ScopedVar) (onStack : List ScopedVar) (scc : List ScopedVar) : List ScopedVar × List ScopedVar × List ScopedVar :=
+      match stack with
+      | [] => ([], onStack, scc)
+      | w :: rest =>
+        let newOnStack := onStack.filter (fun id => id != w)
+        let newScc := w :: scc
+        if w == v then
+          (rest, newOnStack, newScc)
+        else
+          popSCC rest newOnStack newScc
+    
+    let (newStack, newOnStack, scc) := popSCC s2.stack s2.onStack []
+    { s2 with stack := newStack, onStack := newOnStack, sccs := scc :: s2.sccs }
   else
-    let neighbors := getNeighbors edges u
-    let (v_after, s_after) := neighbors.foldl (fun (v_acc, s_acc) n =>
-      dfsForward edges n v_acc s_acc
-    ) (u :: visited, stack)
-    (v_after, u :: s_after)
+    s2
 
 /--
-  Performs the second pass (backward DFS) of Kosaraju's algorithm on the transposed graph.
-  Extracts all vertices reachable from the start node, forming a Strongly Connected Component (SCC).
--/
-partial def dfsBackward (edges : List Edge) (u : ScopedVar) (visited : List ScopedVar) (component : List ScopedVar) : List ScopedVar × List ScopedVar :=
-  if visited.contains u then (visited, component)
-  else
-    let neighbors := getReverseNeighbors edges u
-    let (v_after, c_after) := neighbors.foldl (fun (v_acc, c_acc) n =>
-      dfsBackward edges n v_acc c_acc
-    ) (u :: visited, u :: component)
-    (v_after, c_after)
-
-/--
-  Finds all Strongly Connected Components (SCCs) connected by 0-weight edges using Kosaraju's two-pass algorithm.
+  Finds all Strongly Connected Components (SCCs) connected by 0-weight edges using Tarjan's single-pass algorithm.
   Filters out trivial components (length 1) to return only the "Harmless Cycles" where variables
   must be collapsed/fused to restore an acyclic DAG.
 -/
 def findSCCs (vars : List ScopedVar) (edges : List Edge) : List (List ScopedVar) :=
-  let (_, stack) := vars.foldl (fun (v_acc, s_acc) v =>
-    dfsForward edges v v_acc s_acc
-  ) ([], [])
-
-  let (_, sccs) := stack.foldl (fun (v_acc, comps) v =>
-    if v_acc.contains v then (v_acc, comps)
-    else
-      let (v_after, comp) := dfsBackward edges v v_acc []
-      (v_after, comp :: comps)
-  ) ([], [])
-  sccs.filter (fun c => c.length > 1)
+  let finalState := vars.foldl (fun state v =>
+    if lookupIdx v state.indices != 0 then state else tarjanSCC edges v state
+  ) {}
+  finalState.sccs.filter (fun c => c.length > 1)
 
 /--
   Given a variable `v` in a specific `scope`, checks if it belongs to a harmless cycle (SCC).

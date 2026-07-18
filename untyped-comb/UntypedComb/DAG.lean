@@ -73,44 +73,75 @@ end
 def toGraph (c : Comb) : DAG :=
   (astToGraphAux c ⟨#[], #[]⟩).1
 
--- 3. SCC Isolation (Kosaraju's)
+-- 3. SCC Isolation (Tarjan's)
 
 def getNeighbors (d : DAG) (n : NodeId) : List NodeId :=
   d.edges.toList.filter (fun e => e.src.id == n.id) |>.map (fun e => e.dst)
 
-def getReverseNeighbors (d : DAG) (n : NodeId) : List NodeId :=
-  d.edges.toList.filter (fun e => e.dst.id == n.id) |>.map (fun e => e.src)
+structure TarjanState where
+  index : Nat := 1
+  indices : List (NodeId × Nat) := []
+  lowlinks : List (NodeId × Nat) := []
+  onStack : List NodeId := []
+  stack : List NodeId := []
+  sccs : List (List NodeId) := []
 
-partial def dfsForward (d : DAG) (n : NodeId) (visited : List NodeId) (order : List NodeId) : List NodeId × List NodeId :=
-  if visited.contains n then (visited, order)
-  else
-    let neighbors := getNeighbors d n
-    let (v1, o1) := neighbors.foldl (fun (v, o) curr =>
-      dfsForward d curr v o
-    ) (n :: visited, order)
-    (v1, n :: o1)
+def lookupIdx (k : NodeId) (l : List (NodeId × Nat)) : Nat :=
+  match l.find? (fun (id, _) => id == k) with
+  | some (_, v) => v
+  | none => 0
 
-partial def dfsBackward (d : DAG) (n : NodeId) (visited : List NodeId) (scc : List NodeId) : List NodeId × List NodeId :=
-  if visited.contains n then (visited, scc)
+def insertIdx (k : NodeId) (v : Nat) (l : List (NodeId × Nat)) : List (NodeId × Nat) :=
+  (k, v) :: l.filter (fun (id, _) => id != k)
+
+partial def tarjanSCC (d : DAG) (v : NodeId) (state : TarjanState) : TarjanState :=
+  let idx := state.index
+  let s1 := { state with 
+    indices := insertIdx v idx state.indices,
+    lowlinks := insertIdx v idx state.lowlinks,
+    index := idx + 1,
+    onStack := v :: state.onStack,
+    stack := v :: state.stack
+  }
+  
+  let neighbors := getNeighbors d v
+  let s2 := neighbors.foldl (fun s w =>
+    if lookupIdx w s.indices == 0 then
+      let s_after := tarjanSCC d w s
+      let low_v := lookupIdx v s_after.lowlinks
+      let low_w := lookupIdx w s_after.lowlinks
+      { s_after with lowlinks := insertIdx v (min low_v low_w) s_after.lowlinks }
+    else if s.onStack.contains w then
+      let low_v := lookupIdx v s.lowlinks
+      let index_w := lookupIdx w s.indices
+      { s with lowlinks := insertIdx v (min low_v index_w) s.lowlinks }
+    else
+      s
+  ) s1
+
+  if lookupIdx v s2.lowlinks == lookupIdx v s2.indices then
+    let rec popSCC (stack : List NodeId) (onStack : List NodeId) (scc : List NodeId) : List NodeId × List NodeId × List NodeId :=
+      match stack with
+      | [] => ([], onStack, scc)
+      | w :: rest =>
+        let newOnStack := onStack.filter (fun id => id != w)
+        let newScc := w :: scc
+        if w == v then
+          (rest, newOnStack, newScc)
+        else
+          popSCC rest newOnStack newScc
+    
+    let (newStack, newOnStack, scc) := popSCC s2.stack s2.onStack []
+    { s2 with stack := newStack, onStack := newOnStack, sccs := scc :: s2.sccs }
   else
-    let neighbors := getReverseNeighbors d n
-    let (v1, scc1) := neighbors.foldl (fun (v, s) curr =>
-      dfsBackward d curr v s
-    ) (n :: visited, n :: scc)
-    (v1, scc1)
+    s2
 
 def findSCCs (d : DAG) : List (List NodeId) :=
-  let (_, order) := d.nodes.toList.foldl (fun (v, o) (id, _) =>
-    if v.contains id then (v, o) else dfsForward d id v o
-  ) ([], [])
-
-  let (_, sccs) := order.foldl (fun (v, sccs) id =>
-    if v.contains id then (v, sccs)
-    else
-      let (v1, scc) := dfsBackward d id v []
-      (v1, scc :: sccs)
-  ) ([], [])
-  sccs
+  let nodes := d.nodes.toList.map (fun (id, _) => id)
+  let finalState := nodes.foldl (fun state v =>
+    if lookupIdx v state.indices != 0 then state else tarjanSCC d v state
+  ) {}
+  finalState.sccs
 
 -- 4. Existential Projection Collapse
 

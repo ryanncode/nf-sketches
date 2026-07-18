@@ -12,28 +12,53 @@ Here, we model it to find the topological friction limit for the K-Iteration bou
 def calculateMinimumCycleMean (d : DAG) : Option Float :=
   let n := d.nodes.size
   if n == 0 then none else
-
-  -- We just simulate the minimum cycle mean by finding the cycle with the lowest average weight.
-  -- To keep it computable in Lean without full Karp's matrix, we can just use the SCCs
-  -- and find the cycle with the smallest sum of weights / length.
-  let sccs := findSCCs d
-  let cyclicSccs := sccs.filter (fun scc => isCyclicSCC scc d)
-
-  if cyclicSccs.isEmpty then
-    none -- No cycles, graph is a true DAG
-  else
-    -- For each cyclic SCC, find the minimum cycle weight.
-    -- For simplicity in this logical model, if an SCC has negative sum of edges, it's a negative cycle.
-    -- We assign the K-Iteration limit based on this mu*.
-    -- Here we return a mock computation that determines if we have negative cycle.
-    -- In a real implementation, we would extract exact cycles and average their weights.
-    let minMean := cyclicSccs.foldl (fun (acc : Float) scc =>
-      let edges := d.edges.toList.filter (fun e => scc.contains e.src && scc.contains e.dst)
-      let weightSum : Int := edges.foldl (fun sum e => sum + e.weight) 0
-      let mean := (Float.ofInt weightSum) / (Float.ofNat edges.length)
-      if mean < acc then mean else acc
-    ) (1000000.0) -- Infinity mock
-    some minMean
+  
+  let inf := 1000000.0
+  let negInf := -1000000.0
+  
+  let incomingEdges := (List.range n).map (fun v =>
+    d.edges.toList.filter (fun e => e.dst.id == v)
+  )
+  
+  let stepF (f_prev : List Float) : List Float :=
+    (List.range n).map (fun v =>
+      let edges_v := incomingEdges.getD v []
+      edges_v.foldl (fun acc e =>
+        let u_val := f_prev.getD e.src.id inf
+        if u_val != inf then
+          let val := u_val + Float.ofInt e.weight
+          if val < acc then val else acc
+        else acc
+      ) inf
+    )
+    
+  let f0 := List.replicate n 0.0
+  let rec buildF (k : Nat) (f_prev : List Float) (acc : List (List Float)) : List (List Float) :=
+    match k with
+    | 0 => acc.reverse
+    | k' + 1 =>
+      let f_next := stepF f_prev
+      buildF k' f_next (f_next :: acc)
+      
+  let fk_matrix := buildF n f0 [f0]
+  
+  let fn_row := fk_matrix.getD n []
+  
+  let maxVals := (List.range n).map (fun v =>
+    if fn_row.getD v inf == inf then negInf
+    else
+      let vals := (List.range n).map (fun k =>
+        let fk_row := fk_matrix.getD k []
+        let fkv := fk_row.getD v inf
+        if fkv == inf then negInf
+        else (fn_row.getD v inf - fkv) / (Float.ofNat (n - k))
+      )
+      vals.foldl (fun a b => if a > b then a else b) negInf
+  )
+  
+  let lambda_star := maxVals.foldl (fun a b => if a < b then a else b) inf
+  
+  if lambda_star == inf then none else some lambda_star
 
 def detectStratificationCollision (d : DAG) : Option String :=
   match calculateMinimumCycleMean d with
