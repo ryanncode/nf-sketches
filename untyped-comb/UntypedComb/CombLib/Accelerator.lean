@@ -25,7 +25,7 @@ def accelerate (particle : Comb) (iterations : Nat) : Comb :=
   | n + 1 =>
       -- Braid the current state with the saturated boundary,
       -- forcing a massive future topological distance calculation.
-      accelerate (Comb.lazy_thunk (Comb.app (Comb.app causal_braid particle) saturated_boundary)) n
+      accelerate (Comb.lazy_thunk 10 (Comb.app (Comb.app causal_braid particle) saturated_boundary)) n
 
 /--
   The Collision Chamber.

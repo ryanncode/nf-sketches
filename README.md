@@ -96,9 +96,9 @@ A deep embedding of Gentzen's Sequent Calculus in Lean that restricts comprehens
 
 Constructs a flat, variable-free combinatory execution environment ($S$, $K$, $I$, $U$).
 
-- **Algorithmic T-Weaking:** Synthesizes Forster's $T$-operator ($x \mapsto \iota"x$) as dynamic geometric stabilizers based on the `NfValidate` integer map.
-- **Acyclic Flattening:** Uses Kosaraju's algorithm to flatten semantic cycles.
-- **Topologically-Guided Reduction:** Uses Minimum Cycle Mean (MCM) bounds to enforce K-Iteration limits, safely evaluating paradoxical self-reference (like $V \in V$ or the Russell Set) by forcing terminal states without stack exhaustion.
+- **Algorithmic T-Weaking**: Synthesizes Forster's $T$-operator ($x \mapsto \iota"x$) as dynamic geometric stabilizers based on the `NfValidate` integer map.
+- **Acyclic Flattening**: Uses Tarjan's SCC algorithm (upgraded from Kosaraju's) to single-pass flatten semantic cycles efficiently.
+- **Topologically-Guided Reduction**: Uses Karp's Minimum Cycle Mean (MCM) bounds to enforce explicit K-Iteration limits (via `lazy_thunk` bound embedded with Okasaki's suspension limits) safely evaluating paradoxical self-reference by forcing terminal states without stack exhaustion. Uses Interaction Monoids formalization with Girard's formula (`execute_path_weight`) to algebraically map topological regress.
 
 ### 5. `CombLib`: Native Operational Semantics
 

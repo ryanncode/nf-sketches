@@ -1,4 +1,5 @@
 import UntypedComb.Core
+import UntypedComb.InteractionMonoid
 import UntypedComb.Reduction
 import UntypedComb.Topological
 import UntypedComb.Diagnostic

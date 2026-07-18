@@ -18,7 +18,7 @@ partial def hashComb : Comb → UInt64 → UInt64
   | Comb.U, acc => acc + 4
   | Comb.var _, acc => acc + 5
   | Comb.t_inject c, acc => hashComb c (acc + 6)
-  | Comb.lazy_thunk c, acc => hashComb c (acc + 7)
+  | Comb.lazy_thunk _ c, acc => hashComb c (acc + 7)
   | Comb.terminal _, acc => acc + 8
   | Comb.app c1 c2, acc => hashComb c2 (hashComb c1 (acc + 9))
 

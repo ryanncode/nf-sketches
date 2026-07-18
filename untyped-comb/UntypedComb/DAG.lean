@@ -53,9 +53,9 @@ mutual
     | Comb.U => addNode d Comb.U
     | Comb.var s => addNode d (Comb.var s)
     | Comb.terminal s => addNode d (Comb.terminal s)
-    | Comb.lazy_thunk inner =>
+    | Comb.lazy_thunk k inner =>
       let (d1, innerId) := astToGraphAux inner d
-      let (d2, selfId) := addNode d1 (Comb.lazy_thunk inner)
+      let (d2, selfId) := addNode d1 (Comb.lazy_thunk k inner)
       (addEdge d2 selfId innerId 0, selfId) -- Neutral weight for thunks
     | Comb.t_inject inner =>
       let (d1, innerId) := astToGraphAux inner d
@@ -176,11 +176,11 @@ partial def rebuildGraph (d : DAG) (sccs : List (List NodeId)) (currentNode : No
         let child0 := children.getD 0 currentNode
         Comb.t_inject (rebuildGraph d sccs child0)
       else c
-    | Comb.lazy_thunk _ =>
-      if children.length == 1 then
-        let child0 := children.getD 0 currentNode
-        Comb.lazy_thunk (rebuildGraph d sccs child0)
-      else c
+    | Comb.lazy_thunk k _ =>
+        let child0 := d.edges.filter (fun e => e.src == currentNode) |>.map (fun e => e.dst) |>.getD 0 currentNode
+        if sccs.any (fun scc => scc.contains child0) then
+          Comb.lazy_thunk k (rebuildGraph d sccs child0)
+        else c
     | _ => c
 
 def collapseSCCs (d : DAG) (sccs : List (List NodeId)) (rootId : NodeId) : Comb :=

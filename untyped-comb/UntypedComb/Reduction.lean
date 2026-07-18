@@ -37,7 +37,7 @@ def reduceStep : Comb → Option Comb
       | none => none
 
   -- Lazy thunks are only reduced if structurally required by a call
-  | Comb.lazy_thunk x => some x -- Force the thunk
+  | Comb.lazy_thunk _ x => some x -- Force the thunk
 
   -- Terminals do not reduce further
   | Comb.terminal _ => none

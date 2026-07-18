@@ -17,7 +17,7 @@ def compute_ast_depth : Comb → Nat
   | Comb.var _ => 1
   | Comb.app f x => 1 + max (compute_ast_depth f) (compute_ast_depth x)
   | Comb.t_inject x => 1 + compute_ast_depth x
-  | Comb.lazy_thunk x => 1 + compute_ast_depth x
+  | Comb.lazy_thunk _ x => 1 + compute_ast_depth x
   | Comb.terminal _ => 1
 
 /--

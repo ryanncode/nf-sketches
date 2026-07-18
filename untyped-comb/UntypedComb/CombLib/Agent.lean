@@ -17,7 +17,7 @@ open UntypedComb
 def simulate_hypothetical (current_state proposed_action : Comb) : Comb :=
   -- Braids the current state with the proposed action, suspending
   -- the evaluation inside a lazy thunk to prevent immediate execution.
-  Comb.lazy_thunk (Comb.app (Comb.app causal_braid current_state) proposed_action)
+  Comb.lazy_thunk 10 (Comb.app (Comb.app causal_braid current_state) proposed_action)
 
 /--
   The Divergent Sandbox (Parallel Superposition).

@@ -25,7 +25,7 @@ def nucleon_braid : Comb :=
   let quark1 := symmetric_node base_particle base_particle
   let quark2 := symmetric_node base_particle base_particle
   let quark3 := symmetric_node base_particle base_particle
-  let gluon_field := Comb.lazy_thunk (Comb.app causal_braid (Comb.app quark1 quark2))
+  let gluon_field := Comb.lazy_thunk 10 (Comb.app causal_braid (Comb.app quark1 quark2))
   Comb.app gluon_field quark3
 
 /--
@@ -34,6 +34,6 @@ def nucleon_braid : Comb :=
   friction moving across the saturated boundary.
 -/
 def gauge_boson_wave : Comb :=
-  Comb.lazy_thunk (Comb.app (Comb.t_inject causal_braid) saturated_boundary)
+  Comb.lazy_thunk 10 (Comb.app (Comb.t_inject causal_braid) saturated_boundary)
 
 end CombLib.Particles

@@ -27,7 +27,7 @@ This compilation model replaces hierarchical memory structures with precise rout
 
 To safely process highly entangled combinator streams on bare-metal hardware (like Interaction Nets with 32-bit pointers), the execution engine translates operations into a Directed Acyclic Graph (DAG). 
 
-The compiler executes an $O(V+E)$ topological sort utilizing Kosaraju's algorithm. By identifying 0-weight semantic cycles (Strongly Connected Components), the engine safely projects non-well-founded referential loops natively into flat structures, neutralizing exponential memory blowup prior to execution.
+The compiler executes an $O(V+E)$ topological sort utilizing Tarjan's SCC algorithm (upgraded from Kosaraju's). By identifying 0-weight semantic cycles (Strongly Connected Components) in a single pass, the engine safely projects non-well-founded referential loops natively into flat structures, neutralizing exponential memory blowup prior to execution.
 
 ---
 
@@ -58,8 +58,8 @@ def buildDynamicDistanceMap (w : StratificationWitness) (scope : Nat) : Comb →
 
 By extracting the verified scope constraints (`StratificationWitness`), the compiler utilizes `algorithmicTWeaking` to natively inject `Comb.t_inject` wrappers into the graph exactly where bounds are violated. This geometric self-regulation ensures that unstratified arrays stabilize natively without an infinite type hierarchy.
 
-### MCM Bounds and Terminal States
+### MCM Bounds, Interaction Monoids, and Terminal States
 
-The Minimum Cycle Mean (MCM) calculates dynamic operational limits across semantic boundaries. When evaluating saturated subsets (e.g. $V \in V$), the engine tracks the explicit recursion friction via explicit `lazy_thunk` states. When the distance map reaches a negative convergence limit, the execution is mathematically intercepted and frozen as a `Comb.terminal "K_ITERATION_HALT"`.
+Karp's Minimum Cycle Mean (MCM) algorithm calculates dynamic operational limits across semantic boundaries. When evaluating saturated subsets (e.g. $V \in V$), the engine tracks the explicit recursion friction via explicit `lazy_thunk` states acting as Okasaki suspensions. Further mathematically formalized using Mazza's Interaction Monoids, Girard's execution formula (`execute_path_weight`) algebraically maps the topological regression. When the distance map reaches a negative convergence limit (Extensionality Collision), the execution is mathematically intercepted and frozen as a `Comb.terminal "K_ITERATION_HALT"`.
 
 Once formatted through this pipeline, the AST is perfectly pruned for WGPU parallel reduction loops where atomic Compare-And-Swap (CAS) instructions handle graph rewiring completely lock-free.
