@@ -53,9 +53,12 @@ partial def tokenize (s : String) : List Token :=
     | '<' :: '-' :: '>' :: rest => go rest (Token.iff :: acc)
     | '<' :: rest => go rest (Token.lt :: acc)
     | '-' :: '>' :: rest => go rest (Token.impl :: acc)
+    | '→' :: rest => go rest (Token.impl :: acc)
     | '=' :: rest => go rest (Token.eq :: acc)
     | 'e' :: rest => go rest (Token.mem :: acc)
     | ',' :: rest => go rest (Token.comma :: acc)
+    | '∀' :: rest => go rest (Token.forall_tok :: acc)
+    | '∃' :: rest => go rest (Token.exists_tok :: acc)
     | c :: rest =>
         if c.isAlphanum then
           let (varChars, rest') := cs.span Char.isAlphanum
@@ -478,6 +481,6 @@ def main (args : List String) : IO Unit := do
   let stdin ← IO.getStdin
   let stdout ← IO.getStdout
 
-  stdout.putStrLn "=== Lean ITP REPL ==="
+  stdout.putStrLn "=== NF Sketches ITP ==="
   stdout.putStrLn "Type 'help' for a list of commands, or 'exit' to quit."
   repl stdin stdout { theorems := [] } none
