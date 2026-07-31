@@ -76,9 +76,20 @@ def testYCombSafeCompile : Bool :=
 -- Self-Models & V \in V Tests
 -- Evaluate a Quine atom. Because of the K-Iteration bound, it safely halts and returns the terminal paradox.
 def testQuineAtomHalt : Bool :=
-  normalize buildQuineAtom 20 0 == terminal "K_ITERATION_HALT"
+  normalize buildQuineAtom 20 0 == terminal "K_ITERATION_HALT (Energy Released: 20)"
 
 #eval testQuineAtomHalt
+
+-- SC_CUT Execution Boundary Test
+-- This verifies that bounded polynomial arithmetic limits (Sigma_1^b) accurately interrupt massively deep
+-- execution trees occurring within classical SC_CUT bubbles independently of the global recursion budget.
+def testSCCutHalt : Bool :=
+  -- We construct a Quine loop inside an SC_CUT. 
+  -- We set kLimit=100 (global), scLimit=10 (local SC_CUT limit).
+  -- It should halt inside the SC_CUT after exactly 10 iterations.
+  normalize (app (terminal "SC_CUT") buildQuineAtom) 100 10 0 0 false == terminal "SC_CUT_PTIME_HALT (Sigma_1^b Limit Reached: 10)"
+
+#eval testSCCutHalt
 
 -- Frege-Russell Numerals Tests
 -- Num0 (isNil) applied to nil should return true
