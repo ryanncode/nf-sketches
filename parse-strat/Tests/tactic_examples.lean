@@ -69,12 +69,12 @@ def exampleSurgery : Except String ProofState := do
 
 def runAllExamples : IO Unit := do
   IO.println "--- Component 3 Tactical Examples ---"
-  
+
   IO.print "exampleRefl (SCC DAG Isomorphism): "
   match exampleRefl with
   | Except.ok _ => IO.println "SUCCESS"
   | Except.error e => IO.println s!"FAILED: {e}"
-  
+
   IO.print "exampleStratify (Oracle & Trace): "
   match exampleStratify with
   | Except.ok _ => IO.println "SUCCESS"
