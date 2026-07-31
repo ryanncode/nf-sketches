@@ -290,6 +290,77 @@ def topologicalSort (vars : List ScopedVar) (edges : List Edge) : Option (List S
   else
     none
 
+def getZeroEdges (edges : List Edge) : List Edge :=
+  edges.filter (fun e => e.weight == 0)
+
+partial def dfs1 (u : ScopedVar) (edges : List Edge) (visited : List ScopedVar) (stack : List ScopedVar) : List ScopedVar × List ScopedVar :=
+  if visited.contains u then
+    (visited, stack)
+  else
+    let visited' := u :: visited
+    let outgoing := edges.filter (fun e => e.src == u)
+    let (visited'', stack') := outgoing.foldl (fun (v_acc, s_acc) e =>
+      dfs1 e.dst edges v_acc s_acc
+    ) (visited', stack)
+    (visited'', u :: stack')
+
+def computeFinishOrder (vars : List ScopedVar) (edges : List Edge) : List ScopedVar :=
+  let (_, stack) := vars.foldl (fun (v_acc, s_acc) u =>
+    dfs1 u edges v_acc s_acc
+  ) ([], [])
+  stack
+
+def reverseEdges (edges : List Edge) : List Edge :=
+  edges.map (fun e => { e with src := e.dst, dst := e.src })
+
+partial def dfs2 (u : ScopedVar) (edges : List Edge) (visited : List ScopedVar) (scc : List ScopedVar) : List ScopedVar × List ScopedVar :=
+  if visited.contains u then
+    (visited, scc)
+  else
+    let visited' := u :: visited
+    let outgoing := edges.filter (fun e => e.src == u)
+    let (visited'', scc') := outgoing.foldl (fun (v_acc, scc_acc) e =>
+      dfs2 e.dst edges v_acc scc_acc
+    ) (visited', u :: scc)
+    (visited'', scc')
+
+def kosarajuSCC (vars : List ScopedVar) (edges : List Edge) : List (List ScopedVar) :=
+  let zeroEdges := getZeroEdges edges
+  let finishOrder := computeFinishOrder vars zeroEdges
+  let revZeroEdges := reverseEdges zeroEdges
+  let (_, sccs) := finishOrder.foldl (fun (visited, sccs_acc) u =>
+    if visited.contains u then
+      (visited, sccs_acc)
+    else
+      let (visited', scc) := dfs2 u revZeroEdges visited []
+      (visited', scc :: sccs_acc)
+  ) ([], [])
+  sccs
+
+def getRepresentative (u : ScopedVar) (sccs : List (List ScopedVar)) : ScopedVar :=
+  match sccs.find? (fun scc => scc.contains u) with
+  | some scc => match scc.head? with
+                | some rep => rep
+                | none => u
+  | none => u
+
+def contractVars (vars : List ScopedVar) (sccs : List (List ScopedVar)) : List ScopedVar :=
+  nub (vars.map (fun u => getRepresentative u sccs))
+
+def contractEdges (edges : List Edge) (sccs : List (List ScopedVar)) : List Edge :=
+  let mapped := edges.map (fun e => { e with src := getRepresentative e.src sccs, dst := getRepresentative e.dst sccs })
+  mapped.filter (fun e => e.src != e.dst || e.weight != 0)
+
+def expandDistances (dist : List (ScopedVar × Int)) (sccs : List (List ScopedVar)) : List (ScopedVar × Int) :=
+  sccs.foldl (fun acc scc => 
+    match scc.head? with
+    | some rep =>
+        match dist.find? (fun p => p.1 == rep) with
+        | some (_, d) => acc ++ scc.map (fun u => (u, d))
+        | none => acc ++ scc.map (fun u => (u, 0))
+    | none => acc
+  ) []
+
 def dagShortestPath (vars : List ScopedVar) (edges : List Edge) (sorted : List ScopedVar) : List (ScopedVar × Int) :=
   let initialDist : List (ScopedVar × Int) := vars.map (fun v => (v, (0 : Int)))
   sorted.foldl (fun dist u =>
@@ -311,11 +382,14 @@ def evaluateClause (vars : List ScopedVar) (constraints : List Constraint) : Exc
   if n == 0 then
     Except.ok []
   else
-    -- Try O(V+E) DAG Topological Sort First
-    match (none : Option (List ScopedVar)) with
+    let sccs := kosarajuSCC vars edges
+    let cVars := contractVars vars sccs
+    let cEdges := contractEdges edges sccs
+    -- Try O(V+E) DAG Topological Sort First on SCC-contracted graph
+    match topologicalSort cVars cEdges with
     | some sorted =>
-        let finalDist := dagShortestPath vars edges sorted
-        Except.ok finalDist
+        let finalDist := dagShortestPath cVars cEdges sorted
+        Except.ok (expandDistances finalDist sccs)
     | none =>
         -- Fallback to Bellman-Ford for non-DAGs (containing cycles)
         let initialDist : List (ScopedVar × Int) := vars.map (fun v => (v, (0 : Int)))
