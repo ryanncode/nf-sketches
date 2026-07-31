@@ -2,7 +2,7 @@
 
 ## The Diagnostic Sandbox
 
-The `parse-strat` module provides a tactile, responsive Read-Eval-Print Loop (REPL) environment acting as a full Interactive Theorem Prover (ITP). Before dispatching hardcoded models to the formal Sequent verifier (`seq-embed`), researchers utilize this sandbox to manually explore the boundaries of **weak stratification constraints** in Quine's New Foundations using classical Natural Deduction tactics.
+The `parse-strat` module provides a tactile, responsive Read-Eval-Print Loop (REPL) environment acting as a full Interactive Theorem Prover (ITP). Before dispatching hardcoded models to the formal Sequent verifier (`seq-embed`), researchers utilize this sandbox to manually explore the boundaries of **weak stratification constraints** in Quine's New Foundations. It features a monolithic tactic ecosystem (including `intro`, `simp`, `rewrite`, `focus_hyp`, `elevate`, `collapse_loop`) driving a seamless AST-to-DAG compilation pipeline.
 
 The REPL is supported by a powerful topological graph-flattening backend, giving immediate feedback on Extensionality bounds.
 
@@ -148,6 +148,18 @@ The constraint extraction clearly visualizes how `K` acts as the set boundary, r
 
 ## Core Command Reference
 
+### Logical Operators Syntax
+* `->` or `→`: Implication
+* `<->`: IFF (If and only if)
+* `forall` or `∀`: Universal Quantifier
+* `exists` or `∃`: Existential Quantifier
+* `/\`: Conjunction (AND)
+* `\/`: Disjunction (OR)
+* `~`: Negation (NOT)
+* `e`: Set Membership (e.g., `x e y`) *(Note: Monist uses `in`, but Lean 4 reserves `in`, so `e` is used here)*
+* `<`: Typestate Inequality (e.g., `x < y`)
+* `{x | P(x)}`: Set Comprehension
+
 ### Axioms & Session Management
 * `assume <name> <formula>`: Register a named axiom globally.
 * `theorem <name> <formula>`: Start a new proof with a target goal.
@@ -157,9 +169,21 @@ The constraint extraction clearly visualizes how `K` acts as the set boundary, r
 ### Interactive Tactics
 * `intro [name]`: Introduce a premise.
 * `exact <name>`: Close the current goal if it exactly matches the hypothesis.
+* `apply <name>`: Apply an implication hypothesis.
+* `split`: Split a conjunction goal into two separate goals.
+* `left` / `right`: Select a side of a disjunction goal.
 * `destruct <name>`: Break down conjunctions or disjunctions in context.
-* `rewrite <name>`: Substitute variables inside the goal.
+* `defer`: Rotate the current goal to the back of the queue.
+* `focus_hyp <name>`: Bring a hypothesis to the front of the context.
 * `cut <formula>`: Introduce new hypothesis branches.
+* `rewrite <name>`: Substitute variables inside the goal.
+* `schonfinkel`: Compile quantified formulas directly into raw SKI combinator topology.
+* `simp`: Macro-expansion engine that unfolds definitions until reaching normal form (DNF).
+* `have <name> <formula>`: Assert intermediate topological lemmas and chain them into the context.
+* `refl`: DAG Isomorphism check utilizing Kosaraju's SCC flattening.
+* `stratify`: Oracle Call: Closes existential/stratification goals automatically if no negative-weight cycles exist.
+* `elevate`: Applies the T-Functor ($x \mapsto \iota"x$) to manually neutralize stratification collisions.
+* `collapse_loop`: Reduces stable 0-weight self-referential cycles into a singular graph node using SCC mapping.
 
 ### Diagnostics
 * `eval <formula>`: Parse topological shift and halt if structural loops emerge.

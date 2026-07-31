@@ -84,7 +84,7 @@ An algorithmic syntax checker reducing set theory validation into a geometric sh
 
 ### 2. `parse-strat`: The Interactive ITP Sandbox
 
-A tactile Read-Eval-Print Loop (REPL) environment acting as an Interactive Theorem Prover. It allows users to explore **weak stratification constraints** using classical Natural Deduction tactics (`intro`, `rewrite`, `cut`). By dynamically running `eval`, users can instantly parse topological shift and detect boundaries like Extensionality Collisions in real-time.
+A tactile Read-Eval-Print Loop (REPL) environment acting as an Interactive Theorem Prover. It features a monolithic tactic ecosystem (including `intro`, `simp`, `rewrite`, `focus_hyp`, `elevate`, `collapse_loop`) driving a seamless AST-to-DAG compilation pipeline. Users can explore **weak stratification constraints** and instantly parse topological shifts or detect boundaries like Extensionality Collisions in real-time.
 
 ### 3. `seq-embed`: The Formal Diagnostic Tool
 
@@ -97,8 +97,8 @@ A deep embedding of Gentzen's Sequent Calculus in Lean that restricts comprehens
 Constructs a flat, variable-free combinatory execution environment ($S$, $K$, $I$, $U$).
 
 - **Algorithmic T-Weaking**: Synthesizes Forster's $T$-operator ($x \mapsto \iota"x$) as dynamic geometric stabilizers based on the `NfValidate` integer map.
-- **Acyclic Flattening**: Uses Tarjan's SCC algorithm (upgraded from Kosaraju's) to single-pass flatten semantic cycles efficiently.
-- **Topologically-Guided Reduction**: Uses Karp's Minimum Cycle Mean (MCM) bounds to enforce explicit K-Iteration limits (via `lazy_thunk` bound embedded with Okasaki's suspension limits) safely evaluating paradoxical self-reference by forcing terminal states without stack exhaustion. Uses Interaction Monoids formalization with Girard's formula (`execute_path_weight`) to algebraically map topological regress.
+- **Acyclic Flattening**: Implements Kosaraju's SCC algorithm to single-pass flatten 0-weight equivalence bounds (semantic cycles) efficiently.
+- **Topologically-Guided Reduction**: Uses Karp's Minimum Cycle Mean (MCM) bounds to enforce explicit K-Iteration limits (via `lazy_thunk` bound embedded with Okasaki's suspension limits) safely evaluating paradoxical self-reference by forcing terminal states without stack exhaustion. It strictly injects Buss ptime $\Sigma_1^b$ iteration bounds into the `SC_CUT` runtime to isolate classical domains. Uses Interaction Monoids formalization with Girard's formula (`execute_path_weight`) to algebraically map topological regress.
 
 ### 5. `CombLib`: Native Operational Semantics
 
