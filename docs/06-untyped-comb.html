@@ -213,7 +213,7 @@ window.Quarto = {
   <li><a href="#topologically-guided-lazy-reduction" id="toc-topologically-guided-lazy-reduction" class="nav-link" data-scroll-target="#topologically-guided-lazy-reduction"><span class="header-section-number">6.3</span> Topologically-Guided Lazy Reduction</a>
   <ul class="collapse">
   <li><a href="#dynamic-t-weaking-pipeline" id="toc-dynamic-t-weaking-pipeline" class="nav-link" data-scroll-target="#dynamic-t-weaking-pipeline"><span class="header-section-number">6.3.1</span> Dynamic T-Weaking Pipeline</a></li>
-  <li><a href="#mcm-bounds-and-terminal-states" id="toc-mcm-bounds-and-terminal-states" class="nav-link" data-scroll-target="#mcm-bounds-and-terminal-states"><span class="header-section-number">6.3.2</span> MCM Bounds and Terminal States</a></li>
+  <li><a href="#mcm-bounds-interaction-monoids-and-terminal-states" id="toc-mcm-bounds-interaction-monoids-and-terminal-states" class="nav-link" data-scroll-target="#mcm-bounds-interaction-monoids-and-terminal-states"><span class="header-section-number">6.3.2</span> MCM Bounds, Interaction Monoids, and Terminal States</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -265,7 +265,7 @@ inductive Comb
 <section id="directed-acyclic-translation-flattening" class="level2" data-number="6.2">
 <h2 data-number="6.2" class="anchored" data-anchor-id="directed-acyclic-translation-flattening"><span class="header-section-number">6.2</span> Directed Acyclic Translation &amp; Flattening</h2>
 <p>To safely process highly entangled combinator streams on bare-metal hardware (like Interaction Nets with 32-bit pointers), the execution engine translates operations into a Directed Acyclic Graph (DAG).</p>
-<p>The compiler executes an <span class="math inline">\(O(V+E)\)</span> topological sort utilizing Kosaraju’s algorithm. By identifying 0-weight semantic cycles (Strongly Connected Components), the engine safely projects non-well-founded referential loops natively into flat structures, neutralizing exponential memory blowup prior to execution.</p>
+<p>The compiler executes an <span class="math inline">\(O(V+E)\)</span> topological sort utilizing Kosaraju’s SCC algorithm. By identifying 0-weight equivalence bounds (semantic cycles) in a single pass, the engine safely projects non-well-founded referential loops natively into flat structures, neutralizing exponential memory blowup prior to execution.</p>
 <hr>
 </section>
 <section id="topologically-guided-lazy-reduction" class="level2" data-number="6.3">
@@ -290,9 +290,9 @@ def buildDynamicDistanceMap (w : StratificationWitness) (scope : Nat) : Comb →
       | none =&gt; none</code></pre>
 <p>By extracting the verified scope constraints (<code>StratificationWitness</code>), the compiler utilizes <code>algorithmicTWeaking</code> to natively inject <code>Comb.t_inject</code> wrappers into the graph exactly where bounds are violated. This geometric self-regulation ensures that unstratified arrays stabilize natively without an infinite type hierarchy.</p>
 </section>
-<section id="mcm-bounds-and-terminal-states" class="level3" data-number="6.3.2">
-<h3 data-number="6.3.2" class="anchored" data-anchor-id="mcm-bounds-and-terminal-states"><span class="header-section-number">6.3.2</span> MCM Bounds and Terminal States</h3>
-<p>The Minimum Cycle Mean (MCM) calculates dynamic operational limits across semantic boundaries. When evaluating saturated subsets (e.g.&nbsp;<span class="math inline">\(V \in V\)</span>), the engine tracks the explicit recursion friction via explicit <code>lazy_thunk</code> states. When the distance map reaches a negative convergence limit, the execution is mathematically intercepted and frozen as a <code>Comb.terminal "K_ITERATION_HALT"</code>.</p>
+<section id="mcm-bounds-interaction-monoids-and-terminal-states" class="level3" data-number="6.3.2">
+<h3 data-number="6.3.2" class="anchored" data-anchor-id="mcm-bounds-interaction-monoids-and-terminal-states"><span class="header-section-number">6.3.2</span> MCM Bounds, Interaction Monoids, and Terminal States</h3>
+<p>Karp’s Minimum Cycle Mean (MCM) algorithm calculates dynamic operational limits across semantic boundaries. When evaluating saturated subsets (e.g.&nbsp;<span class="math inline">\(V \in V\)</span>), the engine tracks the explicit recursion friction via explicit <code>lazy_thunk</code> states acting as Okasaki suspensions, strictly injecting Buss ptime <span class="math inline">\(\Sigma_1^b\)</span> iteration bounds into the <code>SC_CUT</code> runtime to isolate classical domains. Further mathematically formalized using Mazza’s Interaction Monoids, Girard’s execution formula (<code>execute_path_weight</code>) algebraically maps the topological regression. When the distance map reaches a negative convergence limit (Extensionality Collision), the execution is mathematically intercepted and frozen as a <code>Comb.terminal "K_ITERATION_HALT"</code>.</p>
 <p>Once formatted through this pipeline, the AST is perfectly pruned for WGPU parallel reduction loops where atomic Compare-And-Swap (CAS) instructions handle graph rewiring completely lock-free.</p>
 
 
