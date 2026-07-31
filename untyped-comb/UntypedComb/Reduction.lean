@@ -49,7 +49,7 @@ Evaluates a combinator term to its normal form by repeatedly applying `reduceSte
 Integrates K-Iteration Halting to prevent infinite regression on paradoxical cycles.
 SC boundaries suspend these detectors.
 -/
-partial def normalize (t : Comb) (kLimit : Nat := 10000) (depth : Nat := 0) (inSC : Bool := false) : Comb :=
+partial def normalize (t : Comb) (kLimit : Nat := 10000) (scLimit : Nat := 50000) (depth : Nat := 0) (scDepth : Nat := 0) (inSC : Bool := false) : Comb :=
   let isCurrentlySC := inSC || (match t with
     | Comb.app (Comb.terminal "SC_CUT") _ => true
     | Comb.terminal "SC_CUT" => true
@@ -57,6 +57,8 @@ partial def normalize (t : Comb) (kLimit : Nat := 10000) (depth : Nat := 0) (inS
 
   if !isCurrentlySC && depth >= kLimit then
     Comb.terminal s!"K_ITERATION_HALT (Energy Released: {depth})"
+  else if isCurrentlySC && scDepth >= scLimit then
+    Comb.terminal s!"SC_CUT_PTIME_HALT (Sigma_1^b Limit Reached: {scDepth})"
   else
     match reduceStep t with
     | some t' =>
@@ -74,7 +76,7 @@ partial def normalize (t : Comb) (kLimit : Nat := 10000) (depth : Nat := 0) (inS
           | none => Comb.terminal "SC_INSTABILITY_DETECTED"
         | _ => t'
       else
-        normalize t' kLimit (if isCurrentlySC then depth else depth + 1) isCurrentlySC
+        normalize t' kLimit scLimit (if isCurrentlySC then depth else depth + 1) (if isCurrentlySC then scDepth + 1 else scDepth) isCurrentlySC
     | none =>
       -- If term is fully reduced and wrapped in SC_CUT, unwrap it.
       match t with
