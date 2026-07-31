@@ -253,6 +253,13 @@ partial def repl (stdin : IO.FS.Stream) (stdout : IO.FS.Stream) (env : GlobalEnv
     stdout.putStrLn "  apply <name>                  - Apply a theorem/hypothesis"
     stdout.putStrLn "  destruct <name> [n1] [n2]     - Break down a hypothesis"
     stdout.putStrLn "  rewrite <name>                - Substitute variables using equality"
+    stdout.putStrLn "  refl                          - Prove equality via DAG Isomorphism (SCC)"
+    stdout.putStrLn "  simp                          - Unfold definitions to Normal Form"
+    stdout.putStrLn "  have <name> <formula>         - Assert intermediate topological lemma"
+    stdout.putStrLn "  stratify                      - Oracle Call to close stratifiable goals"
+    stdout.putStrLn "  elevate                       - Apply T-Functor shift to variables"
+    stdout.putStrLn "  collapse_loop                 - Contract 0-weight cycles mid-proof"
+    stdout.putStrLn "  schonfinkel                   - Compile target to SKI combinator topology"
     stdout.putStrLn "  qed                           - Finish proof"
     stdout.putStrLn "  abort                         - Abort current proof"
     repl stdin stdout env ps
@@ -456,6 +463,45 @@ partial def repl (stdin : IO.FS.Stream) (stdout : IO.FS.Stream) (env : GlobalEnv
       match rewriteTactic name state with
       | Except.ok s => stdout.putStrLn (printState s); repl stdin stdout env (some s)
       | Except.error e => stdout.putStrLn e; repl stdin stdout env (some state)
+    else if cmd == "refl" then
+      match reflTactic state with
+      | Except.ok s => stdout.putStrLn (printState s); repl stdin stdout env (some s)
+      | Except.error e => stdout.putStrLn e; repl stdin stdout env (some state)
+    else if cmd == "simp" then
+      match simpTactic state with
+      | Except.ok s => stdout.putStrLn (printState s); repl stdin stdout env (some s)
+      | Except.error e => stdout.putStrLn e; repl stdin stdout env (some state)
+    else if cmd == "stratify" then
+      match stratifyTactic state with
+      | Except.ok s => stdout.putStrLn (printState s); repl stdin stdout env (some s)
+      | Except.error e => stdout.putStrLn e; repl stdin stdout env (some state)
+    else if cmd == "elevate" then
+      match elevateTactic state with
+      | Except.ok s => stdout.putStrLn (printState s); repl stdin stdout env (some s)
+      | Except.error e => stdout.putStrLn e; repl stdin stdout env (some state)
+    else if cmd == "collapse_loop" then
+      match collapseLoopTactic state with
+      | Except.ok s => stdout.putStrLn (printState s); repl stdin stdout env (some s)
+      | Except.error e => stdout.putStrLn e; repl stdin stdout env (some state)
+    else if cmd == "schonfinkel" then
+      match schonfinkelTactic state with
+      | Except.ok s => stdout.putStrLn (printState s); repl stdin stdout env (some s)
+      | Except.error e => stdout.putStrLn e; repl stdin stdout env (some state)
+    else if cmd == "have" then
+      if args.isEmpty then
+        stdout.putStrLn "Usage: have <name> <formula>"
+        repl stdin stdout env (some state)
+      else
+        let name := args.head!
+        let formulaStr := String.intercalate " " args.tail
+        match parseFormula formulaStr env.macros with
+        | some f =>
+          match haveTactic name f state with
+          | Except.ok s => stdout.putStrLn (printState s); repl stdin stdout env (some s)
+          | Except.error e => stdout.putStrLn e; repl stdin stdout env (some state)
+        | none =>
+          stdout.putStrLn "Failed to parse formula for have."
+          repl stdin stdout env (some state)
     else if cmd == "qed" then
       if state.isEmpty then
         stdout.putStrLn "Proof accepted."

@@ -3,6 +3,13 @@
  "packages":
  [{"type": "path",
    "scope": "",
+   "name": "«untyped-comb»",
+   "manifestFile": "lake-manifest.json",
+   "inherited": false,
+   "dir": "../untyped-comb",
+   "configFile": "lakefile.toml"},
+  {"type": "path",
+   "scope": "",
    "name": "«nf-validate»",
    "manifestFile": "lake-manifest.json",
    "inherited": false,

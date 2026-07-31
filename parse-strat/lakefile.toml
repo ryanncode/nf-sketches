@@ -6,6 +6,10 @@ defaultTargets = ["parse-strat"]
 name = "nf-validate"
 path = "../nf-validate"
 
+[[require]]
+name = "untyped-comb"
+path = "../untyped-comb"
+
 [[lean_lib]]
 name = "ParseStrat"
 

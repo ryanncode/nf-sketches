@@ -1,0 +1,29 @@
+deff MyMacro A B := A e B
+theorem Test_Simp_Refl forall X, forall Y, ~(~(X = Y)) -> X = Y
+intro X
+intro Y
+intro H
+simp
+refl
+qed
+theorem Test_Stratify forall A, A e B
+intro A
+stratify
+qed
+theorem Test_Schonfinkel forall x, forall y, x e y
+intro x
+intro y
+elevate
+schonfinkel
+abort
+theorem Test_Loop X = X
+collapse_loop
+refl
+qed
+theorem Test_Have A = B -> A = B
+intro H
+have H2 A = B
+exact H
+refl
+qed
+exit
